@@ -23,7 +23,7 @@ def login(request):
     if user:
         login_django(request, user) # Navegador logado
 
-        return render(request, "finance/") # TODO pagina inicial do app
+        return render(request, "finance/dashboard")
     
     return HttpResponse("Dados incorretos")
 
