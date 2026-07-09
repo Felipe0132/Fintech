@@ -55,7 +55,7 @@ def dashboard(request):
     total_ganhos = sum_by_value(ganhos)
     saldo_atual = (float)(total_ganhos)-(float)(total_gastos)
 
-    user_context = {"gastos":gastos.order_by('-id')[:5], "ganhos":ganhos.order_by('-id')[:5], "total_gastos":total_gastos, "total_ganhos":total_ganhos, "saldo_atual":saldo_atual, "tipos_gastos":tipos_gastos, "tipos_ganhos":tipos_ganhos}
+    user_context = {"gastos":gastos.order_by('date_paid')[:5], "ganhos":ganhos.order_by('date_paid')[:5], "total_gastos":total_gastos, "total_ganhos":total_ganhos, "saldo_atual":saldo_atual, "tipos_gastos":tipos_gastos, "tipos_ganhos":tipos_ganhos}
 
     return render(request, "finance/dashboard.html", context=user_context)
 
@@ -98,7 +98,19 @@ def registrar_tipo_gasto(request):
 
     name = request.POST.get('name')
 
-    if not(TipoGanho.objects.filter(name=name)):     
+    if not(TipoGasto.objects.filter(name=name, user=request.user).exists()):     
         TipoGasto.objects.create(name=name, user=request.user)
+
+    return redirect('finance:dashboard')
+
+@login_required(login_url="/finance/login/")
+def registrar_tipo_ganho(request):
+    if request.method == "GET":
+        return redirect('finance:dashboard')
+
+    name = request.POST.get('name')
+
+    if not(TipoGanho.objects.filter(name=name, user=request.user).exists()):     
+        TipoGanho.objects.create(name=name, user=request.user)
 
     return redirect('finance:dashboard')

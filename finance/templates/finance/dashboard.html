@@ -135,8 +135,8 @@
                             </div>
 
                             <div class="mb-3 form-check">
-                                <input type="checkbox" class="form-check-input" id="is_paid" name="is_paid"
-                                    value="True" checked>
+                                <input type="checkbox" class="form-check-input" id="is_paid" name="is_paid" value="True"
+                                    checked>
                                 <label class="form-check-label text-label" for="is_paid">Já foi pago / recebido</label>
                             </div>
 
@@ -196,8 +196,8 @@
                             </div>
 
                             <div class="mb-3 form-check">
-                                <input type="checkbox" class="form-check-input" id="is_paid" name="is_paid"
-                                    value="True" checked>
+                                <input type="checkbox" class="form-check-input" id="is_paid" name="is_paid" value="True"
+                                    checked>
                                 <label class="form-check-label text-label" for="is_paid">Já foi pago / recebido</label>
                             </div>
 
@@ -209,6 +209,11 @@
                                     <option value="{{ tipo.id }}">{{ tipo.name }}</option>
                                     {% endfor %}
                                 </select>
+
+                                <button type="button" class="btn btn-link btn-sm mt-1 p-0" data-bs-toggle="modal"
+                                    data-bs-target="#modalTipoGanho">
+                                    + Adicionar Categoria
+                                </button>
                             </div>
 
                             <div class="modal-footer border-secondary">
@@ -221,7 +226,6 @@
             </div>
         </div>
 
-        <!-- Modal: Nova Categoria de Gasto -->
         <div class="modal fade" id="modalTipoGasto" tabindex="-1" aria-labelledby="modalTipoGastoLabel"
             aria-hidden="true">
             <div class="modal-dialog">
@@ -249,9 +253,35 @@
             </div>
         </div>
 
-    </div>
+        <div class="modal fade" id="modalTipoGanho" tabindex="-1" aria-labelledby="modalTipoGanhoLabel"
+            aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="modalTipoGanhoLabel">Nova Categoria de Gasto</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form action="{% url 'finance:registrar_tipo_ganho' %}" method="post">
+                            {% csrf_token %}
+                            <div class="mb-3">
+                                <label for="name" class="form-label text-label">Nome da categoria</label>
+                                <input type="text" class="form-control bg-dark text-white border-secondary" id="name"
+                                    name="name" placeholder="Ex: Lazer, Saúde" required>
+                            </div>
+                            <div class="modal-footer border-secondary">
+                                <button type="button" class="btn btn-secondary"
+                                    data-bs-dismiss="modal">Cancelar</button>
+                                <button type="submit" class="btn btn-primary">Salvar Categoria</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 
 </html>
