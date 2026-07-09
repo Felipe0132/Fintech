@@ -1,0 +1,91 @@
+:root {
+    --bg-principal: #121214;       
+    --bg-cards: #202024;           
+    --cor-texto-principal: #8a8a8a;
+    --cor-texto-mutado: #8d8d99;   
+    
+    --cor-positivo: #00b37e;      
+    --cor-negativo: #f75a68;     
+    
+    --btn-logout-borda: #f75a68;  
+    --btn-logout-texto: #f75a68;  
+    --btn-logout-hover: #f75a68;  
+}
+
+body.bg-custom {
+    background-color: var(--bg-principal);
+    color: var(--cor-texto-principal);
+    font-family: system-ui, -apple-system, sans-serif;
+}
+
+.global{background-color: #b3b3b3;}
+
+/* Navbar */
+.navbar-dash {
+    background-color: var(--bg-cards);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.text-user {
+    color: var(--cor-texto-mutado);
+    font-weight: 500;
+}
+
+/* Botão de Logout Customizado */
+.btn-logout {
+    color: var(--btn-logout-texto);
+    border-color: var(--btn-logout-borda);
+    transition: all 0.2s ease-in-out;
+}
+
+.btn-logout:hover {
+    background-color: var(--btn-logout-hover);
+    color: #ffffff;
+    border-color: var(--btn-logout-hover);
+}
+
+/* Cards */
+.card-dark {
+    background-color: var(--bg-cards);
+    border: none;
+    border-radius: 8px;
+    color: var(--cor-texto-principal);
+}
+
+/* Textos e Títulos */
+.text-title {
+    color: var(--cor-texto-principal);
+    font-weight: 600;
+}
+
+.text-label {
+    color: var(--cor-texto-mutado);
+    font-size: 0.95rem;
+}
+
+/* Valores de Destaque */
+.summary-value {
+    font-size: 1.8rem;
+    font-weight: 700;
+}
+
+.text-positive {
+    color: var(--cor-positivo) !important;
+}
+
+.text-negative {
+    color: var(--cor-negativo) !important;
+}
+
+.text-balance {
+    color: var(--cor-texto-principal);
+}
+
+/* Ajuste fino para o menu responsivo em telas pequenas */
+@media (max-width: 991.98px) {
+    .responsive-nav-items {
+        padding-top: 1rem;
+        flex-direction: column;
+        align-items: flex-start !important;
+    }
+}

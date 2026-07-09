@@ -1,23 +1,86 @@
 {% load static %}
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Dashboard - Gestão Financeira</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../../static/style/dashboard.css">
 </head>
-<body>
+<body class="bg-custom">
+
     <div class="global">
-        <h1>Ola {{ request.user.username }}</h1>
-
-        <h2>Total gastos R$ {{ total_gastos }}</h2>
-        <h2>Total ganho R$ {{ total_ganhos }}</h2>
-
-        <h3>Ultimos 5 gastos</h3>
-        {% for gasto in gastos %}
-            <li>{{ gasto.description }} - R$ {{ gasto.value }}</li>
-        {% endfor %}
+        <nav class="navbar navbar-dash navbar-expand-lg px-4 py-2">
+            <div class="container-fluid">
+                <a class="navbar-brand d-flex align-items-center gap-2" href="{% url 'finance:dashboard' %}">
+                    <img src="{% static 'assets/images/logo.png' %}" alt="Logo" height="40">
+                </a>
+                <button class="navbar-toggler navbar-dark" type="button" data-bs-toggle="collapse" data-bs-target="#navbarDash">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <span class="text-user">Olá, {{ request.user.username }}</span> 
+                <div class="collapse navbar-collapse" id="navbarDash">
+                    <div class="ms-auto d-flex align-items-center gap-3 responsive-nav-items">
+                        
+                        <a href="#" class="btn btn-logout btn-sm">Logout</a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+        <div class="container py-5">
+            <div class="row g-4 mb-4">
+                <div class="col-12 col-md-4">
+                    <div class="card card-dark p-4 h-100">
+                        <span class="text-label mb-2">Total de ganhos</span>
+                        <span class="summary-value text-positive">R$ {{ total_ganhos }}</span>
+                    </div>
+                </div>
+                <div class="col-12 col-md-4">
+                    <div class="card card-dark p-4 h-100">
+                        <span class="text-label mb-2">Total de gastos</span>
+                        <span class="summary-value text-negative">R$ {{ total_gastos }}</span>
+                    </div>
+                </div>
+                <div class="col-12 col-md-4">
+                    <div class="card card-dark p-4 h-100">
+                        <span class="text-label mb-2">Saldo</span>
+                        <span class="summary-value text-balance">R$ {{ saldo_atual }}</span>
+                    </div>
+                </div>
+            </div>
+            <div class="row g-4">
+                <div class="col-12 col-md-6">
+                    <div class="card card-dark p-4">
+                        <h5 class="mb-3 text-title">Últimos gastos</h5>
+                        {% for gasto in gastos %}
+                            <div class="list-item d-flex justify-content-between align-items-center py-2 border-bottom border-secondary">
+                                <span>{{ gasto.description }}</span>
+                                <span class="badge-value text-negative">R$ {{ gasto.value }}</span>
+                            </div>
+                        {% empty %}
+                            <p class="text-label mb-0">Nenhum gasto registrado ainda.</p>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="col-12 col-md-6">
+                    <div class="card card-dark p-4">
+                        <h5 class="mb-3 text-title">Últimos ganhos</h5>
+                        {% for ganho in ganhos %}
+                            <div class="list-item d-flex justify-content-between align-items-center py-2 border-bottom border-secondary">
+                                <span>{{ ganho.description }}</span>
+                                <span class="badge-value text-positive">R$ {{ ganho.value }}</span>
+                            </div>
+                        {% empty %}
+                            <p class="text-label mb-0">Nenhum ganho registrado ainda.</p>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
