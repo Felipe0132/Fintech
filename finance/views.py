@@ -58,3 +58,19 @@ def dashboard(request):
     user_context = {"gastos":gastos.order_by('-id')[:5], "ganhos":ganhos.order_by('-id')[:5], "total_gastos":total_gastos, "total_ganho":total_ganhos, "saldo_atual":saldo_atual, "tipos_gastos":tipos_gastos, "tipos_ganhos":tipos_ganhos}
 
     return render(request, "finance/dashboard.html", context=user_context)
+
+@login_required(login_url="/finance/login/")
+def registrar_gasto(request):
+    if request.method == "GET":
+        return redirect('finance:dashboard')
+    
+    value = request.POST.get('value')
+    description = request.POST.get('description')
+    date_paid = request.POST.get('date_paid')
+    is_paid = request.POST.get('is_paid') == 'True' # Recebe ou True ou Null do html
+
+    type_id = request.POST.get('type') # Do html recebe so o id, ai o Django entende linkando so o type_id
+
+    Gasto.objects.create(value=value, description=description, date_paid=date_paid, is_paid=is_paid, type_id=type_id if type_id else None, user=request.user)
+
+    return redirect('finance:dashboard')

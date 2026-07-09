@@ -85,7 +85,7 @@
                                             aria-label="Close"></button>
                                     </div>
                                     <div class="modal-body">
-                                        <form action="">
+                                        <form action="{% url 'finance:registrar_gasto' %}" method="post"> {% csrf_token %}
                                             <div class="mb-3">
                                                 <label for="description" class="form-label text-label">Descrição</label>
                                                 <input type="text"
@@ -125,12 +125,13 @@
                                                     {% endfor %}
                                                 </select>
                                             </div>
+
+                                            <div class="modal-footer border-secondary">
+                                                <button type="button" class="btn btn-secondary"
+                                                    data-bs-dismiss="modal">Close</button>
+                                                <button type="submit" class="btn btn-primary">Salvar Gasto</button>
+                                            </div>
                                         </form>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary"
-                                            data-bs-dismiss="modal">Close</button>
-                                        <button type="button" class="btn btn-primary">Salvar Ganho</button>
                                     </div>
                                 </div>
                             </div>
@@ -169,7 +170,7 @@
                                             aria-label="Close"></button>
                                     </div>
                                     <div class="modal-body">
-                                        <form action="">
+                                        <form action="" method="post">
                                             <div class="mb-3">
                                                 <label for="description" class="form-label text-label">Descrição</label>
                                                 <input type="text"
