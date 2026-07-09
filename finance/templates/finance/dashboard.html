@@ -2,6 +2,7 @@
 
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,6 +10,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="../../static/style/dashboard.css">
 </head>
+
 <body class="bg-custom">
 
     <div class="global">
@@ -17,13 +19,14 @@
                 <a class="navbar-brand d-flex align-items-center gap-2" href="{% url 'finance:dashboard' %}">
                     <img src="{% static 'assets/images/logo.png' %}" alt="Logo" height="40">
                 </a>
-                <button class="navbar-toggler navbar-dark" type="button" data-bs-toggle="collapse" data-bs-target="#navbarDash">
+                <button class="navbar-toggler navbar-dark" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#navbarDash">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <span class="text-user">Olá, {{ request.user.username }}</span> 
+                <span class="text-user">Olá, {{ request.user.username }}</span>
                 <div class="collapse navbar-collapse" id="navbarDash">
                     <div class="ms-auto d-flex align-items-center gap-3 responsive-nav-items">
-                        
+
                         <a href="#" class="btn btn-logout btn-sm">Logout</a>
                     </div>
                 </div>
@@ -52,35 +55,176 @@
             </div>
             <div class="row g-4">
                 <div class="col-12 col-md-6">
-                    <div class="card card-dark p-4">
-                        <h5 class="mb-3 text-title">Últimos gastos</h5>
-                        {% for gasto in gastos %}
-                            <div class="list-item d-flex justify-content-between align-items-center py-2 border-bottom border-secondary">
+                    <div class="card card-dark h-100 d-flex flex-column justify-content-between">
+                        <div class="p-4">
+                            <h5 class="mb-3 text-title">Últimos gastos</h5>
+                            {% for gasto in gastos %}
+                            <div
+                                class="list-item d-flex justify-content-between align-items-center py-2 border-bottom border-secondary">
                                 <span>{{ gasto.description }}</span>
                                 <span class="badge-value text-negative">R$ {{ gasto.value }}</span>
                             </div>
-                        {% empty %}
+                            {% empty %}
                             <p class="text-label mb-0">Nenhum gasto registrado ainda.</p>
-                        {% endfor %}
+                            {% endfor %}
+                        </div>
+                        <div class="p-4 pt-0 mt-auto">
+                            <button type="button" class="btn btn-primary btn-add-gasto w-100 text-center"
+                                data-bs-toggle="modal" data-bs-target="#exampleModal">
+                                + Adicionar Gasto
+                            </button>
+                        </div>
+
+                        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+                            aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h1 class="modal-title fs-5" id="exampleModalLabel">Modal title</h1>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                            aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form action="">
+                                            <div class="mb-3">
+                                                <label for="description" class="form-label text-label">Descrição</label>
+                                                <input type="text"
+                                                    class="form-control bg-dark text-white border-secondary"
+                                                    id="description" name="description"
+                                                    placeholder="Ex: Mercado, Aluguel" required>
+                                            </div>
+
+                                            <div class="mb-3">
+                                                <label for="value" class="form-label text-label">Valor (R$)</label>
+                                                <input type="number" step="0.01" min="0"
+                                                    class="form-control bg-dark text-white border-secondary" id="value"
+                                                    name="value" placeholder="0,00" required>
+                                            </div>
+
+                                            <div class="mb-3">
+                                                <label for="date_paid" class="form-label text-label">Data</label>
+                                                <input type="date"
+                                                    class="form-control bg-dark text-white border-secondary"
+                                                    id="date_paid" name="date_paid">
+                                            </div>
+
+                                            <div class="mb-3 form-check">
+                                                <input type="checkbox" class="form-check-input" id="is_paid"
+                                                    name="is_paid" value="True" checked>
+                                                <label class="form-check-label text-label" for="is_paid">Já foi pago /
+                                                    recebido</label>
+                                            </div>
+
+                                            <div class="mb-3">
+                                                <label for="type" class="form-label text-label">Categoria</label>
+                                                <select class="form-select bg-dark text-white border-secondary"
+                                                    id="type" name="type">
+                                                    <option value="" selected disabled>Selecione uma opção</option>
+                                                    {% for tipo in tipos_gastos %}
+                                                    <option value="{{ tipo.id }}">{{ tipo.name }}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                        </form>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary"
+                                            data-bs-dismiss="modal">Close</button>
+                                        <button type="button" class="btn btn-primary">Salvar Ganho</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
+
                 <div class="col-12 col-md-6">
-                    <div class="card card-dark p-4">
-                        <h5 class="mb-3 text-title">Últimos ganhos</h5>
-                        {% for ganho in ganhos %}
-                            <div class="list-item d-flex justify-content-between align-items-center py-2 border-bottom border-secondary">
+                    <div class="card card-dark h-100 d-flex flex-column justify-content-between">
+                        <div class="p-4">
+                            <h5 class="mb-3 text-title">Últimos ganhos</h5>
+                            {% for ganho in ganhos %}
+                            <div
+                                class="list-item d-flex justify-content-between align-items-center py-2 border-bottom border-secondary">
                                 <span>{{ ganho.description }}</span>
                                 <span class="badge-value text-positive">R$ {{ ganho.value }}</span>
                             </div>
-                        {% empty %}
+                            {% empty %}
                             <p class="text-label mb-0">Nenhum ganho registrado ainda.</p>
-                        {% endfor %}
+                            {% endfor %}
+                        </div>
+                        <div class="p-4 pt-0 mt-auto">
+                            <button type="button" class="btn btn-primary btn-add-ganho w-100 text-center"
+                                data-bs-toggle="modal" data-bs-target="#exampleModal">
+                                + Adicionar Ganho
+                            </button>
+                        </div>
+
+                        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+                            aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h1 class="modal-title fs-5" id="exampleModalLabel">Modal title</h1>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                            aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form action="">
+                                            <div class="mb-3">
+                                                <label for="description" class="form-label text-label">Descrição</label>
+                                                <input type="text"
+                                                    class="form-control bg-dark text-white border-secondary"
+                                                    id="description" name="description"
+                                                    placeholder="Ex: Mercado, Aluguel" required>
+                                            </div>
+
+                                            <div class="mb-3">
+                                                <label for="value" class="form-label text-label">Valor (R$)</label>
+                                                <input type="number" step="0.01" min="0"
+                                                    class="form-control bg-dark text-white border-secondary" id="value"
+                                                    name="value" placeholder="0,00" required>
+                                            </div>
+
+                                            <div class="mb-3">
+                                                <label for="date_paid" class="form-label text-label">Data</label>
+                                                <input type="date"
+                                                    class="form-control bg-dark text-white border-secondary"
+                                                    id="date_paid" name="date_paid">
+                                            </div>
+
+                                            <div class="mb-3 form-check">
+                                                <input type="checkbox" class="form-check-input" id="is_paid"
+                                                    name="is_paid" value="True" checked>
+                                                <label class="form-check-label text-label" for="is_paid">Já foi pago /
+                                                    recebido</label>
+                                            </div>
+
+                                            <div class="mb-3">
+                                                <label for="type" class="form-label text-label">Categoria</label>
+                                                <select class="form-select bg-dark text-white border-secondary"
+                                                    id="type" name="type">
+                                                    <option value="" selected disabled>Selecione uma opção</option>
+                                                    {% for tipo in tipos_ganhos %}
+                                                    <option value="{{ tipo.id }}">{{ tipo.name }}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                        </form>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary"
+                                            data-bs-dismiss="modal">Close</button>
+                                        <button type="button" class="btn btn-primary">Salvar Gasto</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+
 </html>

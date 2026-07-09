@@ -49,10 +49,12 @@ def dashboard(request):
 
     gastos = Gasto.objects.filter(user=user)
     ganhos = Ganho.objects.filter(user=user)
+    tipos_gastos = TipoGasto.objects.filter(user=user)
+    tipos_ganhos = TipoGanho.objects.filter(user=user)
     total_gastos = sum_by_value(gastos)
     total_ganhos = sum_by_value(ganhos)
     saldo_atual = (float)(total_ganhos)-(float)(total_gastos)
 
-    user_context = {"gastos":gastos.order_by('-id')[:5], "ganhos":ganhos.order_by('-id')[:5], "total_gastos":total_gastos, "total_ganho":total_ganhos, "saldo_atual":saldo_atual}
+    user_context = {"gastos":gastos.order_by('-id')[:5], "ganhos":ganhos.order_by('-id')[:5], "total_gastos":total_gastos, "total_ganho":total_ganhos, "saldo_atual":saldo_atual, "tipos_gastos":tipos_gastos, "tipos_ganhos":tipos_ganhos}
 
     return render(request, "finance/dashboard.html", context=user_context)

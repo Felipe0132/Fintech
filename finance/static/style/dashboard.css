@@ -1,29 +1,38 @@
 :root {
-    --bg-principal: #121214;       
-    --bg-cards: #202024;           
-    --cor-texto-principal: #8a8a8a;
-    --cor-texto-mutado: #8d8d99;   
+    --bg-principal: #575757;         
+    --bg-cards: #202024;             
+    --bg-navbar: #202024;            
     
-    --cor-positivo: #00b37e;      
-    --cor-negativo: #f75a68;     
+    --cor-texto-principal: #ffffff;  
+    --cor-texto-secundario: #8a8a8a; 
+    --cor-texto-mutado: #8d8d99;     
     
-    --btn-logout-borda: #f75a68;  
-    --btn-logout-texto: #f75a68;  
-    --btn-logout-hover: #f75a68;  
+    --cor-borda-navbar: rgba(255, 255, 255, 0.05); 
+    --cor-borda-itens: rgba(255, 255, 255, 0.1);  
+    
+    --cor-positivo: #00b37e;         
+    --cor-negativo: #f75a68;         
+    
+    --btn-logout-cor: #f75a68;       
+    --btn-logout-hover-bg: #f75a68;  
+    --btn-logout-hover-texto: #ffffff;
+    
+    --btn-add-ganho-bg: #00b37e;     
+    --btn-add-ganho-hover: #00996c;  
+    
+    --btn-add-gasto-bg: #f75a68;     
+    --btn-add-gasto-hover: #e04756;  
 }
 
 body.bg-custom {
     background-color: var(--bg-principal);
-    color: var(--cor-texto-principal);
+    color: var(--cor-texto-secundario);
     font-family: system-ui, -apple-system, sans-serif;
 }
 
-.global{background-color: #b3b3b3;}
-
-/* Navbar */
 .navbar-dash {
-    background-color: var(--bg-cards);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    background-color: var(--bg-navbar);
+    border-bottom: 1px solid var(--cor-borda-navbar);
 }
 
 .text-user {
@@ -31,28 +40,17 @@ body.bg-custom {
     font-weight: 500;
 }
 
-/* Botão de Logout Customizado */
-.btn-logout {
-    color: var(--btn-logout-texto);
-    border-color: var(--btn-logout-borda);
-    transition: all 0.2s ease-in-out;
-}
-
-.btn-logout:hover {
-    background-color: var(--btn-logout-hover);
-    color: #ffffff;
-    border-color: var(--btn-logout-hover);
-}
-
-/* Cards */
 .card-dark {
     background-color: var(--bg-cards);
     border: none;
     border-radius: 8px;
-    color: var(--cor-texto-principal);
+    color: var(--cor-texto-secundario);
 }
 
-/* Textos e Títulos */
+.border-secondary {
+    border-color: var(--cor-borda-itens) !important;
+}
+
 .text-title {
     color: var(--cor-texto-principal);
     font-weight: 600;
@@ -63,25 +61,61 @@ body.bg-custom {
     font-size: 0.95rem;
 }
 
-/* Valores de Destaque */
 .summary-value {
     font-size: 1.8rem;
     font-weight: 700;
 }
 
-.text-positive {
-    color: var(--cor-positivo) !important;
+.text-positive { color: var(--cor-positivo) !important; }
+.text-negative { color: var(--cor-negativo) !important; }
+.text-balance  { color: var(--cor-texto-principal); }
+
+.btn-logout {
+    color: var(--btn-logout-cor);
+    border-color: var(--btn-logout-cor);
+    transition: all 0.2s ease-in-out;
 }
 
-.text-negative {
-    color: var(--cor-negativo) !important;
+.btn-logout:hover {
+    background-color: var(--btn-logout-hover-bg);
+    color: var(--btn-logout-hover-texto);
+    border-color: var(--btn-logout-hover-bg);
 }
 
-.text-balance {
-    color: var(--cor-texto-principal);
+.btn-add-ganho {
+    color: #ffffff;
+    background-color: var(--btn-add-ganho-bg);
+    border: 1px solid var(--btn-add-ganho-bg);
+    font-weight: 600;
+    padding: 10px 20px;
+    border-radius: 6px;
+    transition: all 0.2s ease-in-out;
 }
 
-/* Ajuste fino para o menu responsivo em telas pequenas */
+.btn-add-ganho:hover {
+    background-color: var(--btn-add-ganho-hover);
+    border-color: var(--btn-add-ganho-hover);
+    color: #ffffff;
+    transform: translateY(-2px);
+}
+
+.btn-add-gasto {
+    color: #ffffff;
+    background-color: var(--btn-add-gasto-bg);
+    border: 1px solid var(--btn-add-gasto-bg);
+    font-weight: 600;
+    padding: 10px 20px;
+    border-radius: 6px;
+    transition: all 0.2s ease-in-out;
+}
+
+.btn-add-gasto:hover {
+    background-color: var(--btn-add-gasto-hover);
+    border-color: var(--btn-add-gasto-hover);
+    color: #ffffff;
+    transform: translateY(-2px);
+}
+
 @media (max-width: 991.98px) {
     .responsive-nav-items {
         padding-top: 1rem;
