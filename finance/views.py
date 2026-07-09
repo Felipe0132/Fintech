@@ -4,6 +4,8 @@ from django.contrib.auth import authenticate
 from django.contrib.auth import login as login_django
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user_model
+from .models import *
+from .analytics import *
 
 
 ProfileUser = get_user_model() # Substituir o User
@@ -18,12 +20,11 @@ def login(request):
     email = request.POST.get('email')
     password = request.POST.get('password')
 
-    user = authenticate(email=email, password=password)
+    user = authenticate(username=email, password=password)
 
     if user:
         login_django(request, user) # Navegador logado
-
-        return render(request, "finance/dashboard")
+        return redirect('finance:dashboard')        
     
     return HttpResponse("Dados incorretos")
 
@@ -41,3 +42,16 @@ def cadastro(request):
     ProfileUser.objects.create_user(username=username, email=email, password=password)
 
     return redirect('finance:login')
+
+@login_required(login_url="/finance/login/")
+def dashboard(request):
+    user = request.user
+
+    gastos = Gasto.objects.filter(user=user)
+    ganhos = Ganho.objects.filter(user=user)
+    total_gastos = sum_by_value(gastos)
+    total_ganhos = sum_by_value(ganhos)
+
+    user_context = {"gastos":gastos.order_by('-id')[:5], "ganhos":ganhos.order_by('-id')[:5], "total_gastos":total_gastos, "total_ganho":total_ganhos}
+
+    return render(request, "finance/dashboard.html", context=user_context)
