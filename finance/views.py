@@ -90,3 +90,15 @@ def registrar_ganho(request):
     Ganho.objects.create(value=value, description=description, date_paid=date_paid, is_paid=is_paid, type_id=type_id if type_id else None, user=request.user)
 
     return redirect('finance:dashboard')
+
+@login_required(login_url="/finance/login/")
+def registrar_tipo_gasto(request):
+    if request.method == "GET":
+        return redirect('finance:dashboard')
+
+    name = request.POST.get('name')
+
+    if not(TipoGanho.objects.filter(name=name)):     
+        TipoGasto.objects.create(name=name, user=request.user)
+
+    return redirect('finance:dashboard')
