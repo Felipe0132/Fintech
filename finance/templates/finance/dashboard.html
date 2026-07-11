@@ -32,6 +32,37 @@
                 </div>
             </div>
         </nav>
+
+        <button class="btn btn-outline-light btn-sm me-2" type="button" data-bs-toggle="offcanvas"
+            data-bs-target="#sidebarMenu">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="offcanvas offcanvas-start text-bg-dark" tabindex="-1" id="sidebarMenu"
+            aria-labelledby="sidebarMenuLabel">
+            <div class="offcanvas-header">
+                <h5 class="offcanvas-title" id="sidebarMenuLabel">Menu</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"
+                    aria-label="Close"></button>
+            </div>
+            <div class="offcanvas-body">
+                <ul class="nav flex-column gap-2">
+                    <li class="nav-item">
+                        <a class="nav-link text-white" href="{% url 'finance:dashboard' %}">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white" href="#">Gastos</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white" href="#">Ganhos</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white" href="#">Categorias</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
         <div class="container py-5">
             <div class="row g-4 mb-4">
                 <div class="col-12 col-md-3">
@@ -140,7 +171,7 @@
 
             <div class="col-12 col-md-4">
                 <div class="card card-dark p-4">
-                    <h5 class="mb-3 text-title">Gastos por Categoria</h5>
+                    <h5 class="mb-3 text-title">Ganhos por Categoria</h5>
                     {% if grafico_gasto %}
                     <img src="{% static grafico_ganho %}" alt="Gráfico de ganho por categoria" class="grafico-img">
                     {% else %}
@@ -153,7 +184,8 @@
                 <div class="card card-dark p-4">
                     <h5 class="mb-3 text-title">Gastos por Categoria</h5>
                     {% if grafico_gasto %}
-                    <img src="{% static grafico_gasto_not_paid %}" alt="Gráfico de gastos nao pagos por categoria" class="grafico-img">
+                    <img src="{% static grafico_gasto_not_paid %}" alt="Gráfico de gastos nao pagos por categoria"
+                        class="grafico-img">
                     {% else %}
                     <p class="text-label mb-0">Nenhum gasto registrado para gerar o gráfico.</p>
                     {% endif %}
