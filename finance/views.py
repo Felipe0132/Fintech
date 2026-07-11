@@ -47,15 +47,26 @@ def cadastro(request):
 def dashboard(request):
     user = request.user
 
-    gastos = Gasto.objects.filter(user=user)
+    gastos = Gasto.objects.filter(user=user, is_paid=True)
     ganhos = Ganho.objects.filter(user=user)
+
     tipos_gastos = TipoGasto.objects.filter(user=user)
     tipos_ganhos = TipoGanho.objects.filter(user=user)
+
     total_gastos = sum_by_value(gastos)
     total_ganhos = sum_by_value(ganhos)
-    saldo_atual = (float)(total_ganhos)-(float)(total_gastos)
 
-    user_context = {"gastos":gastos.order_by('date_paid')[:5], "ganhos":ganhos.order_by('date_paid')[:5], "total_gastos":total_gastos, "total_ganhos":total_ganhos, "saldo_atual":saldo_atual, "tipos_gastos":tipos_gastos, "tipos_ganhos":tipos_ganhos}
+    saldo_atual = float(total_ganhos) - float(total_gastos)
+
+    gastos_not_paid = Gasto.objects.filter(user=user, is_paid=False)
+
+    saldo_imaginario = saldo_atual - float(sum_by_value(gastos_not_paid))
+
+    grafico_gasto = grafico_by_category_gasto(gastos, user)
+    grafico_ganho = grafico_by_category_ganho(ganhos, user)
+    grafico_gasto_not_paid = grafico_by_category_gasto_not_paid(gastos_not_paid, user)
+
+    user_context = {"gastos":gastos.order_by('-id')[:5], "ganhos":ganhos.order_by('-id')[:5], "total_gastos":total_gastos, "total_ganhos":total_ganhos, "saldo_atual":saldo_atual, "tipos_gastos":tipos_gastos, "tipos_ganhos":tipos_ganhos, 'gastos_not_paid':gastos_not_paid, "saldo_imaginario":saldo_imaginario, "grafico_gasto":grafico_gasto, "grafico_ganho":grafico_ganho, "grafico_gasto_not_paid":grafico_gasto_not_paid}
 
     return render(request, "finance/dashboard.html", context=user_context)
 

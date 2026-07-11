@@ -12,6 +12,7 @@
     
     --cor-positivo: #00b37e;         
     --cor-negativo: #f75a68;         
+    --color-warning: #fb923c;
     
     --btn-logout-cor: #f75a68;       
     --btn-logout-hover-bg: #f75a68;  
@@ -114,6 +115,14 @@ body.bg-custom {
     border-color: var(--btn-add-gasto-hover);
     color: #ffffff;
     transform: translateY(-2px);
+}
+
+.grafico-img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+    border-radius: 0.5rem;
 }
 
 @media (max-width: 991.98px) {

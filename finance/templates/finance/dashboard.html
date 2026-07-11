@@ -34,29 +34,36 @@
         </nav>
         <div class="container py-5">
             <div class="row g-4 mb-4">
-                <div class="col-12 col-md-4">
+                <div class="col-12 col-md-3">
                     <div class="card card-dark p-4 h-100">
                         <span class="text-label mb-2">Total de ganhos</span>
                         <span class="summary-value text-positive">R$ {{ total_ganhos }}</span>
                     </div>
                 </div>
-                <div class="col-12 col-md-4">
+                <div class="col-12 col-md-3">
                     <div class="card card-dark p-4 h-100">
                         <span class="text-label mb-2">Total de gastos</span>
                         <span class="summary-value text-negative">R$ {{ total_gastos }}</span>
                     </div>
                 </div>
-                <div class="col-12 col-md-4">
+                <div class="col-12 col-md-3">
                     <div class="card card-dark p-4 h-100">
                         <span class="text-label mb-2">Saldo</span>
                         <span class="summary-value text-balance">R$ {{ saldo_atual }}</span>
                     </div>
                 </div>
+                <div class="col-12 col-md-3">
+                    <div class="card card-dark p-4 h-100">
+                        <span class="text-label mb-2">Saldo imaginário (atual - não pagos)</span>
+                        <span class="summary-value text-warning">R$ {{ saldo_imaginario }}</span>
+                    </div>
+                </div>
             </div>
+
             <div class="row g-4">
-                <div class="col-12 col-md-6">
+                <div class="col-12 col-md-4">
                     <div class="card card-dark h-100 d-flex flex-column justify-content-between">
-                        <div class="p-4">
+                        <div class="p-3">
                             <h5 class="mb-3 text-title">Últimos gastos</h5>
                             {% for gasto in gastos %}
                             <div
@@ -68,7 +75,7 @@
                             <p class="text-label mb-0">Nenhum gasto registrado ainda.</p>
                             {% endfor %}
                         </div>
-                        <div class="p-4 pt-0 mt-auto">
+                        <div class="p-3 pt-0 mt-auto">
                             <button type="button" class="btn btn-primary btn-add-gasto w-100 text-center"
                                 data-bs-toggle="modal" data-bs-target="#modalGasto">
                                 + Adicionar Gasto
@@ -77,9 +84,9 @@
                     </div>
                 </div>
 
-                <div class="col-12 col-md-6">
+                <div class="col-12 col-md-4">
                     <div class="card card-dark h-100 d-flex flex-column justify-content-between">
-                        <div class="p-4">
+                        <div class="p-3">
                             <h5 class="mb-3 text-title">Últimos ganhos</h5>
                             {% for ganho in ganhos %}
                             <div
@@ -91,13 +98,65 @@
                             <p class="text-label mb-0">Nenhum ganho registrado ainda.</p>
                             {% endfor %}
                         </div>
-                        <div class="p-4 pt-0 mt-auto">
+                        <div class="p-3 pt-0 mt-auto">
                             <button type="button" class="btn btn-primary btn-add-ganho w-100 text-center"
                                 data-bs-toggle="modal" data-bs-target="#modalGanho">
                                 + Adicionar Ganho
                             </button>
                         </div>
                     </div>
+                </div>
+
+                <div class="col-12 col-md-4">
+                    <div class="card card-dark h-100 d-flex flex-column justify-content-between">
+                        <div class="p-3">
+                            <h5 class="mb-3 text-title">Últimos gastos nao pagos</h5>
+                            {% for gasto in gastos_not_paid %}
+                            <div
+                                class="list-item d-flex justify-content-between align-items-center py-2 border-bottom border-secondary">
+                                <span>{{ gasto.description }}</span>
+                                <span class="badge-value text-warning">R$ {{ gasto.value }}</span>
+                            </div>
+                            {% empty %}
+                            <p class="text-label mb-0">Nenhum ganho registrado ainda.</p>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-4 mt-1">
+            <div class="col-12 col-md-4">
+                <div class="card card-dark p-4">
+                    <h5 class="mb-3 text-title">Gastos por Categoria</h5>
+                    {% if grafico_gasto %}
+                    <img src="{% static grafico_gasto %}" alt="Gráfico de gastos por categoria" class="grafico-img">
+                    {% else %}
+                    <p class="text-label mb-0">Nenhum gasto registrado para gerar o gráfico.</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="col-12 col-md-4">
+                <div class="card card-dark p-4">
+                    <h5 class="mb-3 text-title">Gastos por Categoria</h5>
+                    {% if grafico_gasto %}
+                    <img src="{% static grafico_ganho %}" alt="Gráfico de ganho por categoria" class="grafico-img">
+                    {% else %}
+                    <p class="text-label mb-0">Nenhum gasto registrado para gerar o gráfico.</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="col-12 col-md-4">
+                <div class="card card-dark p-4">
+                    <h5 class="mb-3 text-title">Gastos por Categoria</h5>
+                    {% if grafico_gasto %}
+                    <img src="{% static grafico_gasto_not_paid %}" alt="Gráfico de gastos nao pagos por categoria" class="grafico-img">
+                    {% else %}
+                    <p class="text-label mb-0">Nenhum gasto registrado para gerar o gráfico.</p>
+                    {% endif %}
                 </div>
             </div>
         </div>
