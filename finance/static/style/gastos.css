@@ -133,6 +133,66 @@ body.bg-custom {
     }
 }
 
+/* ==================== Específico da página de Gastos ==================== */
+
+/* Inputs e selects dentro dos cards escuros */
+.card-dark .form-control,
+.card-dark .form-select {
+    background-color: var(--bg-principal);
+    color: var(--cor-texto-principal);
+    border: 1px solid var(--cor-borda-itens);
+}
+
+.card-dark .form-control::placeholder {
+    color: var(--cor-texto-mutado);
+}
+
+.card-dark .form-control:focus,
+.card-dark .form-select:focus {
+    background-color: var(--bg-principal);
+    color: var(--cor-texto-principal);
+    border-color: var(--cor-positivo);
+    box-shadow: 0 0 0 0.2rem rgba(0, 179, 126, 0.15);
+}
+
+/* Tabela de resultados no tema escuro */
+.table-dark-custom {
+    color: var(--cor-texto-secundario);
+}
+
+.table-dark-custom thead th {
+    color: var(--cor-texto-mutado);
+    font-weight: 600;
+    font-size: 0.9rem;
+    border-bottom: 1px solid var(--cor-borda-itens);
+    text-transform: uppercase;
+}
+
+.table-dark-custom tbody td {
+    border-bottom: 1px solid var(--cor-borda-itens);
+    vertical-align: middle;
+}
+
+.table-dark-custom tbody tr:hover {
+    background-color: rgba(255, 255, 255, 0.03);
+}
+
+.table-scroll-container {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.table-scroll-container thead th {
+    position: sticky;
+    top: 0;
+    background-color: var(--bg-cards); /* mesma cor do card pra não ficar transparente */
+    z-index: 1;
+}
+
+.text-warning {
+    color: var(--color-warning) !important;
+}
+
 /* ==================== Sidebar fixa ==================== */
 .sidebar-fixed {
     position: fixed;

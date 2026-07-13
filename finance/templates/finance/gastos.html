@@ -1,0 +1,241 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gastos - Gestão Financeira</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../../static/style/gastos.css">
+</head>
+
+<body class="bg-custom">
+
+    <div class="global d-flex">
+
+        <!-- Sidebar fixa -->
+        <aside class="sidebar-fixed">
+            <div class="d-flex align-items-center gap-2 mb-4">
+                <img src="{% static 'assets/images/logo.png' %}" alt="Logo" height="36">
+            </div>
+
+            <p class="sidebar-title">Menu</p>
+            <ul class="nav flex-column gap-1">
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'finance:dashboard' %}">Dashboard</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" href="{% url 'finance:consultar_gastos_by_params' %}">Gastos</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Ganhos</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Categorias</a>
+                </li>
+            </ul>
+        </aside>
+
+        <!-- Conteúdo principal -->
+        <div class="main-content flex-grow-1">
+
+            <nav class="navbar navbar-dash px-4 py-2">
+                <div class="container-fluid justify-content-end">
+                    <span class="text-user me-3">Olá, {{ request.user.username }}</span>
+                    <a href="#" class="btn btn-logout btn-sm">Logout</a>
+                </div>
+            </nav>
+
+            <div class="container-fluid py-5 px-4">
+
+                <!-- Formulário de busca -->
+                <div class="card card-dark p-4 mb-4">
+                    <h5 class="mb-3 text-title">Consultar Gastos</h5>
+
+                    <form method="POST" action="{% url 'finance:consultar_gastos_by_params' %}">
+                        {% csrf_token %}
+
+                        <div class="row g-3">
+                            <div class="col-12 col-md-4">
+                                <label for="description_search" class="form-label text-label">Descrição</label>
+                                <input type="text" class="form-control bg-dark text-white border-secondary"
+                                    id="description_search" name="description_search" placeholder="Ex: Mercado">
+                            </div>
+
+                            <div class="col-6 col-md-2">
+                                <label for="date_start" class="form-label text-label">De</label>
+                                <input type="date" class="form-control bg-dark text-white border-secondary"
+                                    id="date_start" name="date_start">
+                            </div>
+
+                            <div class="col-6 col-md-2">
+                                <label for="date_end" class="form-label text-label">Até</label>
+                                <input type="date" class="form-control bg-dark text-white border-secondary"
+                                    id="date_end" name="date_end">
+                            </div>
+
+                            <div class="col-6 col-md-2">
+                                <label for="value" class="form-label text-label">Valor</label>
+                                <input type="number" step="0.01" min="0"
+                                    class="form-control bg-dark text-white border-secondary" id="value" name="value"
+                                    placeholder="0,00">
+                            </div>
+
+                            <div class="col-6 col-md-2">
+                                <label for="is_paid" class="form-label text-label">Status</label>
+                                <select class="form-select bg-dark text-white border-secondary" id="is_paid"
+                                    name="is_paid">
+                                    <option value="">Todos</option>
+                                    <option value="True">Pago</option>
+                                    <option value="False">Não pago</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="mt-3">
+                            <button type="submit" class="btn btn-add-ganho">Buscar</button>
+                        </div>
+                    </form>
+
+                    <div class="p-3 pt-0 mt-auto">
+                        <button type="button" class="btn btn-primary btn-add-gasto w-100 text-center"
+                            data-bs-toggle="modal" data-bs-target="#modalGasto">
+                            + Adicionar Gasto
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Lista de resultados -->
+                <div class="card card-dark p-4">
+                    <h5 class="mb-3 text-title">Resultados</h5>
+
+                    {% if gastos_consultados %}
+                    <div class="table-responsive table-scroll-container">
+                        <table class="table table-dark-custom mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Descrição</th>
+                                    <th>Valor</th>
+                                    <th>Data</th>
+                                    <th>Status</th>
+                                    <th>Categoria</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for gasto in gastos_consultados %}
+                                <tr>
+                                    <td>{{ gasto.description }}</td>
+                                    <td class="text-negative">R$ {{ gasto.value }}</td>
+                                    <td>{{ gasto.date_paid }}</td>
+                                    <td>
+                                        {% if gasto.is_paid %}
+                                        <span class="text-positive">Pago</span>
+                                        {% else %}
+                                        <span class="text-warning">Não pago</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ gasto.type }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <p class="text-label mb-0">Nenhum gasto encontrado.</p>
+                    {% endif %}
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modalGasto" tabindex="-1" aria-labelledby="modalGastoLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="modalGastoLabel">Novo Gasto</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form action="{% url 'finance:registrar_gasto' %}" method="post">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="description" class="form-label text-label">Descrição</label>
+                            <input type="text" class="form-control bg-dark text-white border-secondary"
+                                id="description" name="description" placeholder="Ex: Mercado, Aluguel" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="value" class="form-label text-label">Valor (R$)</label>
+                            <input type="number" step="0.01" min="0"
+                                class="form-control bg-dark text-white border-secondary" id="value" name="value"
+                                placeholder="0,00" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="date_paid" class="form-label text-label">Data</label>
+                            <input type="date" class="form-control bg-dark text-white border-secondary"
+                                id="date_paid" name="date_paid">
+                        </div>
+
+                        <div class="mb-3 form-check">
+                            <input type="checkbox" class="form-check-input" id="is_paid" name="is_paid" value="True" checked>
+                            <label class="form-check-label text-label" for="is_paid">Já foi pago / recebido</label>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="type" class="form-label text-label">Categoria</label>
+                            <select class="form-select bg-dark text-white border-secondary" id="type" name="type">
+                                <option value="" selected disabled>Selecione uma opção</option>
+                                {% for tipo in tipos_gastos %}
+                                <option value="{{ tipo.id }}">{{ tipo.name }}</option>
+                                {% endfor %}
+                            </select>
+
+                            <button type="button" class="btn btn-link btn-sm mt-1 p-0" data-bs-toggle="modal"
+                                data-bs-target="#modalTipoGasto">
+                                + Adicionar Categoria
+                            </button>
+                        </div>
+
+                        <div class="modal-footer border-secondary">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary">Salvar Gasto</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modalTipoGanho" tabindex="-1" aria-labelledby="modalTipoGanhoLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="modalTipoGanhoLabel">Nova Categoria de Gasto</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form action="{% url 'finance:registrar_tipo_ganho' %}" method="post">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="name" class="form-label text-label">Nome da categoria</label>
+                            <input type="text" class="form-control bg-dark text-white border-secondary" id="name"
+                                name="name" placeholder="Ex: Lazer, Saúde" required>
+                        </div>
+                        <div class="modal-footer border-secondary">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                            <button type="submit" class="btn btn-primary">Salvar Categoria</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

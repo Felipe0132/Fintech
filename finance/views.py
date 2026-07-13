@@ -73,6 +73,9 @@ def dashboard(request):
 @login_required(login_url="/finance/login/")
 def registrar_gasto(request):
     if request.method == "GET":
+        referer = request.META.get('HTTP_REFERER')
+        if referer:
+            return redirect(referer)
         return redirect('finance:dashboard')
     
     value = request.POST.get('value')
@@ -84,11 +87,17 @@ def registrar_gasto(request):
 
     Gasto.objects.create(value=value, description=description, date_paid=date_paid, is_paid=is_paid, type_id=type_id if type_id else None, user=request.user)
 
+    referer = request.META.get('HTTP_REFERER')
+    if referer:
+        return redirect(referer)
     return redirect('finance:dashboard')
 
 @login_required(login_url="/finance/login/")
 def registrar_ganho(request):
     if request.method == "GET":
+        referer = request.META.get('HTTP_REFERER')
+        if referer:
+            return redirect(referer)
         return redirect('finance:dashboard')
     
     value = request.POST.get('value')
@@ -100,11 +109,17 @@ def registrar_ganho(request):
 
     Ganho.objects.create(value=value, description=description, date_paid=date_paid, is_paid=is_paid, type_id=type_id if type_id else None, user=request.user)
 
+    referer = request.META.get('HTTP_REFERER')
+    if referer:
+        return redirect(referer)
     return redirect('finance:dashboard')
 
 @login_required(login_url="/finance/login/")
 def registrar_tipo_gasto(request):
     if request.method == "GET":
+        referer = request.META.get('HTTP_REFERER')
+        if referer:
+            return redirect(referer)
         return redirect('finance:dashboard')
 
     name = request.POST.get('name')
@@ -112,11 +127,17 @@ def registrar_tipo_gasto(request):
     if not(TipoGasto.objects.filter(name=name, user=request.user).exists()):     
         TipoGasto.objects.create(name=name, user=request.user)
 
+    referer = request.META.get('HTTP_REFERER')
+    if referer:
+        return redirect(referer)
     return redirect('finance:dashboard')
 
 @login_required(login_url="/finance/login/")
 def registrar_tipo_ganho(request):
     if request.method == "GET":
+        referer = request.META.get('HTTP_REFERER')
+        if referer:
+            return redirect(referer)
         return redirect('finance:dashboard')
 
     name = request.POST.get('name')
@@ -124,4 +145,43 @@ def registrar_tipo_ganho(request):
     if not(TipoGanho.objects.filter(name=name, user=request.user).exists()):     
         TipoGanho.objects.create(name=name, user=request.user)
 
+    referer = request.META.get('HTTP_REFERER')
+    if referer:
+        return redirect(referer)
     return redirect('finance:dashboard')
+
+@login_required(login_url="/finance/login/")
+def consultar_gastos_by_params(request):
+    user = request.user
+    gastos_consultados = Gasto.objects.filter(user=user)
+
+    if request.method == "POST":
+        description_search = request.POST.get('description_search')
+        date_start = request.POST.get('date_start')
+        date_end = request.POST.get('date_end')
+        value = request.POST.get('value')
+        is_paid = request.POST.get('is_paid')
+
+        if description_search:
+            gastos_consultados = gastos_consultados.filter(description__icontains=description_search)
+
+        if date_start:
+            gastos_consultados = gastos_consultados.filter(date_paid__gte=date_start)
+
+        if date_end:
+            gastos_consultados = gastos_consultados.filter(date_paid__lte=date_end)
+
+        if value:
+            gastos_consultados = gastos_consultados.filter(value=value)
+
+        if is_paid == "True":
+            gastos_consultados = gastos_consultados.filter(is_paid=True)
+
+        if is_paid == "False":
+            gastos_consultados = gastos_consultados.filter(is_paid=False)
+
+    tipos_gastos = TipoGasto.objects.filter(user=user)
+
+    context = {"gastos_consultados":gastos_consultados.order_by('-date_paid'), "tipos_gastos":tipos_gastos}
+
+    return render(request, 'finance/gastos.html', context=context)    
