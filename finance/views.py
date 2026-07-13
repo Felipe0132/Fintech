@@ -185,3 +185,32 @@ def consultar_gastos_by_params(request):
     context = {"gastos_consultados":gastos_consultados.order_by('-date_paid'), "tipos_gastos":tipos_gastos}
 
     return render(request, 'finance/gastos.html', context=context)    
+
+@login_required(login_url="/finance/login/")
+def consultar_ganhos_by_params(request):
+    user = request.user
+    ganhos_consultados = Ganho.objects.filter(user=user)
+
+    if request.method == "POST":
+        description_search = request.POST.get('description_search')
+        date_start = request.POST.get('date_start')
+        date_end = request.POST.get('date_end')
+        value = request.POST.get('value')
+
+        if description_search:
+            ganhos_consultados = ganhos_consultados.filter(description__icontains=description_search)
+
+        if date_start:
+            ganhos_consultados = ganhos_consultados.filter(date_paid__gte=date_start)
+
+        if date_end:
+            ganhos_consultados = ganhos_consultados.filter(date_paid__lte=date_end)
+
+        if value:
+            ganhos_consultados = ganhos_consultados.filter(value=value)
+
+    tipos_ganhos = TipoGasto.objects.filter(user=user)
+
+    context = {"ganhos_consultados":ganhos_consultados.order_by('-date_paid'), "tipos_ganhos":tipos_ganhos}
+
+    return render(request, 'finance/ganhos.html', context=context)    

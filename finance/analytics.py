@@ -48,8 +48,6 @@ def grafico_by_category_ganho(movimentacao, user):
 
     df = pd.DataFrame(movimentacao)
     df['value'] = df['value'].astype(float)
-    print(df.dtypes)
-    print(df['value'])
 
     por_type = df[['type__name', 'value']].groupby('type__name').sum() # Group entries with the same type_id and sum their value
 

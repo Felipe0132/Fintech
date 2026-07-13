@@ -117,6 +117,25 @@ body.bg-custom {
     transform: translateY(-2px);
 }
 
+.grafico-img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+    border-radius: 0.5rem;
+}
+
+@media (max-width: 991.98px) {
+    .responsive-nav-items {
+        padding-top: 1rem;
+        flex-direction: column;
+        align-items: flex-start !important;
+    }
+}
+
+/* ==================== Específico da página de Gastos ==================== */
+
+/* Inputs e selects dentro dos cards escuros */
 .card-dark .form-control,
 .card-dark .form-select {
     background-color: var(--bg-principal);
@@ -166,28 +185,12 @@ body.bg-custom {
 .table-scroll-container thead th {
     position: sticky;
     top: 0;
-    background-color: var(--bg-cards);
+    background-color: var(--bg-cards); /* mesma cor do card pra não ficar transparente */
     z-index: 1;
 }
 
 .text-warning {
     color: var(--color-warning) !important;
-}
-
-.grafico-img {
-    max-width: 100%;
-    height: auto;
-    display: block;
-    margin: 0 auto;
-    border-radius: 0.5rem;
-}
-
-@media (max-width: 991.98px) {
-    .responsive-nav-items {
-        padding-top: 1rem;
-        flex-direction: column;
-        align-items: flex-start !important;
-    }
 }
 
 /* ==================== Sidebar fixa ==================== */

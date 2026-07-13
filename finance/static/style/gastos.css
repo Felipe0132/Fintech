@@ -229,7 +229,7 @@ body.bg-custom {
 }
 
 .sidebar-fixed .nav-link.active {
-    background-color: var(--cor-positivo);
+    background-color: var(--cor-negativo);
     color: #ffffff;
     font-weight: 600;
 }
