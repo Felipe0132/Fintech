@@ -16,4 +16,6 @@ urlpatterns = [
     path('consultar-ganhos-by-params', views.consultar_ganhos_by_params, name="consultar_ganhos_by_params"),
     path('atualizar-gasto', views.atualizar_gasto, name="atualizar_gasto"),
     path('atualizar-ganho', views.atualizar_ganho, name="atualizar_ganho"),
+    path('delete-ganho', views.delete_ganho, name="delete_ganho"),
+    path('delete-gasto', views.delete_gasto, name="delete_gasto"),
 ]
