@@ -65,7 +65,13 @@
                     <div class="col-12 col-md-3">
                         <div class="card card-dark p-4 h-100">
                             <span class="text-label mb-2">Saldo</span>
-                            <span class="summary-value text-balance">R$ {{ saldo_atual }}</span>
+                            {% if saldo_atual > 0 %}
+                            <span class="summary-value text-positive">R$ {{ saldo_atual }}</span>
+                            {% elif 0 > saldo_atual %}
+                            <span class="summary-value text-negative">R$ {{ saldo_atual }}</span>
+                            {% else %}
+                            <span class="summary-value text-warning">R$ {{ saldo_atual }}</span>
+                            {% endif %}
                         </div>
                     </div>
                     <div class="col-12 col-md-3">
@@ -82,7 +88,8 @@
                             <div class="p-3">
                                 <h5 class="mb-3 text-title">Últimos gastos</h5>
                                 {% for gasto in gastos %}
-                                <div class="list-item d-flex justify-content-between align-items-center py-2 border-bottom border-secondary">
+                                <div
+                                    class="list-item d-flex justify-content-between align-items-center py-2 border-bottom border-secondary">
                                     <span>{{ gasto.description }}</span>
                                     <span class="badge-value text-negative">R$ {{ gasto.value }}</span>
                                 </div>
@@ -104,7 +111,8 @@
                             <div class="p-3">
                                 <h5 class="mb-3 text-title">Últimos ganhos</h5>
                                 {% for ganho in ganhos %}
-                                <div class="list-item d-flex justify-content-between align-items-center py-2 border-bottom border-secondary">
+                                <div
+                                    class="list-item d-flex justify-content-between align-items-center py-2 border-bottom border-secondary">
                                     <span>{{ ganho.description }}</span>
                                     <span class="badge-value text-positive">R$ {{ ganho.value }}</span>
                                 </div>
@@ -126,7 +134,8 @@
                             <div class="p-3">
                                 <h5 class="mb-3 text-title">Últimos gastos nao pagos</h5>
                                 {% for gasto in gastos_not_paid %}
-                                <div class="list-item d-flex justify-content-between align-items-center py-2 border-bottom border-secondary">
+                                <div
+                                    class="list-item d-flex justify-content-between align-items-center py-2 border-bottom border-secondary">
                                     <span>{{ gasto.description }}</span>
                                     <span class="badge-value text-warning">R$ {{ gasto.value }}</span>
                                 </div>
@@ -166,7 +175,8 @@
                     <div class="card card-dark p-4">
                         <h5 class="mb-3 text-title">Gastos não pagos por Categoria</h5>
                         {% if grafico_gasto %}
-                        <img src="{% static grafico_gasto_not_paid %}" alt="Gráfico de gastos nao pagos por categoria" class="grafico-img">
+                        <img src="{% static grafico_gasto_not_paid %}" alt="Gráfico de gastos nao pagos por categoria"
+                            class="grafico-img">
                         {% else %}
                         <p class="text-label mb-0">Nenhum gasto registrado para gerar o gráfico.</p>
                         {% endif %}
@@ -192,8 +202,8 @@
                         {% csrf_token %}
                         <div class="mb-3">
                             <label for="description" class="form-label text-label">Descrição</label>
-                            <input type="text" class="form-control bg-dark text-white border-secondary"
-                                id="description" name="description" placeholder="Ex: Mercado, Aluguel" required>
+                            <input type="text" class="form-control bg-dark text-white border-secondary" id="description"
+                                name="description" placeholder="Ex: Mercado, Aluguel" required>
                         </div>
 
                         <div class="mb-3">
@@ -205,12 +215,13 @@
 
                         <div class="mb-3">
                             <label for="date_paid" class="form-label text-label">Data</label>
-                            <input type="date" class="form-control bg-dark text-white border-secondary"
-                                id="date_paid" name="date_paid">
+                            <input type="date" class="form-control bg-dark text-white border-secondary" id="date_paid"
+                                name="date_paid">
                         </div>
 
                         <div class="mb-3 form-check">
-                            <input type="checkbox" class="form-check-input" id="is_paid" name="is_paid" value="True" checked>
+                            <input type="checkbox" class="form-check-input" id="is_paid" name="is_paid" value="True"
+                                checked>
                             <label class="form-check-label text-label" for="is_paid">Já foi pago / recebido</label>
                         </div>
 
@@ -252,8 +263,8 @@
                         {% csrf_token %}
                         <div class="mb-3">
                             <label for="description" class="form-label text-label">Descrição</label>
-                            <input type="text" class="form-control bg-dark text-white border-secondary"
-                                id="description" name="description" placeholder="Ex: Mercado, Aluguel" required>
+                            <input type="text" class="form-control bg-dark text-white border-secondary" id="description"
+                                name="description" placeholder="Ex: Mercado, Aluguel" required>
                         </div>
 
                         <div class="mb-3">
@@ -265,12 +276,13 @@
 
                         <div class="mb-3">
                             <label for="date_paid" class="form-label text-label">Data</label>
-                            <input type="date" class="form-control bg-dark text-white border-secondary"
-                                id="date_paid" name="date_paid">
+                            <input type="date" class="form-control bg-dark text-white border-secondary" id="date_paid"
+                                name="date_paid">
                         </div>
 
                         <div class="mb-3 form-check">
-                            <input type="checkbox" class="form-check-input" id="is_paid" name="is_paid" value="True" checked>
+                            <input type="checkbox" class="form-check-input" id="is_paid" name="is_paid" value="True"
+                                checked>
                             <label class="form-check-label text-label" for="is_paid">Já foi pago / recebido</label>
                         </div>
 
