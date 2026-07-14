@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
 from django.contrib.auth import authenticate
 from django.contrib.auth import login as login_django
@@ -56,11 +56,11 @@ def dashboard(request):
     total_gastos = sum_by_value(gastos)
     total_ganhos = sum_by_value(ganhos)
 
-    saldo_atual = float(total_ganhos) - float(total_gastos)
+    saldo_atual = total_ganhos - total_gastos
 
     gastos_not_paid = Gasto.objects.filter(user=user, is_paid=False)
 
-    saldo_imaginario = saldo_atual - float(sum_by_value(gastos_not_paid))
+    saldo_imaginario = saldo_atual - sum_by_value(gastos_not_paid)
 
     grafico_gasto = grafico_by_category_gasto(gastos, user)
     grafico_ganho = grafico_by_category_ganho(ganhos, user)
@@ -160,6 +160,7 @@ def consultar_gastos_by_params(request):
         date_start = request.POST.get('date_start')
         date_end = request.POST.get('date_end')
         value = request.POST.get('value')
+        type_id = request.POST.get('type')
         is_paid = request.POST.get('is_paid')
 
         if description_search:
@@ -173,6 +174,9 @@ def consultar_gastos_by_params(request):
 
         if value:
             gastos_consultados = gastos_consultados.filter(value=value)
+
+        if type_id:
+            gastos_consultados = gastos_consultados.filter(type_id=type_id)
 
         if is_paid == "True":
             gastos_consultados = gastos_consultados.filter(is_paid=True)
@@ -196,6 +200,7 @@ def consultar_ganhos_by_params(request):
         date_start = request.POST.get('date_start')
         date_end = request.POST.get('date_end')
         value = request.POST.get('value')
+        type_id = request.POST.get('type')
 
         if description_search:
             ganhos_consultados = ganhos_consultados.filter(description__icontains=description_search)
@@ -209,8 +214,82 @@ def consultar_ganhos_by_params(request):
         if value:
             ganhos_consultados = ganhos_consultados.filter(value=value)
 
-    tipos_ganhos = TipoGasto.objects.filter(user=user)
+        if type_id:
+            ganhos_consultados = ganhos_consultados.filter(type_id=type_id)
+
+
+    tipos_ganhos = TipoGanho.objects.filter(user=user)
 
     context = {"ganhos_consultados":ganhos_consultados.order_by('-date_paid'), "tipos_ganhos":tipos_ganhos}
 
     return render(request, 'finance/ganhos.html', context=context)    
+
+@login_required(login_url="/finance/login/")
+def atualizar_gasto(request):
+    user = request.user
+
+    if request.method == "GET":
+        referer = request.META.get('HTTP_REFERER')
+        if referer:
+            return redirect(referer)
+        return redirect('finance:dashboard')
+    
+    gasto_to_update = get_object_or_404(Gasto, id=request.POST.get('gasto_id'), user=user)
+
+    description = request.POST.get('description')
+    date = request.POST.get('date_paid')
+    value = request.POST.get('value')
+    is_paid = request.POST.get('is_paid')
+
+    if description:
+        gasto_to_update.description = description
+    if date:
+        gasto_to_update.date = date
+    if value:
+        gasto_to_update.value = value
+    if is_paid:
+        gasto_to_update.is_paid = is_paid
+
+    gasto_to_update.save()
+
+    referer = request.META.get('HTTP_REFERER')
+    if referer:
+        return redirect(referer)
+    return redirect('finance:dashboard')
+
+@login_required(login_url="/finance/login/")
+def atualizar_ganho(request):
+    user = request.user
+
+    if request.method == "GET":
+        referer = request.META.get('HTTP_REFERER')
+        if referer:
+            return redirect(referer)
+        return redirect('finance:dashboard')
+    
+    ganho_to_update = get_object_or_404(Ganho, id=request.POST.get('ganho_id'), user=user)
+
+    description = request.POST.get('description')
+    date = request.POST.get('date_paid')
+    value = request.POST.get('value')
+    is_paid = request.POST.get('is_paid')
+    type_id = request.POST.get('type')
+
+
+    if description:
+        ganho_to_update.description = description
+    if date:
+        ganho_to_update.date_paid = date
+    if value:
+        ganho_to_update.value = value
+    if is_paid:
+        ganho_to_update.is_paid = is_paid
+    if type_id:
+        ganho_to_update.type_id = type_id
+
+    ganho_to_update.save()
+
+    referer = request.META.get('HTTP_REFERER')
+    if referer:
+        return redirect(referer)
+    return redirect('finance:dashboard')
