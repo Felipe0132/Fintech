@@ -6,9 +6,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - Gestão Financeira</title>
+    <title>inicio - Gestão Financeira</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="../../static/style/dashboard.css">
+    <link rel="stylesheet" href="../../static/style/inicio.css">
+    <link rel="stylesheet" href="../../static/style/default.css">
 </head>
 
 <body class="bg-custom">
@@ -24,17 +25,19 @@
             <p class="sidebar-title">Menu</p>
             <ul class="nav flex-column gap-1">
                 <li class="nav-item">
-                    <a class="nav-link active" href="{% url 'finance:dashboard' %}">Dashboard</a>
+                    <a class="nav-link active" href="{% url 'finance:inicio' %}">inicio</a>
+                </li>
+                <!--
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'finance:consultar_type_by_params' %}">receitas</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{% url 'finance:consultar_gastos_by_params' %}">Gastos</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'finance:consultar_ganhos_by_params' %}">Ganhos</a>
+                    <a class="nav-link" href="{% url 'finance:consultar_type_by_params' %}">Ganhos</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="#">Categorias</a>
                 </li>
+                -->
             </ul>
         </aside>
 
@@ -58,8 +61,8 @@
                     </div>
                     <div class="col-12 col-md-3">
                         <div class="card card-dark p-4 h-100">
-                            <span class="text-label mb-2">Total de gastos</span>
-                            <span class="summary-value text-negative">R$ {{ total_gastos }}</span>
+                            <span class="text-label mb-2">Total de receitas</span>
+                            <span class="summary-value text-negative">R$ {{ total_receitas }}</span>
                         </div>
                     </div>
                     <div class="col-12 col-md-3">
@@ -86,21 +89,21 @@
                     <div class="col-12 col-md-4">
                         <div class="card card-dark h-100 d-flex flex-column justify-content-between">
                             <div class="p-3">
-                                <h5 class="mb-3 text-title">Últimos gastos</h5>
-                                {% for gasto in gastos %}
+                                <h5 class="mb-3 text-title">Últimos receitas</h5>
+                                {% for receita in receitas %}
                                 <div
                                     class="list-item d-flex justify-content-between align-items-center py-2 border-bottom border-secondary">
-                                    <span>{{ gasto.description }}</span>
-                                    <span class="badge-value text-negative">R$ {{ gasto.value }}</span>
+                                    <span>{{ receita.description }}</span>
+                                    <span class="badge-value text-negative">R$ {{ receita.value }}</span>
                                 </div>
                                 {% empty %}
-                                <p class="text-label mb-0">Nenhum gasto registrado ainda.</p>
+                                <p class="text-label mb-0">Nenhum receita registrado ainda.</p>
                                 {% endfor %}
                             </div>
                             <div class="p-3 pt-0 mt-auto">
-                                <button type="button" class="btn btn-primary btn-add-gasto w-100 text-center"
-                                    data-bs-toggle="modal" data-bs-target="#modalGasto">
-                                    + Adicionar Gasto
+                                <button type="button" class="btn btn-primary btn-add-receita w-100 text-center"
+                                    data-bs-toggle="modal" data-bs-target="#modalreceita">
+                                    + Adicionar receita
                                 </button>
                             </div>
                         </div>
@@ -132,12 +135,12 @@
                     <div class="col-12 col-md-4">
                         <div class="card card-dark h-100 d-flex flex-column justify-content-between">
                             <div class="p-3">
-                                <h5 class="mb-3 text-title">Últimos gastos nao pagos</h5>
-                                {% for gasto in gastos_not_paid %}
+                                <h5 class="mb-3 text-title">Últimos receitas nao pagos</h5>
+                                {% for receita in receitas_not_paid %}
                                 <div
                                     class="list-item d-flex justify-content-between align-items-center py-2 border-bottom border-secondary">
-                                    <span>{{ gasto.description }}</span>
-                                    <span class="badge-value text-warning">R$ {{ gasto.value }}</span>
+                                    <span>{{ receita.description }}</span>
+                                    <span class="badge-value text-warning">R$ {{ receita.value }}</span>
                                 </div>
                                 {% empty %}
                                 <p class="text-label mb-0">Nenhum ganho registrado ainda.</p>
@@ -147,15 +150,15 @@
                     </div>
                 </div>
             </div>
-
+<!--
             <div class="row g-4 mt-1 px-4">
                 <div class="col-12 col-md-4">
                     <div class="card card-dark p-4">
-                        <h5 class="mb-3 text-title">Gastos por Categoria</h5>
-                        {% if grafico_gasto %}
-                        <img src="{% static grafico_gasto %}" alt="Gráfico de gastos por categoria" class="grafico-img">
+                        <h5 class="mb-3 text-title">receitas por Categoria</h5>
+                        {% if grafico_receita %}
+                        <img src="{% static grafico_receita %}" alt="Gráfico de receitas por categoria" class="grafico-img">
                         {% else %}
-                        <p class="text-label mb-0">Nenhum gasto registrado para gerar o gráfico.</p>
+                        <p class="text-label mb-0">Nenhum receita registrado para gerar o gráfico.</p>
                         {% endif %}
                     </div>
                 </div>
@@ -163,22 +166,22 @@
                 <div class="col-12 col-md-4">
                     <div class="card card-dark p-4">
                         <h5 class="mb-3 text-title">Ganhos por Categoria</h5>
-                        {% if grafico_gasto %}
+                        {% if grafico_receita %}
                         <img src="{% static grafico_ganho %}" alt="Gráfico de ganho por categoria" class="grafico-img">
                         {% else %}
-                        <p class="text-label mb-0">Nenhum gasto registrado para gerar o gráfico.</p>
+                        <p class="text-label mb-0">Nenhum receita registrado para gerar o gráfico.</p>
                         {% endif %}
                     </div>
                 </div>
 
                 <div class="col-12 col-md-4">
                     <div class="card card-dark p-4">
-                        <h5 class="mb-3 text-title">Gastos não pagos por Categoria</h5>
-                        {% if grafico_gasto %}
-                        <img src="{% static grafico_gasto_not_paid %}" alt="Gráfico de gastos nao pagos por categoria"
+                        <h5 class="mb-3 text-title">receitas não pagos por Categoria</h5>
+                        {% if grafico_receita %}
+                        <img src="{% static grafico_receita_not_paid %}" alt="Gráfico de receitas nao pagos por categoria"
                             class="grafico-img">
                         {% else %}
-                        <p class="text-label mb-0">Nenhum gasto registrado para gerar o gráfico.</p>
+                        <p class="text-label mb-0">Nenhum receita registrado para gerar o gráfico.</p>
                         {% endif %}
                     </div>
                 </div>
@@ -186,19 +189,19 @@
 
         </div>
     </div>
-
+-->
     <!-- ==================== MODAIS ==================== -->
 
-    <!-- Modal: Novo Gasto -->
-    <div class="modal fade" id="modalGasto" tabindex="-1" aria-labelledby="modalGastoLabel" aria-hidden="true">
+    <!-- Modal: Novo receita -->
+    <div class="modal fade" id="modalreceita" tabindex="-1" aria-labelledby="modalreceitaLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="modalGastoLabel">Novo Gasto</h1>
+                    <h1 class="modal-title fs-5" id="modalreceitaLabel">Novo receita</h1>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form action="{% url 'finance:registrar_gasto' %}" method="post">
+                    <form action="{% url 'finance:registrar_receita' %}" method="post">
                         {% csrf_token %}
                         <div class="mb-3">
                             <label for="description" class="form-label text-label">Descrição</label>
@@ -229,20 +232,20 @@
                             <label for="type" class="form-label text-label">Categoria</label>
                             <select class="form-select bg-dark text-white border-secondary" id="type" name="type">
                                 <option value="" selected disabled>Selecione uma opção</option>
-                                {% for tipo in tipos_gastos %}
+                                {% for tipo in tipos_receitas %}
                                 <option value="{{ tipo.id }}">{{ tipo.name }}</option>
                                 {% endfor %}
                             </select>
 
                             <button type="button" class="btn btn-link btn-sm mt-1 p-0" data-bs-toggle="modal"
-                                data-bs-target="#modalTipoGasto">
+                                data-bs-target="#modalTiporeceita">
                                 + Adicionar Categoria
                             </button>
                         </div>
 
                         <div class="modal-footer border-secondary">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                            <button type="submit" class="btn btn-primary">Salvar Gasto</button>
+                            <button type="submit" class="btn btn-primary">Salvar receita</button>
                         </div>
                     </form>
                 </div>
@@ -311,15 +314,15 @@
         </div>
     </div>
 
-    <div class="modal fade" id="modalTipoGasto" tabindex="-1" aria-labelledby="modalTipoGastoLabel" aria-hidden="true">
+    <div class="modal fade" id="modalTiporeceita" tabindex="-1" aria-labelledby="modalTiporeceitaLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="modalTipoGastoLabel">Nova Categoria de Gasto</h1>
+                    <h1 class="modal-title fs-5" id="modalTiporeceitaLabel">Nova Categoria de receita</h1>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form action="{% url 'finance:registrar_tipo_gasto' %}" method="post">
+                    <form action="{% url 'finance:registrar_tipo_receita' %}" method="post">
                         {% csrf_token %}
                         <div class="mb-3">
                             <label for="name" class="form-label text-label">Nome da categoria</label>
@@ -340,7 +343,7 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="modalTipoGanhoLabel">Nova Categoria de Gasto</h1>
+                    <h1 class="modal-title fs-5" id="modalTipoGanhoLabel">Nova Categoria de receita</h1>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">

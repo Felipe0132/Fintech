@@ -12,6 +12,7 @@ class ProfileUser(AbstractUser):
 
 class Account(models.Model):
     name = models.CharField(max_length=255)
+    value = models.DecimalField(default=0, max_digits=10, decimal_places=2)
 
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE) # safer, since the login is based on a custom field (email)
 
@@ -37,6 +38,7 @@ class Transaction(models.Model):
         RECEITA = "R", "Receita"
 
     name = models.CharField(max_length=255)
+    value = models.DecimalField(default=0, max_digits=10, decimal_places=2)
     type = models.CharField(max_length=1, choices=Type.choices)
     date = models.DateField(null=True, blank=True)
     is_paid = models.BooleanField(default=True)

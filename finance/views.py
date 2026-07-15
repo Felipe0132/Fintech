@@ -24,7 +24,7 @@ def login(request):
 
     if user:
         login_django(request, user) # Navegador logado
-        return redirect('finance:dashboard')        
+        return redirect('finance:inicio')        
     
     return HttpResponse("Dados incorretos")
 
@@ -44,31 +44,72 @@ def cadastro(request):
     return redirect('finance:login')
 
 @login_required(login_url="/finance/login/")
-def dashboard(request):
+def inicio(request):
     user = request.user
 
-    gastos = Gasto.objects.filter(user=user, is_paid=True)
-    ganhos = Ganho.objects.filter(user=user)
+    accounts = Account.objects.filter(user=user)
 
-    tipos_gastos = TipoGasto.objects.filter(user=user)
-    tipos_ganhos = TipoGanho.objects.filter(user=user)
+    receitas = Transaction.objects.filter(user=user, type="R")
+    gastos = Transaction.objects.filter(user=user, type="G", is_paid=True)
 
+    categories = Category.objects.filter(user=user)
+
+    total_receitas = sum_by_value(receitas)
     total_gastos = sum_by_value(gastos)
-    total_ganhos = sum_by_value(ganhos)
 
-    saldo_atual = total_ganhos - total_gastos
+    saldo_atual = total_receitas - total_gastos
 
-    gastos_not_paid = Gasto.objects.filter(user=user, is_paid=False)
+    gastos_not_paid = Transaction.objects.filter(user=user, type="G", is_paid=False)
 
     saldo_imaginario = saldo_atual - sum_by_value(gastos_not_paid)
 
     grafico_gasto = grafico_by_category_gasto(gastos, user)
-    grafico_ganho = grafico_by_category_ganho(ganhos, user)
+    grafico_ganho = grafico_by_category_ganho(receitas, user)
     grafico_gasto_not_paid = grafico_by_category_gasto_not_paid(gastos_not_paid, user)
 
-    user_context = {"gastos":gastos.order_by('-id')[:5], "ganhos":ganhos.order_by('-id')[:5], "total_gastos":total_gastos, "total_ganhos":total_ganhos, "saldo_atual":saldo_atual, "tipos_gastos":tipos_gastos, "tipos_ganhos":tipos_ganhos, 'gastos_not_paid':gastos_not_paid, "saldo_imaginario":saldo_imaginario, "grafico_gasto":grafico_gasto, "grafico_ganho":grafico_ganho, "grafico_gasto_not_paid":grafico_gasto_not_paid}
+    user_context = {"gastos":gastos.order_by('-id')[:5], "receitas":receitas.order_by('-id')[:5], "total_gastos":total_gastos, "total_receitas":total_receitas, "saldo_atual":saldo_atual, "categories":categories, 'gastos_not_paid':gastos_not_paid, "saldo_imaginario":saldo_imaginario, "grafico_gasto":grafico_gasto, "grafico_ganho":grafico_ganho, "grafico_gasto_not_paid":grafico_gasto_not_paid}
 
-    return render(request, "finance/dashboard.html", context=user_context)
+    return render(request, "finance/inicio.html", context=user_context)
+
+@login_required(login_url="/finance/login/")
+def registrar_transiction(request):
+    if request.method == "GET":
+        referer = request.META.get('HTTP_REFERER')
+        if referer:
+            return redirect(referer)
+        return redirect('finance:inicio')
+    
+@login_required(login_url="/finance/login/")
+def registrar_category(request):
+    if request.method == "GET":
+        referer = request.META.get('HTTP_REFERER')
+        if referer:
+            return redirect(referer)
+        return redirect('finance:inicio')
+    
+@login_required(login_url="/finance/login/")
+def consultar_transictions_by_params(request):
+    if request.method == "GET":
+        referer = request.META.get('HTTP_REFERER')
+        if referer:
+            return redirect(referer)
+        return redirect('finance:inicio')
+    
+@login_required(login_url="/finance/login/")    
+def atualizar_transictions(request):
+    if request.method == "GET":
+        referer = request.META.get('HTTP_REFERER')
+        if referer:
+            return redirect(referer)
+        return redirect('finance:inicio')
+
+@login_required(login_url="/finance/login/")
+def delete_transictions(request):
+    if request.method == "GET":
+        referer = request.META.get('HTTP_REFERER')
+        if referer:
+            return redirect(referer)
+        return redirect('finance:inicio')
 
 @login_required(login_url="/finance/login/")
 def registrar_gasto(request):
@@ -76,7 +117,7 @@ def registrar_gasto(request):
         referer = request.META.get('HTTP_REFERER')
         if referer:
             return redirect(referer)
-        return redirect('finance:dashboard')
+        return redirect('finance:inicio')
     
     value = request.POST.get('value')
     description = request.POST.get('description')
@@ -90,7 +131,7 @@ def registrar_gasto(request):
     referer = request.META.get('HTTP_REFERER')
     if referer:
         return redirect(referer)
-    return redirect('finance:dashboard')
+    return redirect('finance:inicio')
 
 @login_required(login_url="/finance/login/")
 def registrar_ganho(request):
@@ -98,7 +139,7 @@ def registrar_ganho(request):
         referer = request.META.get('HTTP_REFERER')
         if referer:
             return redirect(referer)
-        return redirect('finance:dashboard')
+        return redirect('finance:inicio')
     
     value = request.POST.get('value')
     description = request.POST.get('description')
@@ -112,7 +153,7 @@ def registrar_ganho(request):
     referer = request.META.get('HTTP_REFERER')
     if referer:
         return redirect(referer)
-    return redirect('finance:dashboard')
+    return redirect('finance:inicio')
 
 @login_required(login_url="/finance/login/")
 def registrar_tipo_gasto(request):
@@ -120,7 +161,7 @@ def registrar_tipo_gasto(request):
         referer = request.META.get('HTTP_REFERER')
         if referer:
             return redirect(referer)
-        return redirect('finance:dashboard')
+        return redirect('finance:inicio')
 
     name = request.POST.get('name')
 
@@ -130,7 +171,7 @@ def registrar_tipo_gasto(request):
     referer = request.META.get('HTTP_REFERER')
     if referer:
         return redirect(referer)
-    return redirect('finance:dashboard')
+    return redirect('finance:inicio')
 
 @login_required(login_url="/finance/login/")
 def registrar_tipo_ganho(request):
@@ -138,7 +179,7 @@ def registrar_tipo_ganho(request):
         referer = request.META.get('HTTP_REFERER')
         if referer:
             return redirect(referer)
-        return redirect('finance:dashboard')
+        return redirect('finance:inicio')
 
     name = request.POST.get('name')
 
@@ -148,7 +189,7 @@ def registrar_tipo_ganho(request):
     referer = request.META.get('HTTP_REFERER')
     if referer:
         return redirect(referer)
-    return redirect('finance:dashboard')
+    return redirect('finance:inicio')
 
 @login_required(login_url="/finance/login/")
 def consultar_gastos_by_params(request):
@@ -232,7 +273,7 @@ def atualizar_gasto(request):
         referer = request.META.get('HTTP_REFERER')
         if referer:
             return redirect(referer)
-        return redirect('finance:dashboard')
+        return redirect('finance:inicio')
     
     gasto_to_update = get_object_or_404(Gasto, id=request.POST.get('gasto_id'), user=user)
 
@@ -255,7 +296,7 @@ def atualizar_gasto(request):
     referer = request.META.get('HTTP_REFERER')
     if referer:
         return redirect(referer)
-    return redirect('finance:dashboard')
+    return redirect('finance:inicio')
 
 @login_required(login_url="/finance/login/")
 def atualizar_ganho(request):
@@ -265,7 +306,7 @@ def atualizar_ganho(request):
         referer = request.META.get('HTTP_REFERER')
         if referer:
             return redirect(referer)
-        return redirect('finance:dashboard')
+        return redirect('finance:inicio')
     
     ganho_to_update = get_object_or_404(Ganho, id=request.POST.get('ganho_id'), user=user)
 
@@ -292,7 +333,7 @@ def atualizar_ganho(request):
     referer = request.META.get('HTTP_REFERER')
     if referer:
         return redirect(referer)
-    return redirect('finance:dashboard')
+    return redirect('finance:inicio')
 
 @login_required(login_url="/finance/login/")
 def delete_ganho(request):
@@ -302,7 +343,7 @@ def delete_ganho(request):
             referer = request.META.get('HTTP_REFERER')
             if referer:
                 return redirect(referer)
-            return redirect('finance:dashboard')
+            return redirect('finance:inicio')
     
     ganho = get_object_or_404(Ganho, id=request.POST.get('ganho_id'), user=user)
     ganho.delete()
@@ -310,7 +351,7 @@ def delete_ganho(request):
     referer = request.META.get('HTTP_REFERER')
     if referer:
         return redirect(referer)
-    return redirect('finance:dashboard')
+    return redirect('finance:inicio')
 
 @login_required(login_url="/finance/login/")
 def delete_gasto(request):
@@ -320,7 +361,7 @@ def delete_gasto(request):
             referer = request.META.get('HTTP_REFERER')
             if referer:
                 return redirect(referer)
-            return redirect('finance:dashboard')
+            return redirect('finance:inicio')
     
     gasto = get_object_or_404(Gasto, id=request.POST.get('gasto_id'), user=user)
     gasto.delete()
@@ -328,4 +369,4 @@ def delete_gasto(request):
     referer = request.META.get('HTTP_REFERER')
     if referer:
         return redirect(referer)
-    return redirect('finance:dashboard')
+    return redirect('finance:inicio')
