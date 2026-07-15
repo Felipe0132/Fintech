@@ -246,7 +246,7 @@
                         <div class="mb-3">
                             <label for="date_paid" class="form-label text-label">Data</label>
                             <input type="date" class="form-control bg-dark text-white border-secondary" id="date_paid"
-                                name="date_paid">
+                                name="date_paid" value="{% now 'Y-m-d' %}">
                         </div>
 
                         <div class="mb-3 form-check">
@@ -324,14 +324,10 @@
                         <div class="mb-3">
                             <label for="date_paid" class="form-label text-label">Data</label>
                             <input type="date" class="form-control bg-dark text-white border-secondary" id="date_paid"
-                                name="date_paid">
+                                name="date_paid" value="{% now 'Y-m-d' %}">
                         </div>
 
-                        <div class="mb-3 form-check">
-                            <input type="checkbox" class="form-check-input" id="is_paid" name="is_paid" value="True"
-                                checked>
-                            <label class="form-check-label text-label" for="is_paid">Já foi pago / recebido</label>
-                        </div>
+                        <input type="hidden" class="form-check-input" id="is_paid" name="is_paid" value="True" checked>
 
                         <div class="mb-3">
                             <label for="category" class="form-label text-label">Categoria</label>
