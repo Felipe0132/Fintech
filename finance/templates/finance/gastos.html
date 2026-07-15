@@ -165,7 +165,8 @@
                                     <td>{{ transaction.account }}</td>
                                     <td>
                                         <button type="button" class="btn btn-sm btn-outline-danger"
-                                            data-bs-toggle="modal" data-bs-target="#confirmar-delete-{{ transaction.id }}">
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#confirmar-delete-{{ transaction.id }}">
                                             <i class="bi bi-trash"></i>
                                         </button>
                                     </td>
@@ -183,7 +184,7 @@
         </div>
     </div>
 
-<!-- ==================== MODAIS ==================== -->
+    <!-- ==================== MODAIS ==================== -->
 
     <div class="modal fade" id="modalAccount" tabindex="-1" aria-labelledby="modalAccount" aria-hidden="true">
         <div class="modal-dialog">
@@ -211,7 +212,8 @@
         </div>
     </div>
 
-    <div class="modal fade" id="modalCategorieGasto" tabindex="-1" aria-labelledby="modalCategorieGastoLabel" aria-hidden="true">
+    <div class="modal fade" id="modalCategorieGasto" tabindex="-1" aria-labelledby="modalCategorieGastoLabel"
+        aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -279,7 +281,8 @@
 
                         <div class="mb-3">
                             <label for="category" class="form-label text-label">Categoria</label>
-                            <select class="form-select bg-dark text-white border-secondary" id="category" name="category">
+                            <select class="form-select bg-dark text-white border-secondary" id="category"
+                                name="category">
                                 <option value="" selected disabled>Selecione uma opção</option>
                                 {% for category in categories %}
                                 <option value="{{ category.id }}">{{ category.name }}</option>
@@ -360,7 +363,8 @@
 
                         <div class="mb-3">
                             <label for="category" class="form-label text-label">Categoria</label>
-                            <select class="form-select bg-dark text-white border-secondary" id="category" name="category">
+                            <select class="form-select bg-dark text-white border-secondary" id="category"
+                                name="category">
                                 <option value="" selected disabled>Selecione uma opção</option>
                                 {% for category in categories %}
                                 <option value="{{ category.id }}">{{ category.name }}</option>
@@ -408,14 +412,17 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    Tem certeza que deseja excluir o ganho <strong>"{{ transaction.description }}"</strong>? Essa ação não
+                    Tem certeza que deseja excluir o ganho <strong>"{{ transaction.description }}"</strong>? Essa ação
+                    não
                     pode ser desfeita.
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                     <form action="{% url 'finance:delete_transiction' %}" method="post" class="d-inline">
                         {% csrf_token %}
+
                         <input type="hidden" name="transaction_id" value="{{ transaction.id }}">
+                        <input type="hidden" name="type" value="G">
                         <button type="submit" class="btn btn-danger">Excluir</button>
                     </form>
                 </div>

@@ -190,6 +190,7 @@ def gastos_by_params(request):
 
     return render(request, 'finance/gastos.html', context=context)    
 
+
     
 @login_required(login_url="/finance/login/")    
 def update_transiction(request):
@@ -236,7 +237,17 @@ def delete_transiction(request):
         if referer:
             return redirect(referer)
         return redirect('finance:inicio')
+    
+    user = request.user
+    type_id = request.POST.get('type')
 
+    transaction = get_object_or_404(Transaction, id=request.POST.get('transaction_id'), user=user, type=type_id)
+    transaction.delete()
+
+    referer = request.META.get('HTTP_REFERER')
+    if referer:
+        return redirect(referer)
+    return redirect('finance:inicio')
 
 @login_required(login_url="/finance/login/")
 def delete_ganho(request):
