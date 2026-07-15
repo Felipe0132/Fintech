@@ -172,7 +172,7 @@ def gastos_by_params(request):
             gastos_consultados = gastos_consultados.filter(value=value)
 
         if category_id:
-            gastos_consultados = gastos_consultados.filter(type_id=category_id)
+            gastos_consultados = gastos_consultados.filter(category_id=category_id)
 
         if is_paid == "True":
             gastos_consultados = gastos_consultados.filter(is_paid=True)
@@ -190,7 +190,43 @@ def gastos_by_params(request):
 
     return render(request, 'finance/gastos.html', context=context)    
 
+@login_required(login_url="/finance/login/")
+def receitas_by_params(request):
+    user = request.user
+    receita_consultados = Transaction.objects.filter(user=user, type="R")
 
+    if request.method == "POST":
+        description_search = request.POST.get('description_search')
+        date_start = request.POST.get('date_start')
+        date_end = request.POST.get('date_end')
+        value = request.POST.get('value')
+        category_id = request.POST.get('category')
+        account_id = request.POST.get('account')
+
+        if description_search:
+            receita_consultados = receita_consultados.filter(description__icontains=description_search)
+
+        if date_start:
+            receita_consultados = receita_consultados.filter(date__gte=date_start)
+
+        if date_end:
+            receita_consultados = receita_consultados.filter(date__lte=date_end)
+
+        if value:
+            receita_consultados = receita_consultados.filter(value=value)
+
+        if category_id:
+            receita_consultados = receita_consultados.filter(category_id=category_id)
+
+        if account_id:
+            receita_consultados = receita_consultados.filter(account_id=account_id)
+
+    categories = Category.objects.filter(user=user, type="R")
+    accounts = Account.objects.filter(user=user)
+
+    context = {"receita_consultados":receita_consultados.order_by('-date'), "categories":categories, "accounts":accounts}
+
+    return render(request, 'finance/receita.html', context=context)   
     
 @login_required(login_url="/finance/login/")    
 def update_transiction(request):
