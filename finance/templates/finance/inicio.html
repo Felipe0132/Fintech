@@ -191,11 +191,11 @@
     <!-- ==================== MODAIS ==================== -->
 
     <!-- Modal: Nova Account -->
-    <div class="modal fade" id="modalAccount" tabindex="-1" aria-labelledby="modalmodalAccount" aria-hidden="true">
+    <div class="modal fade" id="modalAccount" tabindex="-1" aria-labelledby="modalAccount" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="modalmodalAccount">Nova Conta</h1>
+                    <h1 class="modal-title fs-5" id="modalAccount">Nova Conta</h1>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
@@ -275,13 +275,13 @@
                             <select class="form-select bg-dark text-white border-secondary" id="type" name="type">
                                 <option value="" selected disabled>Selecione uma opção</option>
                                 {% for conta in accounts %}
-                                <option value="{{ tipo.id }}">{{ tipo.name }}</option>
+                                <option value="{{ conta.id }}">{{ conta.name }}</option>
                                 {% endfor %}
                             </select>
 
                             <button type="button" class="btn btn-link btn-sm mt-1 p-0" data-bs-toggle="modal"
-                                data-bs-target="#modalTipogasto">
-                                + Adicionar Categoria
+                                data-bs-target="#modalAccount">
+                                + Adicionar Conta
                             </button>
                         </div>
 

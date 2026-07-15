@@ -82,7 +82,21 @@ def inicio(request):
 
 @login_required(login_url="/finance/login/")
 def registrar_account(request):
+    if request.method == "GET":
+        referer = request.META.get('HTTP_REFERER')
+        if referer:
+            return redirect(referer)
+        return redirect('finance:inicio')
     
+    name = request.POST.get('name')
+
+    if not(Account.objects.filter(name=name, user=request.user).exists()):     
+        Account.objects.create(name=name, user=request.user)
+
+    referer = request.META.get('HTTP_REFERER')
+    if referer:
+        return redirect(referer)
+    return redirect('finance:inicio')
 
 
 @login_required(login_url="/finance/login/")
