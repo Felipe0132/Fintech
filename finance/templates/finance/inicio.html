@@ -300,12 +300,14 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="modalreceitaLabel">Novo receita</h1>
+                    <h1 class="modal-title fs-5" id="modalreceitaLabel">Nova receita</h1>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <form action="{% url 'finance:registrar_transiction' %}" method="post">
                         {% csrf_token %}
+
+                        <input type="hidden" name="type" value="R">
                         <div class="mb-3">
                             <label for="description" class="form-label text-label">Descrição</label>
                             <input type="text" class="form-control bg-dark text-white border-secondary" id="description"
@@ -332,17 +334,32 @@
                         </div>
 
                         <div class="mb-3">
-                            <label for="type" class="form-label text-label">Categoria</label>
-                            <select class="form-select bg-dark text-white border-secondary" id="type" name="type">
+                            <label for="category" class="form-label text-label">Categoria</label>
+                            <select class="form-select bg-dark text-white border-secondary" id="category" name="category">
                                 <option value="" selected disabled>Selecione uma opção</option>
-                                {% for tipo in tipos_receitas %}
-                                <option value="{{ tipo.id }}">{{ tipo.name }}</option>
+                                {% for category in categories_receita %}
+                                <option value="{{ category.id }}">{{ category.name }}</option>
                                 {% endfor %}
                             </select>
 
                             <button type="button" class="btn btn-link btn-sm mt-1 p-0" data-bs-toggle="modal"
-                                data-bs-target="#modalTiporeceita">
+                                data-bs-target="#modalCategorieReceita">
                                 + Adicionar Categoria
+                            </button>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="account" class="form-label text-label">Conta</label>
+                            <select class="form-select bg-dark text-white border-secondary" id="account" name="account">
+                                <option value="" selected disabled>Selecione uma opção</option>
+                                {% for account in accounts %}
+                                <option value="{{ account.id }}">{{ account.name }}</option>
+                                {% endfor %}
+                            </select>
+
+                            <button type="button" class="btn btn-link btn-sm mt-1 p-0" data-bs-toggle="modal"
+                                data-bs-target="#modalAccount">
+                                + Adicionar Conta
                             </button>
                         </div>
 
@@ -394,32 +411,7 @@
                     <form action="{% url 'finance:registrar_category' %}" method="post">
                         {% csrf_token %}
 
-                        <input type="hidden" name="type" value="G">
-                        <div class="mb-3">
-                            <label for="name" class="form-label text-label">Nome da categoria</label>
-                            <input type="text" class="form-control bg-dark text-white border-secondary" id="name"
-                                name="name" placeholder="Ex: Lazer, Saúde" required>
-                        </div>
-                        <div class="modal-footer border-secondary">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                            <button type="submit" class="btn btn-primary">Salvar Categoria</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="modal fade" id="modalTiporeceita" tabindex="-1" aria-labelledby="modalTiporeceitaLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="modalTiporeceitaLabel">Nova Categoria de receita</h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form action="{% url 'finance:registrar_category' %}" method="post">
-                        {% csrf_token %}
+                        <input type="hidden" name="type" value="R">
                         <div class="mb-3">
                             <label for="name" class="form-label text-label">Nome da categoria</label>
                             <input type="text" class="form-control bg-dark text-white border-secondary" id="name"
