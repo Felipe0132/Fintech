@@ -64,19 +64,14 @@ def inicio(request):
 
     saldo_imaginario = saldo_atual - sum_by_value(gastos_not_paid)
 
-    grafico_gasto = grafico_by_category_gasto(gastos, user)
-    grafico_ganho = grafico_by_category_ganho(receitas, user)
-    grafico_gasto_not_paid = grafico_by_category_gasto_not_paid(gastos_not_paid, user)
-
     user_context = {"gastos":gastos.order_by('-id')[:5],            "receitas":receitas.order_by('-id')[:5], 
     "total_gastos":total_gastos, 
     "total_receitas":total_receitas, 
     "saldo_atual":saldo_atual, 
     "categories_receita":categories_receita, "categories_gasto":categories_gasto, 
     "accounts":accounts, 
-    "gastos_not_paid":gastos_not_paid, "saldo_imaginario":saldo_imaginario, 
-    "grafico_gasto":grafico_gasto, 
-    "grafico_ganho":grafico_ganho, "grafico_gasto_not_paid":grafico_gasto_not_paid}
+    "gastos_not_paid":gastos_not_paid, "saldo_imaginario":saldo_imaginario
+    }
 
     return render(request, "finance/inicio.html", context=user_context)
 
@@ -106,6 +101,23 @@ def registrar_transiction(request):
         if referer:
             return redirect(referer)
         return redirect('finance:inicio')
+    
+    type = request.POST.get('type')
+    description = request.POST.get('description')
+    value = request.POST.get('value')
+    date = request.POST.get('date_paid')
+    is_paid = request.POST.get('is_paid') == 'True' # Recebe ou True ou Null do html
+
+    category_id = request.POST.get('category') # Do html recebe so o id, ai o Django entende linkando so o category_id
+
+    account_id = request.POST.get('account')
+
+    Transaction.objects.create(value=value, type=type, description=description, date=date, is_paid=is_paid, category_id=category_id if category_id else None, account_id=account_id, user=request.user)
+
+    referer = request.META.get('HTTP_REFERER')
+    if referer:
+        return redirect(referer)
+    return redirect('finance:inicio')
     
 @login_required(login_url="/finance/login/")
 def registrar_category(request):
@@ -149,28 +161,6 @@ def delete_transictions(request):
         if referer:
             return redirect(referer)
         return redirect('finance:inicio')
-
-@login_required(login_url="/finance/login/")
-def registrar_gasto(request):
-    if request.method == "GET":
-        referer = request.META.get('HTTP_REFERER')
-        if referer:
-            return redirect(referer)
-        return redirect('finance:inicio')
-    
-    value = request.POST.get('value')
-    description = request.POST.get('description')
-    date_paid = request.POST.get('date_paid')
-    is_paid = request.POST.get('is_paid') == 'True' # Recebe ou True ou Null do html
-
-    type_id = request.POST.get('type') # Do html recebe so o id, ai o Django entende linkando so o type_id
-
-    Gasto.objects.create(value=value, description=description, date_paid=date_paid, is_paid=is_paid, type_id=type_id if type_id else None, user=request.user)
-
-    referer = request.META.get('HTTP_REFERER')
-    if referer:
-        return redirect(referer)
-    return redirect('finance:inicio')
 
 @login_required(login_url="/finance/login/")
 def consultar_gastos_by_params(request):

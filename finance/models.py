@@ -37,15 +37,15 @@ class Transaction(models.Model):
         GASTO = "G", "Gasto"
         RECEITA = "R", "Receita"
 
-    name = models.CharField(max_length=255)
+    description = models.CharField(max_length=255)
     value = models.DecimalField(default=0, max_digits=10, decimal_places=2)
     type = models.CharField(max_length=1, choices=Type.choices)
     date = models.DateField(null=True, blank=True)
     is_paid = models.BooleanField(default=True)
 
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True)
-    conta = models.ForeignKey(Account, on_delete=models.SET_NULL, null=True)
+    account = models.ForeignKey(Account, on_delete=models.SET_NULL, null=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
 
     def __str__(self):
-        return self.name
+        return self.description

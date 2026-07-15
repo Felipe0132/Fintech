@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 from .models import *
+from decimal import Decimal
 
 def sum_by_value(movimentacao):
 
@@ -12,7 +13,7 @@ def sum_by_value(movimentacao):
 
         return df["value"].sum()
     
-    return 0.0
+    return Decimal(0.0)
 
 def grafico_by_category_gasto(movimentacao, user):
     movimentacao = movimentacao.values('type', 'value') # Data that will use
