@@ -27,17 +27,15 @@
                 <li class="nav-item">
                     <a class="nav-link active" href="{% url 'finance:inicio' %}">inicio</a>
                 </li>
-                <!--
                 <li class="nav-item">
-                    <a class="nav-link" href="{% url 'finance:consultar_type_by_params' %}">receitas</a>
+                    <a class="nav-link" href="{% url 'finance:consultar_transictions_by_params' %}">gastos</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{% url 'finance:consultar_type_by_params' %}">Ganhos</a>
+                    <a class="nav-link" href="{% url 'finance:consultar_transictions_by_params' %}">receitas</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="#">Categorias</a>
                 </li>
-                -->
             </ul>
         </aside>
 
@@ -55,14 +53,14 @@
                 <div class="row g-4 mb-4">
                     <div class="col-12 col-md-3">
                         <div class="card card-dark p-4 h-100">
-                            <span class="text-label mb-2">Total de ganhos</span>
-                            <span class="summary-value text-positive">R$ {{ total_ganhos }}</span>
+                            <span class="text-label mb-2">Total de receitas</span>
+                            <span class="summary-value text-positive">R$ {{ total_receitas }}</span>
                         </div>
                     </div>
                     <div class="col-12 col-md-3">
                         <div class="card card-dark p-4 h-100">
-                            <span class="text-label mb-2">Total de receitas</span>
-                            <span class="summary-value text-negative">R$ {{ total_receitas }}</span>
+                            <span class="text-label mb-2">Total de gastos</span>
+                            <span class="summary-value text-negative">R$ {{ total_gastos }}</span>
                         </div>
                     </div>
                     <div class="col-12 col-md-3">
@@ -89,12 +87,35 @@
                     <div class="col-12 col-md-4">
                         <div class="card card-dark h-100 d-flex flex-column justify-content-between">
                             <div class="p-3">
+                                <h5 class="mb-3 text-title">Últimos gastos</h5>
+                                {% for gasto in gastos %}
+                                <div
+                                    class="list-item d-flex justify-content-between align-items-center py-2 border-bottom border-secondary">
+                                    <span>{{ gasto.description }}</span>
+                                    <span class="badge-value text-negative">R$ {{ gasto.value }}</span>
+                                </div>
+                                {% empty %}
+                                <p class="text-label mb-0">Nenhum gasto registrado ainda.</p>
+                                {% endfor %}
+                            </div>
+                            <div class="p-3 pt-0 mt-auto">
+                                <button type="button" class="btn btn-primary btn-add-gasto w-100 text-center"
+                                    data-bs-toggle="modal" data-bs-target="#modalgasto">
+                                    + Adicionar gasto
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-md-4">
+                        <div class="card card-dark h-100 d-flex flex-column justify-content-between">
+                            <div class="p-3">
                                 <h5 class="mb-3 text-title">Últimos receitas</h5>
                                 {% for receita in receitas %}
                                 <div
                                     class="list-item d-flex justify-content-between align-items-center py-2 border-bottom border-secondary">
                                     <span>{{ receita.description }}</span>
-                                    <span class="badge-value text-negative">R$ {{ receita.value }}</span>
+                                    <span class="badge-value text-positive">R$ {{ receita.value }}</span>
                                 </div>
                                 {% empty %}
                                 <p class="text-label mb-0">Nenhum receita registrado ainda.</p>
@@ -112,38 +133,15 @@
                     <div class="col-12 col-md-4">
                         <div class="card card-dark h-100 d-flex flex-column justify-content-between">
                             <div class="p-3">
-                                <h5 class="mb-3 text-title">Últimos ganhos</h5>
-                                {% for ganho in ganhos %}
-                                <div
-                                    class="list-item d-flex justify-content-between align-items-center py-2 border-bottom border-secondary">
-                                    <span>{{ ganho.description }}</span>
-                                    <span class="badge-value text-positive">R$ {{ ganho.value }}</span>
-                                </div>
-                                {% empty %}
-                                <p class="text-label mb-0">Nenhum ganho registrado ainda.</p>
-                                {% endfor %}
-                            </div>
-                            <div class="p-3 pt-0 mt-auto">
-                                <button type="button" class="btn btn-primary btn-add-ganho w-100 text-center"
-                                    data-bs-toggle="modal" data-bs-target="#modalGanho">
-                                    + Adicionar Ganho
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-12 col-md-4">
-                        <div class="card card-dark h-100 d-flex flex-column justify-content-between">
-                            <div class="p-3">
-                                <h5 class="mb-3 text-title">Últimos receitas nao pagos</h5>
-                                {% for receita in receitas_not_paid %}
+                                <h5 class="mb-3 text-title">Últimos gastos nao pagos</h5>
+                                {% for receita in gastos_not_paid %}
                                 <div
                                     class="list-item d-flex justify-content-between align-items-center py-2 border-bottom border-secondary">
                                     <span>{{ receita.description }}</span>
                                     <span class="badge-value text-warning">R$ {{ receita.value }}</span>
                                 </div>
                                 {% empty %}
-                                <p class="text-label mb-0">Nenhum ganho registrado ainda.</p>
+                                <p class="text-label mb-0">Nenhum receita registrado ainda.</p>
                                 {% endfor %}
                             </div>
                         </div>
@@ -154,9 +152,20 @@
             <div class="row g-4 mt-1 px-4">
                 <div class="col-12 col-md-4">
                     <div class="card card-dark p-4">
+                        <h5 class="mb-3 text-title">gastos por Categoria</h5>
+                        {% if grafico_receita %}
+                        <img src="{% static grafico_receita %}" alt="Gráfico de gastos por categoria" class="grafico-img">
+                        {% else %}
+                        <p class="text-label mb-0">Nenhum receita registrado para gerar o gráfico.</p>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="col-12 col-md-4">
+                    <div class="card card-dark p-4">
                         <h5 class="mb-3 text-title">receitas por Categoria</h5>
                         {% if grafico_receita %}
-                        <img src="{% static grafico_receita %}" alt="Gráfico de receitas por categoria" class="grafico-img">
+                        <img src="{% static grafico_receita %}" alt="Gráfico de receita por categoria" class="grafico-img">
                         {% else %}
                         <p class="text-label mb-0">Nenhum receita registrado para gerar o gráfico.</p>
                         {% endif %}
@@ -165,20 +174,9 @@
 
                 <div class="col-12 col-md-4">
                     <div class="card card-dark p-4">
-                        <h5 class="mb-3 text-title">Ganhos por Categoria</h5>
+                        <h5 class="mb-3 text-title">gastos não pagos por Categoria</h5>
                         {% if grafico_receita %}
-                        <img src="{% static grafico_ganho %}" alt="Gráfico de ganho por categoria" class="grafico-img">
-                        {% else %}
-                        <p class="text-label mb-0">Nenhum receita registrado para gerar o gráfico.</p>
-                        {% endif %}
-                    </div>
-                </div>
-
-                <div class="col-12 col-md-4">
-                    <div class="card card-dark p-4">
-                        <h5 class="mb-3 text-title">receitas não pagos por Categoria</h5>
-                        {% if grafico_receita %}
-                        <img src="{% static grafico_receita_not_paid %}" alt="Gráfico de receitas nao pagos por categoria"
+                        <img src="{% static grafico_receita_not_paid %}" alt="Gráfico de gastos nao pagos por categoria"
                             class="grafico-img">
                         {% else %}
                         <p class="text-label mb-0">Nenhum receita registrado para gerar o gráfico.</p>
@@ -192,6 +190,111 @@
 -->
     <!-- ==================== MODAIS ==================== -->
 
+    <!-- Modal: Nova Account -->
+    <div class="modal fade" id="modalAccount" tabindex="-1" aria-labelledby="modalmodalAccount" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="modalmodalAccount">Nova Conta</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form action="{% url 'finance:registrar_account' %}" method="post">
+                        {% csrf_token %}
+
+                        <div class="mb-3">
+                            <label for="name" class="form-label text-label">Nome da conta</label>
+                            <input type="text" class="form-control bg-dark text-white border-secondary" id="name"
+                                name="name" placeholder="Ex: Lazer, Saúde" required>
+                        </div>
+                        <div class="modal-footer border-secondary">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                            <button type="submit" class="btn btn-primary">Salvar conta</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Novo gasto -->
+    <div class="modal fade" id="modalgasto" tabindex="-1" aria-labelledby="modalgastoLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="modalgastoLabel">Novo gasto</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form action="{% url 'finance:registrar_transiction' %}" method="post">
+                        {% csrf_token %}
+
+                        <input type="hidden" name="type" value="G">
+                        <div class="mb-3">
+                            <label for="description" class="form-label text-label">Descrição</label>
+                            <input type="text" class="form-control bg-dark text-white border-secondary" id="description"
+                                name="description" placeholder="Ex: Mercado, Aluguel" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="value" class="form-label text-label">Valor (R$)</label>
+                            <input type="number" step="0.01" min="0"
+                                class="form-control bg-dark text-white border-secondary" id="value" name="value"
+                                placeholder="0,00" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="date_paid" class="form-label text-label">Data</label>
+                            <input type="date" class="form-control bg-dark text-white border-secondary" id="date_paid"
+                                name="date_paid">
+                        </div>
+
+                        <div class="mb-3 form-check">
+                            <input type="checkbox" class="form-check-input" id="is_paid" name="is_paid" value="True"
+                                checked>
+                            <label class="form-check-label text-label" for="is_paid">Já foi pago / recebido</label>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="type" class="form-label text-label">Categoria</label>
+                            <select class="form-select bg-dark text-white border-secondary" id="type" name="type">
+                                <option value="" selected disabled>Selecione uma opção</option>
+                                {% for tipo in categories_gasto %}
+                                <option value="{{ tipo.id }}">{{ tipo.name }}</option>
+                                {% endfor %}
+                            </select>
+
+                            <button type="button" class="btn btn-link btn-sm mt-1 p-0" data-bs-toggle="modal"
+                                data-bs-target="#modalCategorieGasto">
+                                + Adicionar Categoria
+                            </button>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="type" class="form-label text-label">Conta</label>
+                            <select class="form-select bg-dark text-white border-secondary" id="type" name="type">
+                                <option value="" selected disabled>Selecione uma opção</option>
+                                {% for conta in accounts %}
+                                <option value="{{ tipo.id }}">{{ tipo.name }}</option>
+                                {% endfor %}
+                            </select>
+
+                            <button type="button" class="btn btn-link btn-sm mt-1 p-0" data-bs-toggle="modal"
+                                data-bs-target="#modalTipogasto">
+                                + Adicionar Categoria
+                            </button>
+                        </div>
+
+                        <div class="modal-footer border-secondary">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary">Salvar gasto</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Modal: Novo receita -->
     <div class="modal fade" id="modalreceita" tabindex="-1" aria-labelledby="modalreceitaLabel" aria-hidden="true">
         <div class="modal-dialog">
@@ -201,7 +304,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form action="{% url 'finance:registrar_receita' %}" method="post">
+                    <form action="{% url 'finance:registrar_transiction' %}" method="post">
                         {% csrf_token %}
                         <div class="mb-3">
                             <label for="description" class="form-label text-label">Descrição</label>
@@ -253,77 +356,18 @@
         </div>
     </div>
 
-    <!-- Modal: Novo Ganho -->
-    <div class="modal fade" id="modalGanho" tabindex="-1" aria-labelledby="modalGanhoLabel" aria-hidden="true">
+    <div class="modal fade" id="modalCategorieGasto" tabindex="-1" aria-labelledby="modalCategorieGastoLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="modalGanhoLabel">Novo Ganho</h1>
+                    <h1 class="modal-title fs-5" id="modalCategorieGastoLabel">Nova Categoria de Gasto</h1>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form action="{% url 'finance:registrar_ganho' %}" method="post">
+                    <form action="{% url 'finance:registrar_category' %}" method="post">
                         {% csrf_token %}
-                        <div class="mb-3">
-                            <label for="description" class="form-label text-label">Descrição</label>
-                            <input type="text" class="form-control bg-dark text-white border-secondary" id="description"
-                                name="description" placeholder="Ex: Mercado, Aluguel" required>
-                        </div>
 
-                        <div class="mb-3">
-                            <label for="value" class="form-label text-label">Valor (R$)</label>
-                            <input type="number" step="0.01" min="0"
-                                class="form-control bg-dark text-white border-secondary" id="value" name="value"
-                                placeholder="0,00" required>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="date_paid" class="form-label text-label">Data</label>
-                            <input type="date" class="form-control bg-dark text-white border-secondary" id="date_paid"
-                                name="date_paid">
-                        </div>
-
-                        <div class="mb-3 form-check">
-                            <input type="checkbox" class="form-check-input" id="is_paid" name="is_paid" value="True"
-                                checked>
-                            <label class="form-check-label text-label" for="is_paid">Já foi pago / recebido</label>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="type" class="form-label text-label">Categoria</label>
-                            <select class="form-select bg-dark text-white border-secondary" id="type" name="type">
-                                <option value="" selected disabled>Selecione uma opção</option>
-                                {% for tipo in tipos_ganhos %}
-                                <option value="{{ tipo.id }}">{{ tipo.name }}</option>
-                                {% endfor %}
-                            </select>
-
-                            <button type="button" class="btn btn-link btn-sm mt-1 p-0" data-bs-toggle="modal"
-                                data-bs-target="#modalTipoGanho">
-                                + Adicionar Categoria
-                            </button>
-                        </div>
-
-                        <div class="modal-footer border-secondary">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                            <button type="submit" class="btn btn-primary">Salvar Ganho</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="modal fade" id="modalTiporeceita" tabindex="-1" aria-labelledby="modalTiporeceitaLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="modalTiporeceitaLabel">Nova Categoria de receita</h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form action="{% url 'finance:registrar_tipo_receita' %}" method="post">
-                        {% csrf_token %}
+                        <input type="hidden" name="type" value="G">
                         <div class="mb-3">
                             <label for="name" class="form-label text-label">Nome da categoria</label>
                             <input type="text" class="form-control bg-dark text-white border-secondary" id="name"
@@ -339,15 +383,15 @@
         </div>
     </div>
 
-    <div class="modal fade" id="modalTipoGanho" tabindex="-1" aria-labelledby="modalTipoGanhoLabel" aria-hidden="true">
+    <div class="modal fade" id="modalTiporeceita" tabindex="-1" aria-labelledby="modalTiporeceitaLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="modalTipoGanhoLabel">Nova Categoria de receita</h1>
+                    <h1 class="modal-title fs-5" id="modalTiporeceitaLabel">Nova Categoria de receita</h1>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form action="{% url 'finance:registrar_tipo_ganho' %}" method="post">
+                    <form action="{% url 'finance:registrar_category' %}" method="post">
                         {% csrf_token %}
                         <div class="mb-3">
                             <label for="name" class="form-label text-label">Nome da categoria</label>

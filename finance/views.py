@@ -52,7 +52,8 @@ def inicio(request):
     receitas = Transaction.objects.filter(user=user, type="R")
     gastos = Transaction.objects.filter(user=user, type="G", is_paid=True)
 
-    categories = Category.objects.filter(user=user)
+    categories_receita = Category.objects.filter(user=user, type="R")
+    categories_gasto = Category.objects.filter(user=user, type="G")
 
     total_receitas = sum_by_value(receitas)
     total_gastos = sum_by_value(gastos)
@@ -67,9 +68,22 @@ def inicio(request):
     grafico_ganho = grafico_by_category_ganho(receitas, user)
     grafico_gasto_not_paid = grafico_by_category_gasto_not_paid(gastos_not_paid, user)
 
-    user_context = {"gastos":gastos.order_by('-id')[:5], "receitas":receitas.order_by('-id')[:5], "total_gastos":total_gastos, "total_receitas":total_receitas, "saldo_atual":saldo_atual, "categories":categories, 'gastos_not_paid':gastos_not_paid, "saldo_imaginario":saldo_imaginario, "grafico_gasto":grafico_gasto, "grafico_ganho":grafico_ganho, "grafico_gasto_not_paid":grafico_gasto_not_paid}
+    user_context = {"gastos":gastos.order_by('-id')[:5],            "receitas":receitas.order_by('-id')[:5], 
+    "total_gastos":total_gastos, 
+    "total_receitas":total_receitas, 
+    "saldo_atual":saldo_atual, 
+    "categories_receita":categories_receita, "categories_gasto":categories_gasto, 
+    "accounts":accounts, 
+    "gastos_not_paid":gastos_not_paid, "saldo_imaginario":saldo_imaginario, 
+    "grafico_gasto":grafico_gasto, 
+    "grafico_ganho":grafico_ganho, "grafico_gasto_not_paid":grafico_gasto_not_paid}
 
     return render(request, "finance/inicio.html", context=user_context)
+
+@login_required(login_url="/finance/login/")
+def registrar_account(request):
+    
+
 
 @login_required(login_url="/finance/login/")
 def registrar_transiction(request):
@@ -86,6 +100,17 @@ def registrar_category(request):
         if referer:
             return redirect(referer)
         return redirect('finance:inicio')
+    
+    name = request.POST.get('name')
+    type = request.POST.get('type')
+
+    if not(Category.objects.filter(name=name, type=type, user=request.user).exists()):     
+        Category.objects.create(name=name, type=type, user=request.user)
+
+    referer = request.META.get('HTTP_REFERER')
+    if referer:
+        return redirect(referer)
+    return redirect('finance:inicio')
     
 @login_required(login_url="/finance/login/")
 def consultar_transictions_by_params(request):
@@ -127,64 +152,6 @@ def registrar_gasto(request):
     type_id = request.POST.get('type') # Do html recebe so o id, ai o Django entende linkando so o type_id
 
     Gasto.objects.create(value=value, description=description, date_paid=date_paid, is_paid=is_paid, type_id=type_id if type_id else None, user=request.user)
-
-    referer = request.META.get('HTTP_REFERER')
-    if referer:
-        return redirect(referer)
-    return redirect('finance:inicio')
-
-@login_required(login_url="/finance/login/")
-def registrar_ganho(request):
-    if request.method == "GET":
-        referer = request.META.get('HTTP_REFERER')
-        if referer:
-            return redirect(referer)
-        return redirect('finance:inicio')
-    
-    value = request.POST.get('value')
-    description = request.POST.get('description')
-    date_paid = request.POST.get('date_paid')
-    is_paid = request.POST.get('is_paid') == 'True' # Recebe ou True ou Null do html
-
-    type_id = request.POST.get('type') # Do html recebe so o id, ai o Django entende linkando so o type_id
-
-    Ganho.objects.create(value=value, description=description, date_paid=date_paid, is_paid=is_paid, type_id=type_id if type_id else None, user=request.user)
-
-    referer = request.META.get('HTTP_REFERER')
-    if referer:
-        return redirect(referer)
-    return redirect('finance:inicio')
-
-@login_required(login_url="/finance/login/")
-def registrar_tipo_gasto(request):
-    if request.method == "GET":
-        referer = request.META.get('HTTP_REFERER')
-        if referer:
-            return redirect(referer)
-        return redirect('finance:inicio')
-
-    name = request.POST.get('name')
-
-    if not(TipoGasto.objects.filter(name=name, user=request.user).exists()):     
-        TipoGasto.objects.create(name=name, user=request.user)
-
-    referer = request.META.get('HTTP_REFERER')
-    if referer:
-        return redirect(referer)
-    return redirect('finance:inicio')
-
-@login_required(login_url="/finance/login/")
-def registrar_tipo_ganho(request):
-    if request.method == "GET":
-        referer = request.META.get('HTTP_REFERER')
-        if referer:
-            return redirect(referer)
-        return redirect('finance:inicio')
-
-    name = request.POST.get('name')
-
-    if not(TipoGanho.objects.filter(name=name, user=request.user).exists()):     
-        TipoGanho.objects.create(name=name, user=request.user)
 
     referer = request.META.get('HTTP_REFERER')
     if referer:
