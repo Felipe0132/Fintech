@@ -23,8 +23,8 @@
     --btn-logout-hover-bg: #f75a68;
     --btn-logout-hover-texto: #ffffff;
 
-    --btn-add-ganho-bg: #00b37e;
-    --btn-add-ganho-hover: #00996c;
+    --btn-add-receita-bg: #00704f;
+    --btn-add-receita-hover: #00996c;
 
     --btn-add-gasto-bg: #f75a68;
     --btn-add-gasto-hover: #e04756;
@@ -97,19 +97,19 @@ body.bg-custom {
     border-color: var(--btn-logout-hover-bg);
 }
 
-.btn-add-ganho {
+.btn-add-receita {
     color: #ffffff;
-    background-color: var(--btn-add-ganho-bg);
-    border: 1px solid var(--btn-add-ganho-bg);
+    background-color: var(--btn-add-receita-bg);
+    border: 1px solid var(--btn-add-receita-bg);
     font-weight: 600;
     padding: 10px 20px;
     border-radius: 6px;
     transition: all 0.2s ease-in-out;
 }
 
-.btn-add-ganho:hover {
-    background-color: var(--btn-add-ganho-hover);
-    border-color: var(--btn-add-ganho-hover);
+.btn-add-receita:hover {
+    background-color: var(--btn-add-receita-hover);
+    border-color: var(--btn-add-receita-hover);
     color: #ffffff;
     transform: translateY(-2px);
 }
