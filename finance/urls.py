@@ -11,7 +11,8 @@ urlpatterns = [
     path('registrar-account', views.registrar_account, name="registrar_account"),
     path('registrar-transiction/', views.registrar_transiction, name='registrar_transiction'),
     path('registrar-category', views.registrar_category, name='registrar_category'),
-    path('consultar-transictions-by-params', views.consultar_transictions_by_params, name="consultar_transictions_by_params"),
-    path('atualizar-transictions', views.atualizar_transictions, name="atualizar_transictions"),
-    path('delete-transictions', views.delete_transictions, name="delete_transictions"),
+    path('receitas-by-params', views.receitas_by_params, name="receitas_by_params"),
+    path('gastos-by-params', views.gastos_by_params, name="gastos_by_params"),
+    path('update-transiction', views.update_transiction, name="update_transiction"),
+    path('delete-transiction', views.delete_transiction, name="delete_transiction"),
 ]

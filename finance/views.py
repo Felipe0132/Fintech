@@ -93,7 +93,6 @@ def registrar_account(request):
         return redirect(referer)
     return redirect('finance:inicio')
 
-
 @login_required(login_url="/finance/login/")
 def registrar_transiction(request):
     if request.method == "GET":
@@ -139,56 +138,41 @@ def registrar_category(request):
     return redirect('finance:inicio')
     
 @login_required(login_url="/finance/login/")
-def consultar_transictions_by_params(request):
+def receitas_by_params(request):
     if request.method == "GET":
         referer = request.META.get('HTTP_REFERER')
         if referer:
             return redirect(referer)
         return redirect('finance:inicio')
     
-@login_required(login_url="/finance/login/")    
-def atualizar_transictions(request):
-    if request.method == "GET":
-        referer = request.META.get('HTTP_REFERER')
-        if referer:
-            return redirect(referer)
-        return redirect('finance:inicio')
-
 @login_required(login_url="/finance/login/")
-def delete_transictions(request):
-    if request.method == "GET":
-        referer = request.META.get('HTTP_REFERER')
-        if referer:
-            return redirect(referer)
-        return redirect('finance:inicio')
-
-@login_required(login_url="/finance/login/")
-def consultar_gastos_by_params(request):
+def gastos_by_params(request):
     user = request.user
-    gastos_consultados = Gasto.objects.filter(user=user)
+    gastos_consultados = Transaction.objects.filter(user=user, type="G")
 
     if request.method == "POST":
         description_search = request.POST.get('description_search')
         date_start = request.POST.get('date_start')
         date_end = request.POST.get('date_end')
         value = request.POST.get('value')
-        type_id = request.POST.get('type')
+        category_id = request.POST.get('category')
         is_paid = request.POST.get('is_paid')
+        account_id = request.POST.get('account')
 
         if description_search:
             gastos_consultados = gastos_consultados.filter(description__icontains=description_search)
 
         if date_start:
-            gastos_consultados = gastos_consultados.filter(date_paid__gte=date_start)
+            gastos_consultados = gastos_consultados.filter(date__gte=date_start)
 
         if date_end:
-            gastos_consultados = gastos_consultados.filter(date_paid__lte=date_end)
+            gastos_consultados = gastos_consultados.filter(date__lte=date_end)
 
         if value:
             gastos_consultados = gastos_consultados.filter(value=value)
 
-        if type_id:
-            gastos_consultados = gastos_consultados.filter(type_id=type_id)
+        if category_id:
+            gastos_consultados = gastos_consultados.filter(type_id=category_id)
 
         if is_paid == "True":
             gastos_consultados = gastos_consultados.filter(is_paid=True)
@@ -196,115 +180,63 @@ def consultar_gastos_by_params(request):
         if is_paid == "False":
             gastos_consultados = gastos_consultados.filter(is_paid=False)
 
-    tipos_gastos = TipoGasto.objects.filter(user=user)
+        if account_id:
+            gastos_consultados = gastos_consultados.filter(account_id=account_id)
 
-    context = {"gastos_consultados":gastos_consultados.order_by('-date_paid'), "tipos_gastos":tipos_gastos}
+    categories = Category.objects.filter(user=user, type="G")
+    accounts = Account.objects.filter(user=user)
+
+    context = {"gastos_consultados":gastos_consultados.order_by('-date'), "categories":categories, "accounts":accounts}
 
     return render(request, 'finance/gastos.html', context=context)    
 
-@login_required(login_url="/finance/login/")
-def consultar_ganhos_by_params(request):
-    user = request.user
-    ganhos_consultados = Ganho.objects.filter(user=user)
-
-    if request.method == "POST":
-        description_search = request.POST.get('description_search')
-        date_start = request.POST.get('date_start')
-        date_end = request.POST.get('date_end')
-        value = request.POST.get('value')
-        type_id = request.POST.get('type')
-
-        if description_search:
-            ganhos_consultados = ganhos_consultados.filter(description__icontains=description_search)
-
-        if date_start:
-            ganhos_consultados = ganhos_consultados.filter(date_paid__gte=date_start)
-
-        if date_end:
-            ganhos_consultados = ganhos_consultados.filter(date_paid__lte=date_end)
-
-        if value:
-            ganhos_consultados = ganhos_consultados.filter(value=value)
-
-        if type_id:
-            ganhos_consultados = ganhos_consultados.filter(type_id=type_id)
-
-
-    tipos_ganhos = TipoGanho.objects.filter(user=user)
-
-    context = {"ganhos_consultados":ganhos_consultados.order_by('-date_paid'), "tipos_ganhos":tipos_ganhos}
-
-    return render(request, 'finance/ganhos.html', context=context)    
-
-@login_required(login_url="/finance/login/")
-def atualizar_gasto(request):
-    user = request.user
-
+    
+@login_required(login_url="/finance/login/")    
+def update_transiction(request):
     if request.method == "GET":
         referer = request.META.get('HTTP_REFERER')
         if referer:
             return redirect(referer)
         return redirect('finance:inicio')
     
-    gasto_to_update = get_object_or_404(Gasto, id=request.POST.get('gasto_id'), user=user)
-
-    description = request.POST.get('description')
-    date = request.POST.get('date_paid')
-    value = request.POST.get('value')
-    is_paid = request.POST.get('is_paid')
-
-    if description:
-        gasto_to_update.description = description
-    if date:
-        gasto_to_update.date = date
-    if value:
-        gasto_to_update.value = value
-    if is_paid:
-        gasto_to_update.is_paid = is_paid
-
-    gasto_to_update.save()
-
-    referer = request.META.get('HTTP_REFERER')
-    if referer:
-        return redirect(referer)
-    return redirect('finance:inicio')
-
-@login_required(login_url="/finance/login/")
-def atualizar_ganho(request):
     user = request.user
-
-    if request.method == "GET":
-        referer = request.META.get('HTTP_REFERER')
-        if referer:
-            return redirect(referer)
-        return redirect('finance:inicio')
-    
-    ganho_to_update = get_object_or_404(Ganho, id=request.POST.get('ganho_id'), user=user)
-
-    description = request.POST.get('description')
-    date = request.POST.get('date_paid')
-    value = request.POST.get('value')
-    is_paid = request.POST.get('is_paid')
     type_id = request.POST.get('type')
+    
+    transaction_to_update = get_object_or_404(Transaction, id=request.POST.get('transaction_id'), type=type_id, user=user)
 
+    description = request.POST.get('description')
+    date = request.POST.get('date_paid')
+    value = request.POST.get('value')
+    category_id = request.POST.get('category')
+    account_id = request.POST.get('account')
 
     if description:
-        ganho_to_update.description = description
+        transaction_to_update.description = description
     if date:
-        ganho_to_update.date_paid = date
+        transaction_to_update.date = date
     if value:
-        ganho_to_update.value = value
-    if is_paid:
-        ganho_to_update.is_paid = is_paid
-    if type_id:
-        ganho_to_update.type_id = type_id
+        transaction_to_update.value = value
+    transaction_to_update.is_paid = request.POST.get('is_paid') == 'True'
+    if category_id:
+        transaction_to_update.category_id = category_id
+    if account_id:
+        transaction_to_update.account_id = account_id
 
-    ganho_to_update.save()
+    transaction_to_update.save()
 
     referer = request.META.get('HTTP_REFERER')
     if referer:
         return redirect(referer)
     return redirect('finance:inicio')
+
+@login_required(login_url="/finance/login/")
+def delete_transiction(request):
+    if request.method == "GET":
+        referer = request.META.get('HTTP_REFERER')
+        if referer:
+            return redirect(referer)
+        return redirect('finance:inicio')
+
 
 @login_required(login_url="/finance/login/")
 def delete_ganho(request):
