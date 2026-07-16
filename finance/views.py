@@ -468,6 +468,17 @@ def dashboard_mensal(request):
     value_by_category_receita_compare = sum_by_category(receitas_compare)
     value_by_category_gastos_compare = sum_by_category(gastos_compare)
 
+    total_receitas = sum_by_value(receitas_selected)
+    total_gastos = sum_by_value(gastos_selected)
+
+    saldo_atual = total_receitas - total_gastos
+
+    gastos_not_paid = Transaction.objects.filter(user=user, type="G", is_paid=False)
+
+    total_gastos_not_paid = sum_by_value(gastos_not_paid)
+
+    saldo_imaginario = saldo_atual - total_gastos_not_paid
+
     user_context = {"selected_month":selected_month,
                     "compare_month":compare_month,
                     "receitas_selected":receitas_selected,
@@ -479,6 +490,10 @@ def dashboard_mensal(request):
                     "value_by_category_gastos_selected":value_by_category_gastos_selected,
                     "value_by_category_receitas_compare":value_by_category_receita_compare,
                     "value_by_category_gastos_compare":value_by_category_gastos_compare,
+                    "total_gastos":total_gastos,
+                    "saldo_atual":saldo_atual,
+                    "total_gastos_not_paid":total_gastos_not_paid,
+                    "saldo_imaginario":saldo_imaginario
                     }
 
     return render(request, 'finance/dashboard_mensal.html', user_context)

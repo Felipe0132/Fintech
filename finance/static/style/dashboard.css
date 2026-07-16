@@ -1,0 +1,78 @@
+/* ====================================================================
+   dashboard.css — estilos específicos do Dashboard Mensal
+   ==================================================================== */
+
+.section-icon {
+    font-size: 1.1rem;
+    margin-right: 0.4rem;
+    opacity: 0.85;
+}
+
+.card-title-row {
+    display: flex;
+    align-items: center;
+}
+
+/* Tabelas de categoria */
+.category-table td {
+    padding-top: 0.65rem;
+    padding-bottom: 0.65rem;
+}
+
+.category-table .category-name {
+    color: var(--cor-texto-principal);
+    font-weight: 500;
+}
+
+.value-pill {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 999px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.value-pill-positive {
+    background-color: rgba(0, 179, 126, 0.15);
+    color: var(--cor-positivo);
+}
+
+.value-pill-negative {
+    background-color: rgba(247, 90, 104, 0.15);
+    color: var(--cor-negativo);
+}
+
+.category-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* Empty state */
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 0;
+    color: var(--cor-texto-mutado);
+    text-align: center;
+}
+
+.empty-state i {
+    font-size: 1.8rem;
+    margin-bottom: 0.5rem;
+    opacity: 0.5;
+}
+
+/* Botão filtrar com leve destaque */
+.btn-filtrar {
+    background-color: var(--cor-positivo);
+    border-color: var(--cor-positivo);
+    font-weight: 600;
+    transition: all 0.2s ease-in-out;
+}
+
+.btn-filtrar:hover {
+    background-color: #00996c;
+    border-color: #00996c;
+    transform: translateY(-1px);
+}
