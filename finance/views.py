@@ -6,6 +6,8 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user_model
 from .models import *
 from .analytics import *
+from datetime import date, datetime
+from dateutil.relativedelta import relativedelta
 
 
 ProfileUser = get_user_model() # Substituir o User
@@ -139,14 +141,7 @@ def registrar_category(request):
     if referer:
         return redirect(referer)
     return redirect('finance:inicio')
-    
-@login_required(login_url="/finance/login/")
-def receitas_by_params(request):
-    if request.method == "GET":
-        referer = request.META.get('HTTP_REFERER')
-        if referer:
-            return redirect(referer)
-        return redirect('finance:inicio')
+
     
 @login_required(login_url="/finance/login/")
 def gastos_by_params(request):
@@ -433,3 +428,42 @@ def accounts_categories(request):
                     }
 
     return render(request, 'finance/accounts_categories.html', user_context)
+
+@login_required(login_url="/finance/login")
+def dashboard_mensal(request):
+    today = date.today()
+    user = request.user
+
+    if request.method == "POST":
+        selected_month = request.POST.get("selected_month")
+        compare_month = request.POST.get("compare_month")
+    else:
+        selected_month = today.strftime("%Y-%m")
+        compare_month = (today - relativedelta(months=1)).strftime("%Y-%m")
+
+    selected_ref = datetime.strptime(selected_month, "%Y-%m")
+    compare_ref = datetime.strptime(compare_month, "%Y-%m")
+        
+    receitas_selected = Transaction.objects.filter(user=user, type="R", date__year=selected_ref.year, date__month=selected_ref.month)
+    gastos_selected = Transaction.objects.filter(user=user, type="G", date__year=selected_ref.year, date__month=selected_ref.month)
+
+    
+    receitas_compare = Transaction.objects.filter(user=user, type="R", date__year=compare_ref.year, date__month=compare_ref.month)
+    gastos_compare = Transaction.objects.filter(user=user, type="G", date__year=compare_ref.year, date__month=compare_ref.month)
+    
+    accounts = Account.objects.filter(user=user)
+    categories_receita = Category.objects.filter(user=user, type="R")
+    categories_gastos = Category.objects.filter(user=user, type="G")
+
+    user_context = {"selected_month":selected_month,
+                    "compare_month":compare_month,
+                    "receitas_selected":receitas_selected,
+                    "gastos_selected": gastos_selected,
+                    "receitas_compare":receitas_compare,
+                    "gastos_compare":gastos_compare,
+                    "accounts":accounts,
+                    "categories_receita":categories_receita,
+                    "categories_gastos":categories_gastos
+                    }
+
+    return render(request, 'finance/dashboard_mensal.html', user_context)

@@ -19,5 +19,6 @@ urlpatterns = [
     path('delete-account/', views.delete_account, name="delete_account"),
     path('delete-category/', views.delete_category, name="delete_category"),
     path('update-account', views.update_account, name="update_account"),
-    path('update-category', views.update_category, name="update_category")
+    path('update-category', views.update_category, name="update_category"),
+    path('dashboard-mensal', views.dashboard_mensal, name="dashboard_mensal")
 ]

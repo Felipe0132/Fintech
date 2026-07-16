@@ -25,7 +25,7 @@
             <p class="sidebar-title">Menu</p>
             <ul class="nav flex-column gap-1">
                 <li class="nav-item">
-                    <a class="nav-link active" href="{% url 'finance:inicio' %}">inicio</a>
+                    <a class="nav-link" href="{% url 'finance:inicio' %}">Inicio</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'finance:gastos_by_params' %}">Visao dos Gastos</a>
@@ -34,7 +34,10 @@
                     <a class="nav-link" href="{% url 'finance:receitas_by_params' %}">Visao das Receitas</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{% url 'finance:accounts_categories' %}">Contas e Categorias</a>
+                    <a class="nav-link active" href="{% url 'finance:accounts_categories' %}">Categorias</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'finance:dashboard_mensal' %}">Dashboard mensal</a>
                 </li>
             </ul>
         </aside>
