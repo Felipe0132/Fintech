@@ -15,4 +15,5 @@ urlpatterns = [
     path('gastos-by-params', views.gastos_by_params, name="gastos_by_params"),
     path('update-transiction', views.update_transiction, name="update_transiction"),
     path('delete-transiction', views.delete_transiction, name="delete_transiction"),
+    path('accounts-categories/', views.accounts_categories, name="accounts_categories")
 ]

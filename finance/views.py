@@ -328,3 +328,8 @@ def delete_transiction(request):
     if referer:
         return redirect(referer)
     return redirect('finance:inicio')
+
+@login_required(login_url="/finance/login")
+def accounts_categories(request):
+
+    return render(request, 'finance/accounts_categories.html')
