@@ -65,16 +65,16 @@ def inicio(request):
     saldo_imaginario = saldo_atual - sum_by_value(gastos_not_paid)
 
     user_context = {"gastos":gastos.order_by('-id')[:5],            
-    "receitas":receitas.order_by('-id')[:5], 
-    "total_gastos":total_gastos, 
-    "total_receitas":total_receitas, 
-    "saldo_atual":saldo_atual, 
-    "categories_receita":categories_receita, 
-    "categories_gasto":categories_gasto, 
-    "accounts":accounts, 
-    "gastos_not_paid":gastos_not_paid.order_by('-id')[:5], 
-    "saldo_imaginario":saldo_imaginario
-    }
+                    "receitas":receitas.order_by('-id')[:5], 
+                    "total_gastos":total_gastos, 
+                    "total_receitas":total_receitas, 
+                    "saldo_atual":saldo_atual, 
+                    "categories_receita":categories_receita, 
+                    "categories_gasto":categories_gasto, 
+                    "accounts":accounts, 
+                    "gastos_not_paid":gastos_not_paid.order_by('-id')[:5], 
+                    "saldo_imaginario":saldo_imaginario
+                    }
 
     return render(request, "finance/inicio.html", context=user_context)
 
@@ -329,7 +329,107 @@ def delete_transiction(request):
         return redirect(referer)
     return redirect('finance:inicio')
 
+@login_required(login_url="/finance/login/")
+def delete_account(request):
+    if request.method == "GET":
+        referer = request.META.get('HTTP_REFERER')
+        if referer:
+            return redirect(referer)
+        return redirect('finance:inicio')
+    
+    user = request.user
+
+    account = get_object_or_404(Account, id=request.POST.get('account_id'), user=user)
+    account.delete()
+
+    referer = request.META.get('HTTP_REFERER')
+    if referer:
+        return redirect(referer)
+    return redirect('finance:inicio')
+
+@login_required(login_url="/finance/login/")
+def delete_category(request):
+    if request.method == "GET":
+        referer = request.META.get('HTTP_REFERER')
+        if referer:
+            return redirect(referer)
+        return redirect('finance:inicio')
+    
+    user = request.user
+
+    category = get_object_or_404(Category, id=request.POST.get('category_id'), user=user)
+    category.delete()
+
+    referer = request.META.get('HTTP_REFERER')
+    if referer:
+        return redirect(referer)
+    return redirect('finance:inicio')
+
+@login_required(login_url="/finance/login/")    
+def update_account(request):
+    if request.method == "GET":
+        referer = request.META.get('HTTP_REFERER')
+        if referer:
+            return redirect(referer)
+        return redirect('finance:inicio')
+    
+    user = request.user
+    
+    account_to_update = get_object_or_404(Account, id=request.POST.get('account_id'), user=user)
+
+    name = request.POST.get('name')
+
+    if name:
+        account_to_update.name = name
+
+    account_to_update.save()
+
+    referer = request.META.get('HTTP_REFERER')
+    if referer:
+        return redirect(referer)
+    return redirect('finance:inicio')
+
+@login_required(login_url="/finance/login/")    
+def update_category(request):
+    if request.method == "GET":
+        referer = request.META.get('HTTP_REFERER')
+        if referer:
+            return redirect(referer)
+        return redirect('finance:inicio')
+    
+    user = request.user
+    
+    category_to_update = get_object_or_404(Category, id=request.POST.get('category_id'), user=user)
+
+    name = request.POST.get('name')
+
+    if name:
+        category_to_update.name = name
+
+    category_to_update.save()
+
+    referer = request.META.get('HTTP_REFERER')
+    if referer:
+        return redirect(referer)
+    return redirect('finance:inicio')
+
+
 @login_required(login_url="/finance/login")
 def accounts_categories(request):
 
-    return render(request, 'finance/accounts_categories.html')
+    user = request.user
+
+    accounts = Account.objects.filter(user=user)
+
+    categories = Category.objects.filter(user=user)
+
+    categories_receita = categories.filter(type="R")
+    categories_gasto = categories.filter( type="G")
+
+    user_context = {"categories":categories,
+                    "categories_receita":categories_receita, 
+                    "categories_gasto":categories_gasto, 
+                    "accounts":accounts,
+                    }
+
+    return render(request, 'finance/accounts_categories.html', user_context)

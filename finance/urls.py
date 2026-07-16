@@ -15,5 +15,9 @@ urlpatterns = [
     path('gastos-by-params', views.gastos_by_params, name="gastos_by_params"),
     path('update-transiction', views.update_transiction, name="update_transiction"),
     path('delete-transiction', views.delete_transiction, name="delete_transiction"),
-    path('accounts-categories/', views.accounts_categories, name="accounts_categories")
+    path('accounts-categories/', views.accounts_categories, name="accounts_categories"),
+    path('delete-account/', views.delete_account, name="delete_account"),
+    path('delete-category/', views.delete_category, name="delete_category"),
+    path('update-account', views.update_account, name="update_account"),
+    path('update-category', views.update_category, name="update_category")
 ]
