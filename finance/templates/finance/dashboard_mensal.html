@@ -51,31 +51,35 @@
                 </div>
             </nav>
 
-            <div class="container-fluid py-5 px-4">
-                <!-- Formulário de busca -->
-                <div class="card card-dark p-4 mb-4">
-                    <h5 class="mb-3 text-title">Dashboard Mensal</h5>
+            <div class="card card-dark p-4 mb-4">
+                <h5 class="mb-3 text-title">Dashboard Mensal</h5>
 
-                    <form method="POST" action="{% url 'finance:dashboard_mensal' %}">
-                        {% csrf_token %}
+                <form method="POST" action="{% url 'finance:dashboard_mensal' %}">
+                    {% csrf_token %}
 
-                        <div class="row g-3">
-                            <div class="col-5 col-md-2">
-                                <label for="selected_month" class="form-label text-label">Selecione um mes</label>
-                                <input type="month" class="form-control bg-dark text-white border-secondary"
-                                    id="selected_month" name="selected_month" value="{{ selected_month }}">
-                            </div>
-
-                            <div class="col-5 col-md-2">
-                                <label for="compare_month" class="form-label text-label">Selecione um mes para
-                                    comparar</label>
-                                <input type="month" class="form-control bg-dark text-white border-secondary"
-                                    id="compare_month" name="compare_month" value="{{ compare_month }}"
-                                    max="{{ selected_month }}">
-                            </div>
+                    <div class="row g-3 align-items-end">
+                        <div class="col-5 col-md-2">
+                            <label for="selected_month" class="form-label text-label">Selecione um mes</label>
+                            <input type="month" class="form-control bg-dark text-white border-secondary"
+                                id="selected_month" name="selected_month" value="{{ selected_month }}">
                         </div>
-                    </form>
-                </div>
+
+                        <div class="col-5 col-md-2">
+                            <label for="compare_month" class="form-label text-label">Selecione um mes para
+                                comparar</label>
+                            <input type="month" class="form-control bg-dark text-white border-secondary"
+                                id="compare_month" name="compare_month" value="{{ compare_month }}"
+                                max="{{ selected_month }}">
+                        </div>
+
+                        <div class="col-auto">
+                            <button type="submit" class="btn btn-primary px-4">
+                                <i class="bi bi-search me-1"></i> Filtrar
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
 
                 <!-- Receitas e Gastos lado a lado -->
                 <div class="row g-4">
@@ -208,7 +212,7 @@
                                             {% for categoria, total in value_by_category_receitas_selected.items %}
                                             <tr>
                                                 <td>{{ categoria }}</td>
-                                                <td>R$ {{ total|floatformat:2 }}</td>
+                                                <td class="text-positive">R$ {{ total|floatformat:2 }}</td>
                                             </tr>
                                             {% endfor %}
                                         </tbody>

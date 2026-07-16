@@ -114,7 +114,15 @@ def registrar_transiction(request):
 
     category_id = request.POST.get('category') # Do html recebe so o id, ai o Django entende linkando so o category_id
 
+    if not category_id:
+        category_default, _ = Category.objects.get_or_create(name="Padrao", type=type, user=request.user)
+        category_id = category_default.id
+
     account_id = request.POST.get('account')
+
+    if not account_id:
+        account_default, _ = Account.objects.get_or_create(name="Padrao", user=request.user)
+        account_id = account_default.id
 
     Transaction.objects.create(value=value, type=type, description=description, date=date, is_paid=is_paid, category_id=category_id if category_id else None, account_id=account_id, user=request.user)
 
@@ -457,17 +465,20 @@ def dashboard_mensal(request):
     value_by_category_receita_selected = sum_by_category(receitas_selected)
     value_by_category_gastos_selected = sum_by_category(gastos_selected)
 
+    value_by_category_receita_compare = sum_by_category(receitas_compare)
+    value_by_category_gastos_compare = sum_by_category(gastos_compare)
+
     user_context = {"selected_month":selected_month,
                     "compare_month":compare_month,
                     "receitas_selected":receitas_selected,
                     "gastos_selected": gastos_selected,
-                    "receitas_compare":receitas_compare,
-                    "gastos_compare":gastos_compare,
                     "accounts":accounts,
                     "categories_receita":categories_receita,
                     "categories_gastos":categories_gastos,
-                    "value_by_category_receita_selected":value_by_category_receita_selected,
-                    "value_by_category_gastos_selected":value_by_category_gastos_selected
+                    "value_by_category_receitas_selected":value_by_category_receita_selected,
+                    "value_by_category_gastos_selected":value_by_category_gastos_selected,
+                    "value_by_category_receitas_compare":value_by_category_receita_compare,
+                    "value_by_category_gastos_compare":value_by_category_gastos_compare,
                     }
 
     return render(request, 'finance/dashboard_mensal.html', user_context)
