@@ -66,6 +66,8 @@ def inicio(request):
 
     saldo_imaginario = saldo_atual - sum_by_value(gastos_not_paid)
 
+    total_account = total_by_account(Transaction.objects.filter(user=user))
+
     user_context = {"gastos":gastos.order_by('-id')[:5],            
                     "receitas":receitas.order_by('-id')[:5], 
                     "total_gastos":total_gastos, 
@@ -75,7 +77,8 @@ def inicio(request):
                     "categories_gasto":categories_gasto, 
                     "accounts":accounts, 
                     "gastos_not_paid":gastos_not_paid.order_by('-id')[:5], 
-                    "saldo_imaginario":saldo_imaginario
+                    "saldo_imaginario":saldo_imaginario,
+                    "total_account":total_account
                     }
 
     return render(request, "finance/inicio.html", context=user_context)
@@ -479,6 +482,11 @@ def dashboard_mensal(request):
 
     saldo_imaginario = saldo_atual - total_gastos_not_paid
 
+    receitas_account = sum_by_account(receitas_selected)
+    gastos_account = sum_by_account(gastos_selected)
+
+    total_account = total_by_account(Transaction.objects.filter(user=user, date__year=selected_ref.year, date__month=selected_ref.month))
+
     user_context = {"selected_month":selected_month,
                     "compare_month":compare_month,
                     "receitas_selected":receitas_selected,
@@ -493,7 +501,10 @@ def dashboard_mensal(request):
                     "total_gastos":total_gastos,
                     "saldo_atual":saldo_atual,
                     "total_gastos_not_paid":total_gastos_not_paid,
-                    "saldo_imaginario":saldo_imaginario
+                    "saldo_imaginario":saldo_imaginario,
+                    "receitas_account":receitas_account,
+                    "gastos_account":gastos_account,
+                    "total_account":total_account
                     }
 
     return render(request, 'finance/dashboard_mensal.html', user_context)

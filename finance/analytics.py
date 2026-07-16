@@ -23,3 +23,25 @@ def sum_by_category(transactions):
 
     resultado = df.groupby('category__name')['value'].sum()
     return resultado.to_dict()
+
+def sum_by_account(transactions):
+    transactions = transactions.values('account__name', 'value')
+    df = pd.DataFrame(list(transactions))
+
+    if df.empty:
+        return {}
+
+    resultado = df.groupby('account__name')['value'].sum()
+    return resultado.to_dict()
+
+def total_by_account(transactions):
+    transactions = transactions.values('account__name', 'value', 'type')
+    df = pd.DataFrame(list(transactions))
+
+    df.loc[df["type"]=="G", "value"] = df["value"] * -1
+
+    if df.empty:
+        return {}
+
+    resultado = df.groupby('account__name')['value'].sum()
+    return resultado.to_dict()
