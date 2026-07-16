@@ -51,58 +51,285 @@
             </nav>
 
             <div class="container-fluid py-5 px-4">
+                <div class="row g-4 mb-4">
+                    <div class="col-12 col-md-3">
+                        <div class="card card-dark p-4 h-100">
+                            <span class="text-label mb-2">Total de gastos</span>
+                            <span class="summary-value text-negative">R$ {{ total_gastos }}</span>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-3">
+                        <div class="card card-dark p-4 h-100">
+                            <span class="text-label mb-2">Total de gastos nao pago</span>
+                            <span class="summary-value text-warning">R$ {{ total_gastos_not_paid }}</span>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-3">
+                        <div class="card card-dark p-4 h-100">
+                            <span class="text-label mb-2">Saldo</span>
+                            {% if saldo_atual > 0 %}
+                            <span class="summary-value text-positive">R$ {{ saldo_atual }}</span>
+                            {% elif 0 > saldo_atual %}
+                            <span class="summary-value text-negative">R$ {{ saldo_atual }}</span>
+                            {% else %}
+                            <span class="summary-value text-warning">R$ {{ saldo_atual }}</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-3">
+                        <div class="card card-dark p-4 h-100">
+                            <span class="text-label mb-2">Saldo imaginário (atual - não pagos)</span>
+                            <span class="summary-value text-warning">R$ {{ saldo_imaginario }}</span>
+                        </div>
+                    </div>
+                </div>
 
-                <!-- Formulário de busca -->
-                <div class="card card-dark p-4 mb-4">
-                    <h5 class="mb-3 text-title">Consultar Gastos</h5>
+                <div class="container-fluid py-5 px-4">
 
-                    <form method="POST" action="{% url 'finance:gastos_by_params' %}">
-                        {% csrf_token %}
+                    <!-- Formulário de busca -->
+                    <div class="card card-dark p-4 mb-4">
+                        <h5 class="mb-3 text-title">Consultar Gastos</h5>
 
-                        <div class="row g-3">
-                            <div class="col-12 col-md-4">
-                                <label for="description_search" class="form-label text-label">Descrição</label>
+                        <form method="POST" action="{% url 'finance:gastos_by_params' %}">
+                            {% csrf_token %}
+
+                            <div class="row g-3">
+                                <div class="col-12 col-md-4">
+                                    <label for="description_search" class="form-label text-label">Descrição</label>
+                                    <input type="text" class="form-control bg-dark text-white border-secondary"
+                                        id="description_search" name="description_search" placeholder="Ex: Mercado">
+                                </div>
+
+                                <div class="col-5 col-md-2">
+                                    <label for="date_start" class="form-label text-label">De</label>
+                                    <input type="date" class="form-control bg-dark text-white border-secondary"
+                                        id="date_start" name="date_start">
+                                </div>
+
+                                <div class="col-5 col-md-2">
+                                    <label for="date_end" class="form-label text-label">Até</label>
+                                    <input type="date" class="form-control bg-dark text-white border-secondary"
+                                        id="date_end" name="date_end">
+                                </div>
+
+                                <div class="col-5 col-md-2">
+                                    <label for="value" class="form-label text-label">Valor</label>
+                                    <input type="number" step="0.01" min="0"
+                                        class="form-control bg-dark text-white border-secondary" id="value" name="value"
+                                        placeholder="0,00">
+                                </div>
+
+                                <div class="col-5 col-md-2">
+                                    <label for="type" class="form-label text-label">Categoria</label>
+                                    <select class="form-select bg-dark text-white border-secondary" id="type"
+                                        name="type">
+                                        <option value="" selected disabled>Selecione uma opção</option>
+                                        {% for category in categories %}
+                                        <option value="{{ category.id }}">{{ category.name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+
+                                <div class="col-5 col-md-2">
+                                    <label for="is_paid" class="form-label text-label">Status</label>
+                                    <select class="form-select bg-dark text-white border-secondary" id="is_paid"
+                                        name="is_paid">
+                                        <option value="">Todos</option>
+                                        <option value="True">Pago</option>
+                                        <option value="False">Não pago</option>
+                                    </select>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="account" class="form-label text-label">Conta</label>
+                                    <select class="form-select bg-dark text-white border-secondary" id="account"
+                                        name="account">
+                                        <option value="" selected disabled>Selecione uma opção</option>
+                                        {% for account in accounts %}
+                                        <option value="{{ account.id }}">{{ account.name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="mt-3">
+                                <button type="submit" class="btn btn-add-ganho">Buscar</button>
+                            </div>
+                        </form>
+
+                        <div class="p-3 pt-0 mt-auto">
+                            <button type="button" class="btn btn-primary btn-add-gasto w-100 text-center"
+                                data-bs-toggle="modal" data-bs-target="#modalgasto">
+                                + Adicionar Gasto
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Lista de resultados -->
+                    <div class="card card-dark p-4">
+                        <h5 class="mb-3 text-title">Resultados</h5>
+
+                        {% if gastos_consultados %}
+                        <div class="table-responsive table-scroll-container">
+                            <table class="table table-dark-custom mb-0 table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Descrição</th>
+                                        <th>Valor</th>
+                                        <th>Data</th>
+                                        <th>Status</th>
+                                        <th>Categoria</th>
+                                        <th>Conta</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for transaction in gastos_consultados %}
+                                    <tr data-bs-toggle="modal" data-bs-target="#detalhe-{{ transaction.id }}"
+                                        style="cursor: pointer;">
+                                        <td>{{ transaction.description }}</td>
+                                        <td class="text-negative">R$ {{ transaction.value }}</td>
+                                        <td>{{ transaction.date_paid }}</td>
+                                        <td>
+                                            {% if transaction.is_paid %}
+                                            <span class="text-positive">Pago</span>
+                                            {% else %}
+                                            <span class="text-warning">Não pago</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ transaction.category }}</td>
+                                        <td>{{ transaction.account }}</td>
+                                        <td>
+                                            <button type="button" class="btn btn-sm btn-outline-danger"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#confirmar-delete-{{ transaction.id }}">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        {% else %}
+                        <p class="text-label mb-0">Nenhum gasto encontrado.</p>
+                        {% endif %}
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== MODAIS ==================== -->
+
+        <div class="modal fade" id="modalAccount" tabindex="-1" aria-labelledby="modalAccount" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="modalAccount">Nova Conta</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form action="{% url 'finance:registrar_account' %}" method="post">
+                            {% csrf_token %}
+
+                            <div class="mb-3">
+                                <label for="name" class="form-label text-label">Nome da conta</label>
+                                <input type="text" class="form-control bg-dark text-white border-secondary" id="name"
+                                    name="name" placeholder="Ex: Lazer, Saúde" required>
+                            </div>
+                            <div class="modal-footer border-secondary">
+                                <button type="button" class="btn btn-secondary"
+                                    data-bs-dismiss="modal">Cancelar</button>
+                                <button type="submit" class="btn btn-primary">Salvar conta</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="modalCategorieGasto" tabindex="-1" aria-labelledby="modalCategorieGastoLabel"
+            aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="modalCategorieGastoLabel">Nova Categoria de Gasto</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form action="{% url 'finance:registrar_category' %}" method="post">
+                            {% csrf_token %}
+
+                            <input type="hidden" name="type" value="G">
+                            <div class="mb-3">
+                                <label for="name" class="form-label text-label">Nome da categoria</label>
+                                <input type="text" class="form-control bg-dark text-white border-secondary" id="name"
+                                    name="name" placeholder="Ex: Lazer, Saúde" required>
+                            </div>
+                            <div class="modal-footer border-secondary">
+                                <button type="button" class="btn btn-secondary"
+                                    data-bs-dismiss="modal">Cancelar</button>
+                                <button type="submit" class="btn btn-primary">Salvar Categoria</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modais dos gastos -->
+        {% for gasto in gastos_consultados %}
+        <div class="modal fade" id="modalgasto" tabindex="-1" aria-labelledby="modalgastoLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="modalgastoLabel">Novo gasto</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form action="{% url 'finance:registrar_transiction' %}" method="post">
+                            {% csrf_token %}
+
+                            <input type="hidden" name="type" value="G">
+                            <div class="mb-3">
+                                <label for="description" class="form-label text-label">Descrição</label>
                                 <input type="text" class="form-control bg-dark text-white border-secondary"
-                                    id="description_search" name="description_search" placeholder="Ex: Mercado">
+                                    id="description" name="description" placeholder="Ex: Mercado, Aluguel" required>
                             </div>
 
-                            <div class="col-5 col-md-2">
-                                <label for="date_start" class="form-label text-label">De</label>
-                                <input type="date" class="form-control bg-dark text-white border-secondary"
-                                    id="date_start" name="date_start">
-                            </div>
-
-                            <div class="col-5 col-md-2">
-                                <label for="date_end" class="form-label text-label">Até</label>
-                                <input type="date" class="form-control bg-dark text-white border-secondary"
-                                    id="date_end" name="date_end">
-                            </div>
-
-                            <div class="col-5 col-md-2">
-                                <label for="value" class="form-label text-label">Valor</label>
+                            <div class="mb-3">
+                                <label for="value" class="form-label text-label">Valor (R$)</label>
                                 <input type="number" step="0.01" min="0"
                                     class="form-control bg-dark text-white border-secondary" id="value" name="value"
-                                    placeholder="0,00">
+                                    placeholder="0,00" required>
                             </div>
 
-                            <div class="col-5 col-md-2">
-                                <label for="type" class="form-label text-label">Categoria</label>
-                                <select class="form-select bg-dark text-white border-secondary" id="type" name="type">
+                            <div class="mb-3">
+                                <label for="date_paid" class="form-label text-label">Data</label>
+                                <input type="date" class="form-control bg-dark text-white border-secondary"
+                                    id="date_paid" name="date_paid" value="{% now 'Y-m-d' %}">
+                            </div>
+
+                            <div class="mb-3 form-check">
+                                <input type="checkbox" class="form-check-input" id="is_paid" name="is_paid" value="True"
+                                    checked>
+                                <label class="form-check-label text-label" for="is_paid">Já foi pago / recebido</label>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="category" class="form-label text-label">Categoria</label>
+                                <select class="form-select bg-dark text-white border-secondary" id="category"
+                                    name="category">
                                     <option value="" selected disabled>Selecione uma opção</option>
                                     {% for category in categories %}
                                     <option value="{{ category.id }}">{{ category.name }}</option>
                                     {% endfor %}
                                 </select>
-                            </div>
 
-                            <div class="col-5 col-md-2">
-                                <label for="is_paid" class="form-label text-label">Status</label>
-                                <select class="form-select bg-dark text-white border-secondary" id="is_paid"
-                                    name="is_paid">
-                                    <option value="">Todos</option>
-                                    <option value="True">Pago</option>
-                                    <option value="False">Não pago</option>
-                                </select>
+                                <button type="button" class="btn btn-link btn-sm mt-1 p-0" data-bs-toggle="modal"
+                                    data-bs-target="#modalCategorieGasto">
+                                    + Adicionar Categoria
+                                </button>
                             </div>
 
                             <div class="mb-3">
@@ -114,324 +341,137 @@
                                     <option value="{{ account.id }}">{{ account.name }}</option>
                                     {% endfor %}
                                 </select>
+
+                                <button type="button" class="btn btn-link btn-sm mt-1 p-0" data-bs-toggle="modal"
+                                    data-bs-target="#modalAccount">
+                                    + Adicionar Conta
+                                </button>
                             </div>
-                        </div>
 
-                        <div class="mt-3">
-                            <button type="submit" class="btn btn-add-ganho">Buscar</button>
-                        </div>
-                    </form>
-
-                    <div class="p-3 pt-0 mt-auto">
-                        <button type="button" class="btn btn-primary btn-add-gasto w-100 text-center"
-                            data-bs-toggle="modal" data-bs-target="#modalgasto">
-                            + Adicionar Gasto
-                        </button>
+                            <div class="modal-footer border-secondary">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                <button type="submit" class="btn btn-primary">Salvar gasto</button>
+                            </div>
+                        </form>
                     </div>
                 </div>
+            </div>
+        </div>
+        {% endfor %}
 
-                <!-- Lista de resultados -->
-                <div class="card card-dark p-4">
-                    <h5 class="mb-3 text-title">Resultados</h5>
-
-                    {% if gastos_consultados %}
-                    <div class="table-responsive table-scroll-container">
-                        <table class="table table-dark-custom mb-0 table-hover">
-                            <thead>
-                                <tr>
-                                    <th>Descrição</th>
-                                    <th>Valor</th>
-                                    <th>Data</th>
-                                    <th>Status</th>
-                                    <th>Categoria</th>
-                                    <th>Conta</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for transaction in gastos_consultados %}
-                                <tr data-bs-toggle="modal" data-bs-target="#detalhe-{{ transaction.id }}"
-                                    style="cursor: pointer;">
-                                    <td>{{ transaction.description }}</td>
-                                    <td class="text-negative">R$ {{ transaction.value }}</td>
-                                    <td>{{ transaction.date_paid }}</td>
-                                    <td>
-                                        {% if transaction.is_paid %}
-                                        <span class="text-positive">Pago</span>
-                                        {% else %}
-                                        <span class="text-warning">Não pago</span>
-                                        {% endif %}
-                                    </td>
-                                    <td>{{ transaction.category }}</td>
-                                    <td>{{ transaction.account }}</td>
-                                    <td>
-                                        <button type="button" class="btn btn-sm btn-outline-danger"
-                                            data-bs-toggle="modal"
-                                            data-bs-target="#confirmar-delete-{{ transaction.id }}">
-                                            <i class="bi bi-trash"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
+        {% for transaction in gastos_consultados %}
+        <div class="modal fade" id="detalhe-{{ transaction.id }}" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="modalGastoLabel-{{ transaction.id }}">Atualizar Gasto</h1>
+                        <p>Se deixar vazio, nao ira atualizar o campo</p>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
-                    {% else %}
-                    <p class="text-label mb-0">Nenhum gasto encontrado.</p>
-                    {% endif %}
-                </div>
+                    <div class="modal-body">
+                        <form action="{% url 'finance:update_transiction' %}" method="post">
+                            {% csrf_token %}
 
-            </div>
-        </div>
-    </div>
+                            <input type="hidden" name="transaction_id" value="{{ transaction.id }}">
+                            <input type="hidden" name="type" value="G">
+                            <div class="mb-3">
+                                <label for="description" class="form-label text-label">Descrição</label>
+                                <input type="text" class="form-control bg-dark text-white border-secondary"
+                                    id="description" name="description" placeholder="Ex: Mercado, Aluguel">
+                            </div>
 
-    <!-- ==================== MODAIS ==================== -->
+                            <div class="mb-3">
+                                <label for="value" class="form-label text-label">Valor (R$)</label>
+                                <input type="number" step="0.01" min="0"
+                                    class="form-control bg-dark text-white border-secondary" id="value" name="value"
+                                    placeholder="0,00">
+                            </div>
 
-    <div class="modal fade" id="modalAccount" tabindex="-1" aria-labelledby="modalAccount" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="modalAccount">Nova Conta</h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form action="{% url 'finance:registrar_account' %}" method="post">
-                        {% csrf_token %}
+                            <div class="mb-3">
+                                <label for="date_paid" class="form-label text-label">Data</label>
+                                <input type="date" class="form-control bg-dark text-white border-secondary"
+                                    id="date_paid" name="date_paid">
+                            </div>
 
-                        <div class="mb-3">
-                            <label for="name" class="form-label text-label">Nome da conta</label>
-                            <input type="text" class="form-control bg-dark text-white border-secondary" id="name"
-                                name="name" placeholder="Ex: Lazer, Saúde" required>
-                        </div>
-                        <div class="modal-footer border-secondary">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                            <button type="submit" class="btn btn-primary">Salvar conta</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
+                            <div class="mb-3 form-check">
+                                <input type="checkbox" class="form-check-input" id="is_paid" name="is_paid" value="True"
+                                    checked>
+                                <label class="form-check-label text-label" for="is_paid">Já foi pago / recebido</label>
+                            </div>
 
-    <div class="modal fade" id="modalCategorieGasto" tabindex="-1" aria-labelledby="modalCategorieGastoLabel"
-        aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="modalCategorieGastoLabel">Nova Categoria de Gasto</h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form action="{% url 'finance:registrar_category' %}" method="post">
-                        {% csrf_token %}
+                            <div class="mb-3">
+                                <label for="category" class="form-label text-label">Categoria</label>
+                                <select class="form-select bg-dark text-white border-secondary" id="category"
+                                    name="category">
+                                    <option value="" selected disabled>Selecione uma opção</option>
+                                    {% for category in categories %}
+                                    <option value="{{ category.id }}">{{ category.name }}</option>
+                                    {% endfor %}
+                                </select>
 
-                        <input type="hidden" name="type" value="G">
-                        <div class="mb-3">
-                            <label for="name" class="form-label text-label">Nome da categoria</label>
-                            <input type="text" class="form-control bg-dark text-white border-secondary" id="name"
-                                name="name" placeholder="Ex: Lazer, Saúde" required>
-                        </div>
-                        <div class="modal-footer border-secondary">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                            <button type="submit" class="btn btn-primary">Salvar Categoria</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
+                                <button type="button" class="btn btn-link btn-sm mt-1 p-0" data-bs-toggle="modal"
+                                    data-bs-target="#modalCategorieGasto">
+                                    + Adicionar Categoria
+                                </button>
+                            </div>
 
-    <!-- Modais dos gastos -->
-    {% for gasto in gastos_consultados %}
-    <div class="modal fade" id="modalgasto" tabindex="-1" aria-labelledby="modalgastoLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="modalgastoLabel">Novo gasto</h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form action="{% url 'finance:registrar_transiction' %}" method="post">
-                        {% csrf_token %}
+                            <div class="mb-3">
+                                <label for="account" class="form-label text-label">Conta</label>
+                                <select class="form-select bg-dark text-white border-secondary" id="account"
+                                    name="account">
+                                    <option value="" selected disabled>Selecione uma opção</option>
+                                    {% for account in accounts %}
+                                    <option value="{{ account.id }}">{{ account.name }}</option>
+                                    {% endfor %}
+                                </select>
 
-                        <input type="hidden" name="type" value="G">
-                        <div class="mb-3">
-                            <label for="description" class="form-label text-label">Descrição</label>
-                            <input type="text" class="form-control bg-dark text-white border-secondary" id="description"
-                                name="description" placeholder="Ex: Mercado, Aluguel" required>
-                        </div>
+                                <button type="button" class="btn btn-link btn-sm mt-1 p-0" data-bs-toggle="modal"
+                                    data-bs-target="#modalAccount">
+                                    + Adicionar Conta
+                                </button>
+                            </div>
 
-                        <div class="mb-3">
-                            <label for="value" class="form-label text-label">Valor (R$)</label>
-                            <input type="number" step="0.01" min="0"
-                                class="form-control bg-dark text-white border-secondary" id="value" name="value"
-                                placeholder="0,00" required>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="date_paid" class="form-label text-label">Data</label>
-                            <input type="date" class="form-control bg-dark text-white border-secondary" id="date_paid"
-                                name="date_paid" value="{% now 'Y-m-d' %}">
-                        </div>
-
-                        <div class="mb-3 form-check">
-                            <input type="checkbox" class="form-check-input" id="is_paid" name="is_paid" value="True"
-                                checked>
-                            <label class="form-check-label text-label" for="is_paid">Já foi pago / recebido</label>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="category" class="form-label text-label">Categoria</label>
-                            <select class="form-select bg-dark text-white border-secondary" id="category"
-                                name="category">
-                                <option value="" selected disabled>Selecione uma opção</option>
-                                {% for category in categories %}
-                                <option value="{{ category.id }}">{{ category.name }}</option>
-                                {% endfor %}
-                            </select>
-
-                            <button type="button" class="btn btn-link btn-sm mt-1 p-0" data-bs-toggle="modal"
-                                data-bs-target="#modalCategorieGasto">
-                                + Adicionar Categoria
-                            </button>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="account" class="form-label text-label">Conta</label>
-                            <select class="form-select bg-dark text-white border-secondary" id="account" name="account">
-                                <option value="" selected disabled>Selecione uma opção</option>
-                                {% for account in accounts %}
-                                <option value="{{ account.id }}">{{ account.name }}</option>
-                                {% endfor %}
-                            </select>
-
-                            <button type="button" class="btn btn-link btn-sm mt-1 p-0" data-bs-toggle="modal"
-                                data-bs-target="#modalAccount">
-                                + Adicionar Conta
-                            </button>
-                        </div>
-
-                        <div class="modal-footer border-secondary">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                            <button type="submit" class="btn btn-primary">Salvar gasto</button>
-                        </div>
-                    </form>
+                            <div class="modal-footer border-secondary">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                <button type="submit" class="btn btn-primary">Salvar gasto</button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-    {% endfor %}
+        {% endfor %}
 
-    {% for transaction in gastos_consultados %}
-    <div class="modal fade" id="detalhe-{{ transaction.id }}" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="modalGastoLabel-{{ transaction.id }}">Atualizar Gasto</h1>
-                    <p>Se deixar vazio, nao ira atualizar o campo</p>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form action="{% url 'finance:update_transiction' %}" method="post">
-                        {% csrf_token %}
+        {% for transaction in gastos_consultados %}
+        <div class="modal fade" id="confirmar-delete-{{ transaction.id }}" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Confirmar exclusão</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        Tem certeza que deseja excluir o ganho <strong>"{{ transaction.description }}"</strong>? Essa
+                        ação
+                        não
+                        pode ser desfeita.
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <form action="{% url 'finance:delete_transiction' %}" method="post" class="d-inline">
+                            {% csrf_token %}
 
-                        <input type="hidden" name="transaction_id" value="{{ transaction.id }}">
-                        <input type="hidden" name="type" value="G">
-                        <div class="mb-3">
-                            <label for="description" class="form-label text-label">Descrição</label>
-                            <input type="text" class="form-control bg-dark text-white border-secondary" id="description"
-                                name="description" placeholder="Ex: Mercado, Aluguel">
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="value" class="form-label text-label">Valor (R$)</label>
-                            <input type="number" step="0.01" min="0"
-                                class="form-control bg-dark text-white border-secondary" id="value" name="value"
-                                placeholder="0,00">
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="date_paid" class="form-label text-label">Data</label>
-                            <input type="date" class="form-control bg-dark text-white border-secondary" id="date_paid"
-                                name="date_paid">
-                        </div>
-
-                        <div class="mb-3 form-check">
-                            <input type="checkbox" class="form-check-input" id="is_paid" name="is_paid" value="True"
-                                checked>
-                            <label class="form-check-label text-label" for="is_paid">Já foi pago / recebido</label>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="category" class="form-label text-label">Categoria</label>
-                            <select class="form-select bg-dark text-white border-secondary" id="category"
-                                name="category">
-                                <option value="" selected disabled>Selecione uma opção</option>
-                                {% for category in categories %}
-                                <option value="{{ category.id }}">{{ category.name }}</option>
-                                {% endfor %}
-                            </select>
-
-                            <button type="button" class="btn btn-link btn-sm mt-1 p-0" data-bs-toggle="modal"
-                                data-bs-target="#modalCategorieGasto">
-                                + Adicionar Categoria
-                            </button>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="account" class="form-label text-label">Conta</label>
-                            <select class="form-select bg-dark text-white border-secondary" id="account" name="account">
-                                <option value="" selected disabled>Selecione uma opção</option>
-                                {% for account in accounts %}
-                                <option value="{{ account.id }}">{{ account.name }}</option>
-                                {% endfor %}
-                            </select>
-
-                            <button type="button" class="btn btn-link btn-sm mt-1 p-0" data-bs-toggle="modal"
-                                data-bs-target="#modalAccount">
-                                + Adicionar Conta
-                            </button>
-                        </div>
-
-                        <div class="modal-footer border-secondary">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                            <button type="submit" class="btn btn-primary">Salvar gasto</button>
-                        </div>
-                    </form>
+                            <input type="hidden" name="transaction_id" value="{{ transaction.id }}">
+                            <input type="hidden" name="type" value="G">
+                            <button type="submit" class="btn btn-danger">Excluir</button>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-    {% endfor %}
+        {% endfor %}
 
-    {% for transaction in gastos_consultados %}
-    <div class="modal fade" id="confirmar-delete-{{ transaction.id }}" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Confirmar exclusão</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    Tem certeza que deseja excluir o ganho <strong>"{{ transaction.description }}"</strong>? Essa ação
-                    não
-                    pode ser desfeita.
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <form action="{% url 'finance:delete_transiction' %}" method="post" class="d-inline">
-                        {% csrf_token %}
-
-                        <input type="hidden" name="transaction_id" value="{{ transaction.id }}">
-                        <input type="hidden" name="type" value="G">
-                        <button type="submit" class="btn btn-danger">Excluir</button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-    {% endfor %}
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 
 </html>

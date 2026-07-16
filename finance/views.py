@@ -64,13 +64,16 @@ def inicio(request):
 
     saldo_imaginario = saldo_atual - sum_by_value(gastos_not_paid)
 
-    user_context = {"gastos":gastos.order_by('-id')[:5],            "receitas":receitas.order_by('-id')[:5], 
+    user_context = {"gastos":gastos.order_by('-id')[:5],            
+    "receitas":receitas.order_by('-id')[:5], 
     "total_gastos":total_gastos, 
     "total_receitas":total_receitas, 
     "saldo_atual":saldo_atual, 
-    "categories_receita":categories_receita, "categories_gasto":categories_gasto, 
+    "categories_receita":categories_receita, 
+    "categories_gasto":categories_gasto, 
     "accounts":accounts, 
-    "gastos_not_paid":gastos_not_paid, "saldo_imaginario":saldo_imaginario
+    "gastos_not_paid":gastos_not_paid.order_by('-id')[:5], 
+    "saldo_imaginario":saldo_imaginario
     }
 
     return render(request, "finance/inicio.html", context=user_context)
@@ -186,7 +189,28 @@ def gastos_by_params(request):
     categories = Category.objects.filter(user=user, type="G")
     accounts = Account.objects.filter(user=user)
 
-    context = {"gastos_consultados":gastos_consultados.order_by('-date'), "categories":categories, "accounts":accounts}
+    receitas = Transaction.objects.filter(user=user, type="R")
+    gastos = Transaction.objects.filter(user=user, type="G", is_paid=True)
+
+    total_receitas = sum_by_value(receitas)
+    total_gastos = sum_by_value(gastos)
+
+    saldo_atual = total_receitas - total_gastos
+
+    gastos_not_paid = Transaction.objects.filter(user=user, type="G", is_paid=False)
+
+    total_gastos_not_paid = sum_by_value(gastos_not_paid)
+
+    saldo_imaginario = saldo_atual - total_gastos_not_paid
+
+    context = {"gastos_consultados":gastos_consultados.order_by('-date'), 
+               "categories":categories, 
+               "accounts":accounts,
+               "total_gastos":total_gastos,
+               "saldo_atual":saldo_atual,
+               "total_gastos_not_paid":total_gastos_not_paid,
+               "saldo_imaginario":saldo_imaginario
+               }
 
     return render(request, 'finance/gastos.html', context=context)    
 
@@ -224,7 +248,27 @@ def receitas_by_params(request):
     categories = Category.objects.filter(user=user, type="R")
     accounts = Account.objects.filter(user=user)
 
-    context = {"receita_consultados":receita_consultados.order_by('-date'), "categories":categories, "accounts":accounts}
+    receitas = Transaction.objects.filter(user=user, type="R")
+    gastos = Transaction.objects.filter(user=user, type="G", is_paid=True)
+
+    total_receitas = sum_by_value(receitas)
+    total_gastos = sum_by_value(gastos)
+
+    saldo_atual = total_receitas - total_gastos
+
+    gastos_not_paid = Transaction.objects.filter(user=user, type="G", is_paid=False)
+
+    total_gastos_not_paid = sum_by_value(gastos_not_paid)
+
+    saldo_imaginario = saldo_atual - total_gastos_not_paid
+
+    context = {"receita_consultados":receita_consultados.order_by('-date'), 
+               "categories":categories, 
+               "accounts":accounts,
+               "total_receitas":total_receitas,
+               "saldo_atual":saldo_atual,
+               "saldo_imaginario":saldo_imaginario
+               }
 
     return render(request, 'finance/receita.html', context=context)   
     

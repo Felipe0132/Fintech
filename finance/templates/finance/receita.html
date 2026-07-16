@@ -52,6 +52,33 @@
 
             <div class="container-fluid py-5 px-4">
 
+                <div class="row g-4 mb-4">
+                    <div class="col-12 col-md-3">
+                        <div class="card card-dark p-4 h-100">
+                            <span class="text-label mb-2">Total de receita</span>
+                            <span class="summary-value text-positive">R$ {{ total_receitas }}</span>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-3">
+                        <div class="card card-dark p-4 h-100">
+                            <span class="text-label mb-2">Saldo</span>
+                            {% if saldo_atual > 0 %}
+                            <span class="summary-value text-positive">R$ {{ saldo_atual }}</span>
+                            {% elif 0 > saldo_atual %}
+                            <span class="summary-value text-negative">R$ {{ saldo_atual }}</span>
+                            {% else %}
+                            <span class="summary-value text-warning">R$ {{ saldo_atual }}</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-3">
+                        <div class="card card-dark p-4 h-100">
+                            <span class="text-label mb-2">Saldo imaginário (atual - não pagos)</span>
+                            <span class="summary-value text-warning">R$ {{ saldo_imaginario }}</span>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Formulário de busca -->
                 <div class="card card-dark p-4 mb-4">
                     <h5 class="mb-3 text-title">Consultar Receitas</h5>
