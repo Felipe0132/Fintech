@@ -328,39 +328,3 @@ def delete_transiction(request):
     if referer:
         return redirect(referer)
     return redirect('finance:inicio')
-
-@login_required(login_url="/finance/login/")
-def delete_ganho(request):
-    user = request.user
-
-    if request.method == "GET":
-            referer = request.META.get('HTTP_REFERER')
-            if referer:
-                return redirect(referer)
-            return redirect('finance:inicio')
-    
-    ganho = get_object_or_404(Ganho, id=request.POST.get('ganho_id'), user=user)
-    ganho.delete()
-
-    referer = request.META.get('HTTP_REFERER')
-    if referer:
-        return redirect(referer)
-    return redirect('finance:inicio')
-
-@login_required(login_url="/finance/login/")
-def delete_gasto(request):
-    user = request.user
-
-    if request.method == "GET":
-            referer = request.META.get('HTTP_REFERER')
-            if referer:
-                return redirect(referer)
-            return redirect('finance:inicio')
-    
-    gasto = get_object_or_404(Gasto, id=request.POST.get('gasto_id'), user=user)
-    gasto.delete()
-
-    referer = request.META.get('HTTP_REFERER')
-    if referer:
-        return redirect(referer)
-    return redirect('finance:inicio')
