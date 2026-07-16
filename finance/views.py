@@ -314,9 +314,8 @@ def delete_transiction(request):
         return redirect('finance:inicio')
     
     user = request.user
-    type_id = request.POST.get('type')
 
-    transaction = get_object_or_404(Transaction, id=request.POST.get('transaction_id'), user=user, type=type_id)
+    transaction = get_object_or_404(Transaction, id=request.POST.get('transaction_id'), user=user)
     transaction.delete()
 
     referer = request.META.get('HTTP_REFERER')
@@ -455,6 +454,9 @@ def dashboard_mensal(request):
     categories_receita = Category.objects.filter(user=user, type="R")
     categories_gastos = Category.objects.filter(user=user, type="G")
 
+    value_by_category_receita_selected = sum_by_category(receitas_selected)
+    value_by_category_gastos_selected = sum_by_category(gastos_selected)
+
     user_context = {"selected_month":selected_month,
                     "compare_month":compare_month,
                     "receitas_selected":receitas_selected,
@@ -463,7 +465,9 @@ def dashboard_mensal(request):
                     "gastos_compare":gastos_compare,
                     "accounts":accounts,
                     "categories_receita":categories_receita,
-                    "categories_gastos":categories_gastos
+                    "categories_gastos":categories_gastos,
+                    "value_by_category_receita_selected":value_by_category_receita_selected,
+                    "value_by_category_gastos_selected":value_by_category_gastos_selected
                     }
 
     return render(request, 'finance/dashboard_mensal.html', user_context)
