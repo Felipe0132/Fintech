@@ -1,459 +1,271 @@
+{% extends 'finance/base.html' %}
 {% load static %}
 
-<!DOCTYPE html>
-<html lang="pt-br">
+{% block title %}Receitas{% endblock %}
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Receitas - Gestão Financeira</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
-    <link rel="stylesheet" href="../../static/style/gastos.css">
-    <link rel="stylesheet" href="../../static/style/default.css">
-</head>
+{% block active_receitas %}active{% endblock %}
 
-<body class="bg-custom">
+{% block content %}
+<div class="row g-4 mb-4">
+    <div class="col-12 col-md-3">
+        <div class="card card-dark p-4 h-100">
+            <span class="text-label mb-2">Total de receitas</span>
+            <span class="summary-value text-positive">R$ {{ total_receitas }}</span>
+        </div>
+    </div>
+    <div class="col-12 col-md-3">
+        <div class="card card-dark p-4 h-100">
+            <span class="text-label mb-2">Saldo</span>
+            {% if saldo_atual > 0 %}
+            <span class="summary-value text-positive">R$ {{ saldo_atual }}</span>
+            {% elif 0 > saldo_atual %}
+            <span class="summary-value text-negative">R$ {{ saldo_atual }}</span>
+            {% else %}
+            <span class="summary-value text-warning">R$ {{ saldo_atual }}</span>
+            {% endif %}
+        </div>
+    </div>
+    <div class="col-12 col-md-3">
+        <div class="card card-dark p-4 h-100">
+            <span class="text-label mb-2">Saldo imaginário (atual - não pagos)</span>
+            <span class="summary-value text-warning">R$ {{ saldo_imaginario }}</span>
+        </div>
+    </div>
+</div>
 
-    <div class="global d-flex">
+<!-- Formulário de busca -->
+<div class="card card-dark p-4 mb-4">
+    <h5 class="mb-3 text-title">Consultar Receitas</h5>
 
-        <!-- Sidebar fixa -->
-        <aside class="sidebar-fixed">
-            <div class="d-flex align-items-center gap-2 mb-4">
-                <img src="{% static 'assets/images/logo.png' %}" alt="Logo" height="36">
+    <form method="POST" action="{% url 'finance:receitas_by_params' %}">
+        {% csrf_token %}
+
+        <div class="row g-3">
+            <div class="col-12 col-md-4">
+                <label for="description_search" class="form-label text-label">Descrição</label>
+                <input type="text" class="form-control bg-dark text-white border-secondary"
+                    id="description_search" name="description_search" placeholder="Ex: Salário">
             </div>
 
-            <p class="sidebar-title">Menu</p>
-            <ul class="nav flex-column gap-1">
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'finance:inicio' %}">Inicio</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'finance:gastos_by_params' %}">Visao dos Gastos</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link active" href="{% url 'finance:receitas_by_params' %}">Visao das Receitas</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'finance:accounts_categories' %}">Categorias</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'finance:dashboard_mensal' %}">Dashboard mensal</a>
-                </li>
-            </ul>
-        </aside>
+            <div class="col-5 col-md-2">
+                <label for="date_start" class="form-label text-label">De</label>
+                <input type="date" class="form-control bg-dark text-white border-secondary"
+                    id="date_start" name="date_start">
+            </div>
 
-        <!-- Conteúdo principal -->
-        <div class="main-content flex-grow-1">
+            <div class="col-5 col-md-2">
+                <label for="date_end" class="form-label text-label">Até</label>
+                <input type="date" class="form-control bg-dark text-white border-secondary"
+                    id="date_end" name="date_end">
+            </div>
 
-            <nav class="navbar navbar-dash px-4 py-2">
-                <div class="container-fluid justify-content-end">
-                    <span class="text-user me-3">Olá, {{ request.user.username }}</span>
-                    <a href="#" class="btn btn-logout btn-sm">Logout</a>
-                </div>
-            </nav>
+            <div class="col-5 col-md-2">
+                <label for="value" class="form-label text-label">Valor</label>
+                <input type="number" step="0.01" min="0"
+                    class="form-control bg-dark text-white border-secondary" id="value" name="value"
+                    placeholder="0,00">
+            </div>
 
-            <div class="container-fluid py-5 px-4">
+            <div class="col-5 col-md-2">
+                <label for="category_id" class="form-label text-label">Categoria</label>
+                <select class="form-select bg-dark text-white border-secondary" id="category_id" name="category">
+                    <option value="" selected disabled>Selecione uma opção</option>
+                    {% for category in categories %}
+                    <option value="{{ category.id }}">{{ category.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
 
-                <div class="row g-4 mb-4">
-                    <div class="col-12 col-md-3">
-                        <div class="card card-dark p-4 h-100">
-                            <span class="text-label mb-2">Total de receita</span>
-                            <span class="summary-value text-positive">R$ {{ total_receitas }}</span>
-                        </div>
+            <div class="col-5 col-md-2">
+                <label for="account" class="form-label text-label">Conta</label>
+                <select class="form-select bg-dark text-white border-secondary" id="account" name="account">
+                    <option value="" selected disabled>Selecione uma opção</option>
+                    {% for account in accounts %}
+                    <option value="{{ account.id }}">{{ account.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+
+        <div class="mt-3 d-flex justify-content-between align-items-center">
+            <button type="submit" class="btn btn-filtrar">Buscar</button>
+            <button type="button" class="btn btn-primary btn-add-receita" data-bs-toggle="modal" data-bs-target="#modalreceita">
+                + Adicionar Receita
+            </button>
+        </div>
+    </form>
+</div>
+
+<!-- Lista de resultados -->
+<div class="card card-dark p-4">
+    <h5 class="mb-3 text-title">Resultados</h5>
+
+    {% if receita_consultados %}
+    <div class="table-responsive table-scroll-container">
+        <table class="table table-dark-custom mb-0 table-hover">
+            <thead>
+                <tr>
+                    <th onclick="ordenarTabela(0)" style="cursor:pointer">Descrição <i class="bi bi-arrow-down-up"></i></th>
+                    <th onclick="ordenarTabela(1)" style="cursor:pointer">Valor <i class="bi bi-arrow-down-up"></i></th>
+                    <th onclick="ordenarTabela(2)" style="cursor:pointer">Data <i class="bi bi-arrow-down-up"></i></th>
+                    <th onclick="ordenarTabela(3)" style="cursor:pointer">Categoria <i class="bi bi-arrow-down-up"></i></th>
+                    <th onclick="ordenarTabela(4)" style="cursor:pointer">Conta <i class="bi bi-arrow-down-up"></i></th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for transaction in receita_consultados %}
+                <tr>
+                    <td onclick="abrirDetalheModal('{{ transaction.id }}')" style="cursor: pointer;">{{ transaction.description }}</td>
+                    <td onclick="abrirDetalheModal('{{ transaction.id }}')" style="cursor: pointer;" class="text-positive" data-sort="{{ transaction.value }}">R$ {{ transaction.value }}</td>
+                    <td onclick="abrirDetalheModal('{{ transaction.id }}')" style="cursor: pointer;" data-sort="{{ transaction.date|date:'Y-m-d' }}">{{ transaction.date }}</td>
+                    <td onclick="abrirDetalheModal('{{ transaction.id }}')" style="cursor: pointer;">{{ transaction.category }}</td>
+                    <td onclick="abrirDetalheModal('{{ transaction.id }}')" style="cursor: pointer;">{{ transaction.account }}</td>
+                    <td>
+                        <button type="button" class="btn btn-sm btn-outline-danger"
+                            data-bs-toggle="modal"
+                            data-bs-target="#confirmar-delete-{{ transaction.id }}">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <p class="text-label mb-0">Nenhuma receita encontrada.</p>
+    {% endif %}
+</div>
+
+<!-- Modais locais de loop (detalhes e confirmação de exclusão) -->
+{% for transaction in receita_consultados %}
+<div class="modal fade" id="detalhe-{{ transaction.id }}" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content bg-dark text-white border-secondary">
+            <div class="modal-header border-secondary">
+                <h1 class="modal-title fs-5 text-title" id="modalReceitaLabel-{{ transaction.id }}">Atualizar Receita</h1>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form action="{% url 'finance:update_transiction' %}" method="post">
+                    {% csrf_token %}
+
+                    <input type="hidden" name="transaction_id" value="{{ transaction.id }}">
+                    <input type="hidden" name="type" value="R">
+                    
+                    <div class="mb-3">
+                        <label for="desc-{{ transaction.id }}" class="form-label text-label">Descrição</label>
+                        <input type="text" class="form-control bg-dark text-white border-secondary"
+                            id="desc-{{ transaction.id }}" name="description" value="{{ transaction.description }}" placeholder="Descrição">
                     </div>
-                    <div class="col-12 col-md-3">
-                        <div class="card card-dark p-4 h-100">
-                            <span class="text-label mb-2">Saldo</span>
-                            {% if saldo_atual > 0 %}
-                            <span class="summary-value text-positive">R$ {{ saldo_atual }}</span>
-                            {% elif 0 > saldo_atual %}
-                            <span class="summary-value text-negative">R$ {{ saldo_atual }}</span>
-                            {% else %}
-                            <span class="summary-value text-warning">R$ {{ saldo_atual }}</span>
-                            {% endif %}
-                        </div>
+
+                    <div class="mb-3">
+                        <label for="val-{{ transaction.id }}" class="form-label text-label">Valor (R$)</label>
+                        <input type="number" step="0.01" min="0"
+                            class="form-control bg-dark text-white border-secondary" id="val-{{ transaction.id }}" name="value"
+                            value="{{ transaction.value|stringformat:'.2f' }}" placeholder="0,00">
                     </div>
-                    <div class="col-12 col-md-3">
-                        <div class="card card-dark p-4 h-100">
-                            <span class="text-label mb-2">Saldo imaginário (atual - não pagos)</span>
-                            <span class="summary-value text-warning">R$ {{ saldo_imaginario }}</span>
-                        </div>
+
+                    <div class="mb-3">
+                        <label for="date-{{ transaction.id }}" class="form-label text-label">Data</label>
+                        <input type="date" class="form-control bg-dark text-white border-secondary"
+                            id="date-{{ transaction.id }}" name="date_paid" value="{{ transaction.date|date:'Y-m-d' }}">
                     </div>
-                </div>
 
-                <!-- Formulário de busca -->
-                <div class="card card-dark p-4 mb-4">
-                    <h5 class="mb-3 text-title">Consultar Receitas</h5>
-
-                    <form method="POST" action="{% url 'finance:receitas_by_params' %}">
-                        {% csrf_token %}
-
-                        <div class="row g-3">
-                            <div class="col-12 col-md-4">
-                                <label for="description_search" class="form-label text-label">Descrição</label>
-                                <input type="text" class="form-control bg-dark text-white border-secondary"
-                                    id="description_search" name="description_search" placeholder="Ex: Salário">
-                            </div>
-
-                            <div class="col-5 col-md-2">
-                                <label for="date_start" class="form-label text-label">De</label>
-                                <input type="date" class="form-control bg-dark text-white border-secondary"
-                                    id="date_start" name="date_start">
-                            </div>
-
-                            <div class="col-5 col-md-2">
-                                <label for="date_end" class="form-label text-label">Até</label>
-                                <input type="date" class="form-control bg-dark text-white border-secondary"
-                                    id="date_end" name="date_end">
-                            </div>
-
-                            <div class="col-5 col-md-2">
-                                <label for="value" class="form-label text-label">Valor</label>
-                                <input type="number" step="0.01" min="0"
-                                    class="form-control bg-dark text-white border-secondary" id="value" name="value"
-                                    placeholder="0,00">
-                            </div>
-
-                            <div class="col-5 col-md-2">
-                                <label for="category" class="form-label text-label">Categoria</label>
-                                <select class="form-select bg-dark text-white border-secondary" id="category"
-                                    name="category">
-                                    <option value="" selected disabled>Selecione uma opção</option>
-                                    {% for category in categories %}
-                                    <option value="{{ category.id }}">{{ category.name }}</option>
-                                    {% endfor %}
-                                </select>
-                            </div>
-
-                            <div class="mb-3">
-                                <label for="account" class="form-label text-label">Conta</label>
-                                <select class="form-select bg-dark text-white border-secondary" id="account"
-                                    name="account">
-                                    <option value="" selected disabled>Selecione uma opção</option>
-                                    {% for account in accounts %}
-                                    <option value="{{ account.id }}">{{ account.name }}</option>
-                                    {% endfor %}
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="mt-3 d-flex justify-content-between align-items-center">
-                            <button type="submit" class="btn btn-add-ganho">Buscar</button>
-                            <button type="button" class="btn btn-primary btn-add-ganho" data-bs-toggle="modal"
-                                data-bs-target="#modalreceita">
-                                + Adicionar Receita
-                            </button>
-                        </div>
-                    </form>
-                </div>
-
-                <!-- Lista de resultados -->
-                <div class="card card-dark p-4">
-                    <h5 class="mb-3 text-title">Resultados</h5>
-
-                    {% if receita_consultados %}
-                    <div class="table-responsive table-scroll-container">
-                        <table class="table table-dark-custom mb-0 table-hover">
-                            <thead>
-                                <tr>
-                                    <th onclick="ordenarTabela(0)" style="cursor:pointer">Descrição <i class="bi bi-arrow-down-up"></i></th>
-                                    <th onclick="ordenarTabela(1)" style="cursor:pointer">Valor <i class="bi bi-arrow-down-up"></i></th>
-                                    <th onclick="ordenarTabela(2)" style="cursor:pointer">Data <i class="bi bi-arrow-down-up"></i></th>
-                                    <th onclick="ordenarTabela(4)" style="cursor:pointer">Categoria <i class="bi bi-arrow-down-up"></i></th>
-                                    <th onclick="ordenarTabela(5)" style="cursor:pointer">Conta <i class="bi bi-arrow-down-up"></i></th>
-                                    <th></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for transaction in receita_consultados %}
-                                <tr data-bs-toggle="modal" data-bs-target="#detalhe-{{ transaction.id }}"
-                                    style="cursor: pointer;">
-                                    <td>{{ transaction.description }}</td>
-                                    <td class="text-positive" data-sort="{{ transaction.value }}">R$ {{ transaction.value }}</td>
-                                    <td data-sort="{{ transaction.date|date:'Y-m-d' }}">{{ transaction.date }}</td>
-                                    <td>{{ transaction.category }}</td>
-                                    <td>{{ transaction.account }}</td>
-                                    <td>
-                                        <button type="button" class="btn btn-sm btn-outline-danger"
-                                            data-bs-toggle="modal"
-                                            data-bs-target="#confirmar-delete-{{ transaction.id }}">
-                                            <i class="bi bi-trash"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
+                    <div class="mb-3">
+                        <label for="cat-{{ transaction.id }}" class="form-label text-label">Categoria</label>
+                        <select class="form-select bg-dark text-white border-secondary" id="cat-{{ transaction.id }}" name="category">
+                            <option value="" disabled>Selecione uma opção</option>
+                            {% for category in categories %}
+                            <option value="{{ category.id }}" {% if transaction.category_id == category.id %}selected{% endif %}>{{ category.name }}</option>
+                            {% endfor %}
+                        </select>
+                        <button type="button" class="btn btn-link btn-sm mt-1 p-0 text-positive" data-bs-toggle="modal"
+                            data-bs-target="#modalCategorieReceita">
+                            + Adicionar Categoria
+                        </button>
                     </div>
-                    {% else %}
-                    <p class="text-label mb-0">Nenhuma receita encontrada.</p>
-                    {% endif %}
-                </div>
 
+                    <div class="mb-3">
+                        <label for="acc-{{ transaction.id }}" class="form-label text-label">Conta</label>
+                        <select class="form-select bg-dark text-white border-secondary" id="acc-{{ transaction.id }}" name="account">
+                            <option value="" disabled>Selecione uma opção</option>
+                            {% for account in accounts %}
+                            <option value="{{ account.id }}" {% if transaction.account_id == account.id %}selected{% endif %}>{{ account.name }}</option>
+                            {% endfor %}
+                        </select>
+                        <button type="button" class="btn btn-link btn-sm mt-1 p-0 text-positive" data-bs-toggle="modal"
+                            data-bs-target="#modalAccount">
+                            + Adicionar Conta
+                        </button>
+                    </div>
+
+                    <div class="modal-footer border-0 p-0 pt-3">
+                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Fechar</button>
+                        <button type="submit" class="btn btn-filtrar">Salvar Receita</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
+</div>
+{% endfor %}
 
-    <!-- ==================== MODAIS ==================== -->
-
-    <div class="modal fade" id="modalAccount" tabindex="-1" aria-labelledby="modalAccount" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="modalAccount">Nova Conta</h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form action="{% url 'finance:registrar_account' %}" method="post">
-                        {% csrf_token %}
-
-                        <div class="mb-3">
-                            <label for="name" class="form-label text-label">Nome da conta</label>
-                            <input type="text" class="form-control bg-dark text-white border-secondary" id="name"
-                                name="name" placeholder="Ex: Carteira, Banco" required>
-                        </div>
-                        <div class="modal-footer border-secondary">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                            <button type="submit" class="btn btn-primary">Salvar conta</button>
-                        </div>
-                    </form>
-                </div>
+{% for transaction in receita_consultados %}
+<div class="modal fade" id="confirmar-delete-{{ transaction.id }}" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content bg-dark text-white border-secondary">
+            <div class="modal-header border-secondary">
+                <h5 class="modal-title text-title">Confirmar exclusão</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Tem certeza que deseja excluir a receita <strong>"{{ transaction.description }}"</strong>? Essa ação não pode ser desfeita.
+            </div>
+            <div class="modal-footer border-0">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <form action="{% url 'finance:delete_transiction' %}" method="post" class="d-inline">
+                    {% csrf_token %}
+                    <input type="hidden" name="transaction_id" value="{{ transaction.id }}">
+                    <input type="hidden" name="type" value="R">
+                    <button type="submit" class="btn btn-danger">Excluir</button>
+                </form>
             </div>
         </div>
     </div>
+</div>
+{% endfor %}
+{% endblock %}
 
-    <div class="modal fade" id="modalCategorieReceita" tabindex="-1" aria-labelledby="modalCategorieReceitaLabel"
-        aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="modalCategorieReceitaLabel">Nova Categoria de Receita</h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form action="{% url 'finance:registrar_category' %}" method="post">
-                        {% csrf_token %}
+{% block extra_js %}
+<script>
+function abrirDetalheModal(id) {
+    const myModal = new bootstrap.Modal(document.getElementById('detalhe-' + id));
+    myModal.show();
+}
 
-                        <input type="hidden" name="type" value="R">
-                        <div class="mb-3">
-                            <label for="name" class="form-label text-label">Nome da categoria</label>
-                            <input type="text" class="form-control bg-dark text-white border-secondary" id="name"
-                                name="name" placeholder="Ex: Salário, Freelance" required>
-                        </div>
-                        <div class="modal-footer border-secondary">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                            <button type="submit" class="btn btn-primary">Salvar Categoria</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
+function ordenarTabela(colIndex) {
+    const table = document.querySelector('.table-dark-custom');
+    const tbody = table.querySelector('tbody');
+    const linhas = Array.from(tbody.querySelectorAll('tr'));
 
-    <!-- Modal de nova receita (fora do loop — não depende de transaction) -->
-    <div class="modal fade" id="modalreceita" tabindex="-1" aria-labelledby="modalreceitaLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="modalreceitaLabel">Nova receita</h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form action="{% url 'finance:registrar_transiction' %}" method="post">
-                        {% csrf_token %}
+    const th = table.querySelectorAll('th')[colIndex];
+    const asc = th.dataset.asc !== 'true';
+    table.querySelectorAll('th').forEach(h => h.dataset.asc = '');
+    th.dataset.asc = asc;
 
-                        <input type="hidden" name="type" value="R">
-                        <div class="mb-3">
-                            <label for="description" class="form-label text-label">Descrição</label>
-                            <input type="text" class="form-control bg-dark text-white border-secondary" id="description"
-                                name="description" placeholder="Ex: Salário, Freelance" required>
-                        </div>
+    linhas.sort((a, b) => {
+        const va = a.children[colIndex].dataset.sort ?? a.children[colIndex].textContent.trim();
+        const vb = b.children[colIndex].dataset.sort ?? b.children[colIndex].textContent.trim();
+        const na = parseFloat(va), nb = parseFloat(vb);
+        const cmp = !isNaN(na) && !isNaN(nb)
+            ? na - nb
+            : va.localeCompare(vb, 'pt-BR');
+        return asc ? cmp : -cmp;
+    });
 
-                        <div class="mb-3">
-                            <label for="value" class="form-label text-label">Valor (R$)</label>
-                            <input type="number" step="0.01" min="0"
-                                class="form-control bg-dark text-white border-secondary" id="value" name="value"
-                                placeholder="0,00" required>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="date_paid" class="form-label text-label">Data</label>
-                            <input type="date" class="form-control bg-dark text-white border-secondary" id="date_paid"
-                                name="date_paid" value="{% now 'Y-m-d' %}">
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="category" class="form-label text-label">Categoria</label>
-                            <select class="form-select bg-dark text-white border-secondary" id="category"
-                                name="category">
-                                <option value="" selected disabled>Selecione uma opção</option>
-                                {% for category in categories %}
-                                <option value="{{ category.id }}">{{ category.name }}</option>
-                                {% endfor %}
-                            </select>
-
-                            <button type="button" class="btn btn-link btn-sm mt-1 p-0" data-bs-toggle="modal"
-                                data-bs-target="#modalCategorieReceita">
-                                + Adicionar Categoria
-                            </button>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="account" class="form-label text-label">Conta</label>
-                            <select class="form-select bg-dark text-white border-secondary" id="account" name="account">
-                                <option value="" selected disabled>Selecione uma opção</option>
-                                {% for account in accounts %}
-                                <option value="{{ account.id }}">{{ account.name }}</option>
-                                {% endfor %}
-                            </select>
-
-                            <button type="button" class="btn btn-link btn-sm mt-1 p-0" data-bs-toggle="modal"
-                                data-bs-target="#modalAccount">
-                                + Adicionar Conta
-                            </button>
-                        </div>
-
-                        <div class="modal-footer border-secondary">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                            <button type="submit" class="btn btn-primary">Salvar receita</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    {% for transaction in receita_consultados %}
-    <div class="modal fade" id="detalhe-{{ transaction.id }}" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="modalReceitaLabel-{{ transaction.id }}">Atualizar Receita</h1>
-                    <p>Se deixar vazio, nao ira atualizar o campo</p>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form action="{% url 'finance:update_transiction' %}" method="post">
-                        {% csrf_token %}
-
-                        <input type="hidden" name="transaction_id" value="{{ transaction.id }}">
-                        <input type="hidden" name="type" value="R">
-                        <div class="mb-3">
-                            <label for="description" class="form-label text-label">Descrição</label>
-                            <input type="text" class="form-control bg-dark text-white border-secondary" id="description"
-                                name="description" placeholder="Ex: Salário, Freelance">
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="value" class="form-label text-label">Valor (R$)</label>
-                            <input type="number" step="0.01" min="0"
-                                class="form-control bg-dark text-white border-secondary" id="value" name="value"
-                                placeholder="0,00">
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="date_paid" class="form-label text-label">Data</label>
-                            <input type="date" class="form-control bg-dark text-white border-secondary" id="date_paid"
-                                name="date_paid">
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="category" class="form-label text-label">Categoria</label>
-                            <select class="form-select bg-dark text-white border-secondary" id="category"
-                                name="category">
-                                <option value="" selected disabled>Selecione uma opção</option>
-                                {% for category in categories %}
-                                <option value="{{ category.id }}">{{ category.name }}</option>
-                                {% endfor %}
-                            </select>
-
-                            <button type="button" class="btn btn-link btn-sm mt-1 p-0" data-bs-toggle="modal"
-                                data-bs-target="#modalCategorieReceita">
-                                + Adicionar Categoria
-                            </button>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="account" class="form-label text-label">Conta</label>
-                            <select class="form-select bg-dark text-white border-secondary" id="account" name="account">
-                                <option value="" selected disabled>Selecione uma opção</option>
-                                {% for account in accounts %}
-                                <option value="{{ account.id }}">{{ account.name }}</option>
-                                {% endfor %}
-                            </select>
-
-                            <button type="button" class="btn btn-link btn-sm mt-1 p-0" data-bs-toggle="modal"
-                                data-bs-target="#modalAccount">
-                                + Adicionar Conta
-                            </button>
-                        </div>
-
-                        <div class="modal-footer border-secondary">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                            <button type="submit" class="btn btn-primary">Salvar receita</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-    {% endfor %}
-
-    {% for transaction in receita_consultados %}
-    <div class="modal fade" id="confirmar-delete-{{ transaction.id }}" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Confirmar exclusão</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    Tem certeza que deseja excluir a receita <strong>"{{ transaction.description }}"</strong>? Essa ação
-                    não
-                    pode ser desfeita.
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <form action="{% url 'finance:delete_transiction' %}" method="post" class="d-inline">
-                        {% csrf_token %}
-
-                        <input type="hidden" name="transaction_id" value="{{ transaction.id }}">
-                        <input type="hidden" name="type" value="R">
-                        <button type="submit" class="btn btn-danger">Excluir</button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-    {% endfor %}
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
-    <script>
-        function ordenarTabela(colIndex) {
-            const table = document.querySelector('.table-dark-custom');
-            const tbody = table.querySelector('tbody');
-            const linhas = Array.from(tbody.querySelectorAll('tr'));
-
-            const th = table.querySelectorAll('th')[colIndex];
-            const asc = th.dataset.asc !== 'true';
-            table.querySelectorAll('th').forEach(h => h.dataset.asc = '');
-            th.dataset.asc = asc;
-
-            linhas.sort((a, b) => {
-                const va = a.children[colIndex].dataset.sort ?? a.children[colIndex].textContent.trim();
-                const vb = b.children[colIndex].dataset.sort ?? b.children[colIndex].textContent.trim();
-                const na = parseFloat(va), nb = parseFloat(vb);
-                const cmp = !isNaN(na) && !isNaN(nb)
-                    ? na - nb
-                    : va.localeCompare(vb, 'pt-BR');
-                return asc ? cmp : -cmp;
-            });
-
-            linhas.forEach(linha => tbody.appendChild(linha));
-        }
-    </script>
-</body>
-
-</html>
+    linhas.forEach(linha => tbody.appendChild(linha));
+}
+</script>
+{% endblock %}

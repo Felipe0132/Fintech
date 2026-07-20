@@ -1,0 +1,86 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Gestão Financeira{% endblock %} - FinaTech</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    
+    <!-- Custom Style -->
+    <link rel="stylesheet" href="{% static 'style/default.css' %}">
+    {% block extra_css %}{% endblock %}
+</head>
+<body class="bg-custom">
+
+    <div class="global d-flex">
+        <!-- Sidebar fixa -->
+        <aside class="sidebar-fixed">
+            <div class="d-flex align-items-center gap-2 mb-4 px-2">
+                <img src="{% static 'assets/images/logo.png' %}" alt="Logo" height="36">
+            </div>
+
+            <p class="sidebar-title">Menu</p>
+            <ul class="nav flex-column gap-1">
+                <li class="nav-item">
+                    <a class="nav-link {% block active_inicio %}{% endblock %}" href="{% url 'finance:inicio' %}">
+                        <i class="bi bi-house-door-fill"></i> Início
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {% block active_gastos %}{% endblock %}" href="{% url 'finance:gastos_by_params' %}">
+                        <i class="bi bi-graph-down-arrow"></i> Visão dos Gastos
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {% block active_receitas %}{% endblock %}" href="{% url 'finance:receitas_by_params' %}">
+                        <i class="bi bi-graph-up-arrow"></i> Visão das Receitas
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {% block active_categories %}{% endblock %}" href="{% url 'finance:accounts_categories' %}">
+                        <i class="bi bi-tags-fill"></i> Categorias
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {% block active_dashboard %}{% endblock %}" href="{% url 'finance:dashboard_mensal' %}">
+                        <i class="bi bi-calendar3"></i> Dashboard Mensal
+                    </a>
+                </li>
+            </ul>
+        </aside>
+
+        <!-- Conteúdo principal -->
+        <div class="main-content flex-grow-1">
+            <nav class="navbar navbar-dash px-4 py-2">
+                <div class="container-fluid justify-content-end align-items-center">
+                    <span class="text-user me-3">Olá, {{ request.user.username }}</span>
+                    <a href="{% url 'finance:login' %}" class="btn btn-logout btn-sm">Logout</a>
+                </div>
+            </nav>
+
+            <div class="container-fluid py-5 px-4">
+                {% block content %}
+                {% endblock %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Modais Globais Centralizados -->
+    {% include 'finance/includes/modals.html' %}
+
+    <!-- Bootstrap Bundle JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    {% block extra_js %}{% endblock %}
+</body>
+</html>
