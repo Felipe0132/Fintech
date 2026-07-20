@@ -52,7 +52,7 @@ def inicio(request):
     accounts = Account.objects.filter(user=user)
 
     receitas = Transaction.objects.filter(user=user, type="R")
-    gastos = Transaction.objects.filter(user=user, type="G", is_paid=True)
+    gastos = Transaction.objects.filter(user=user, type="G")
 
     categories_receita = Category.objects.filter(user=user, type="R")
     categories_gasto = Category.objects.filter(user=user, type="G")
@@ -62,9 +62,15 @@ def inicio(request):
 
     saldo_atual = total_receitas - total_gastos
 
-    gastos_not_paid = Transaction.objects.filter(user=user, type="G", is_paid=False)
+    gastos_not_paid = gastos.filter(is_paid=False, transaction_installment=None)
+
+    gastos_parcelados_aberto = gastos_not_paid.filter(transaction_installment__isnull=False)
+
+    gastos = gastos.filter(is_paid=True)
 
     saldo_imaginario = saldo_atual - sum_by_value(gastos_not_paid)
+
+    total_parcelado_aberto = sum_by_value(gastos_parcelados_aberto)
 
     total_account = total_by_account(Transaction.objects.filter(user=user))
 
@@ -77,7 +83,9 @@ def inicio(request):
                     "categories_gasto":categories_gasto, 
                     "accounts":accounts, 
                     "gastos_not_paid":gastos_not_paid.order_by('-id')[:5], 
+                    "gastos_parcelados":gastos_parcelados_aberto,
                     "saldo_imaginario":saldo_imaginario,
+                    "total_parcelado":total_parcelado_aberto,
                     "total_account":total_account
                     }
 
@@ -167,6 +175,7 @@ def gastos_by_params(request):
         category_id = request.POST.get('category')
         is_paid = request.POST.get('is_paid')
         account_id = request.POST.get('account')
+        is_installment = request.POST.get('installment')
 
         if description_search:
             gastos_consultados = gastos_consultados.filter(description__icontains=description_search)
@@ -192,6 +201,9 @@ def gastos_by_params(request):
         if account_id:
             gastos_consultados = gastos_consultados.filter(account_id=account_id)
 
+        if is_installment == "True":
+            gastos_consultados = gastos_consultados.filter(transaction_installment__isnull=False)
+
     categories = Category.objects.filter(user=user, type="G")
     accounts = Account.objects.filter(user=user)
 
@@ -205,7 +217,11 @@ def gastos_by_params(request):
 
     gastos_not_paid = Transaction.objects.filter(user=user, type="G", is_paid=False)
 
+    gastos_parcelados_aberto = Transaction.objects.filter(user=user, type="G", transaction_installment__isnull=False)
+
     total_gastos_not_paid = sum_by_value(gastos_not_paid)
+
+    total_parcelado_aberto = sum_by_value(gastos_parcelados_aberto)
 
     saldo_imaginario = saldo_atual - total_gastos_not_paid
 
@@ -215,7 +231,8 @@ def gastos_by_params(request):
                "total_gastos":total_gastos,
                "saldo_atual":saldo_atual,
                "total_gastos_not_paid":total_gastos_not_paid,
-               "saldo_imaginario":saldo_imaginario
+               "saldo_imaginario":saldo_imaginario,
+               "total_parcelado_aberto":total_parcelado_aberto,
                }
 
     return render(request, 'finance/gastos.html', context=context)    
@@ -476,9 +493,13 @@ def dashboard_mensal(request):
 
     saldo_atual = total_receitas - total_gastos
 
-    gastos_not_paid = Transaction.objects.filter(user=user, type="G", is_paid=False)
+    gastos_not_paid = Transaction.objects.filter(user=user, type="G", is_paid=False, transaction_installment__isnull=True)
+    gasto_parcelado = Transaction.objects.filter(user=user, type="G", transaction_installment__isnull=False)
+    gastos_parcelados_aberto = gasto_parcelado.filter(is_paid=False)
 
     total_gastos_not_paid = sum_by_value(gastos_not_paid)
+    total_parcelado =  sum_by_value(gasto_parcelado)
+    total_parcelado_aberto = sum_by_value(gastos_parcelados_aberto)
 
     saldo_imaginario = saldo_atual - total_gastos_not_paid
 
@@ -501,6 +522,8 @@ def dashboard_mensal(request):
                     "total_gastos":total_gastos,
                     "saldo_atual":saldo_atual,
                     "total_gastos_not_paid":total_gastos_not_paid,
+                    "total_parcelado":total_parcelado,
+                    "total_parcelado_aberto":total_parcelado_aberto,
                     "saldo_imaginario":saldo_imaginario,
                     "receitas_account":receitas_account,
                     "gastos_account":gastos_account,
