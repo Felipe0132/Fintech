@@ -118,7 +118,7 @@
                 <tr>
                     <td onclick="abrirDetalheModal('{{ transaction.id }}')" style="cursor: pointer;">{{ transaction.description }}</td>
                     <td onclick="abrirDetalheModal('{{ transaction.id }}')" style="cursor: pointer;" class="text-positive" data-sort="{{ transaction.value }}">R$ {{ transaction.value }}</td>
-                    <td onclick="abrirDetalheModal('{{ transaction.id }}')" style="cursor: pointer;" data-sort="{{ transaction.date|date:'Y-m-d' }}">{{ transaction.date }}</td>
+                    <td onclick="abrirDetalheModal('{{ transaction.id }}')" style="cursor: pointer;" data-sort="{{ transaction.date|date:'Ymd' }}">{{ transaction.date }}</td>
                     <td onclick="abrirDetalheModal('{{ transaction.id }}')" style="cursor: pointer;">{{ transaction.category }}</td>
                     <td onclick="abrirDetalheModal('{{ transaction.id }}')" style="cursor: pointer;">{{ transaction.account }}</td>
                     <td>
