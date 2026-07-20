@@ -36,6 +36,8 @@
                 <form action="{% url 'finance:registrar_transiction' %}" method="post">
                     {% csrf_token %}
                     <input type="hidden" name="type" value="G">
+                    <input type="hidden" id="gasto_tipo" name="gasto_tipo" value="comum">
+                    <input type="hidden" id="gasto_is_installment" name="is_installment" value="False">
                     
                     <div class="mb-3">
                         <label for="gasto_description" class="form-label text-label">Descrição</label>
@@ -43,21 +45,67 @@
                             name="description" placeholder="Ex: Supermercado, Gasolina" required>
                     </div>
 
-                    <div class="mb-3">
-                        <label for="gasto_value" class="form-label text-label">Valor (R$)</label>
-                        <input type="number" step="0.01" min="0" class="form-control bg-dark text-white border-secondary"
-                            id="gasto_value" name="value" placeholder="0,00" required>
-                    </div>
+                    <!-- Abas de Tipo de Gasto -->
+                    <ul class="nav nav-pills mb-3 justify-content-center" id="gastoTab" role="tablist">
+                        <li class="nav-item flex-grow-1 text-center" role="presentation">
+                            <button class="nav-link active w-100" id="normal-tab" data-bs-toggle="pill" data-bs-target="#normal-gasto-pane" type="button" role="tab" aria-controls="normal-gasto-pane" aria-selected="true">
+                                <i class="bi bi-wallet2 me-1"></i> Comum
+                            </button>
+                        </li>
+                        <li class="nav-item flex-grow-1 text-center" role="presentation">
+                            <button class="nav-link w-100" id="parcelado-tab" data-bs-toggle="pill" data-bs-target="#parcelado-gasto-pane" type="button" role="tab" aria-controls="parcelado-gasto-pane" aria-selected="false">
+                                <i class="bi bi-calendar-range me-1"></i> Parcelado
+                            </button>
+                        </li>
+                    </ul>
 
-                    <div class="mb-3">
-                        <label for="gasto_date" class="form-label text-label">Data</label>
-                        <input type="date" class="form-control bg-dark text-white border-secondary" id="gasto_date"
-                            name="date_paid" value="{% now 'Y-m-d' %}">
-                    </div>
+                    <div class="tab-content" id="gastoTabContent">
+                        <!-- Aba Gasto Comum -->
+                        <div class="tab-pane fade show active" id="normal-gasto-pane" role="tabpanel" aria-labelledby="normal-tab" tabindex="0">
+                            <div class="mb-3">
+                                <label for="gasto_value" class="form-label text-label">Valor (R$)</label>
+                                <input type="number" step="0.01" min="0" class="form-control bg-dark text-white border-secondary"
+                                    id="gasto_value" name="value" placeholder="0,00" required>
+                            </div>
 
-                    <div class="mb-3 form-check">
-                        <input type="checkbox" class="form-check-input" id="gasto_is_paid" name="is_paid" value="True" checked>
-                        <label class="form-check-label text-label" for="gasto_is_paid">Já foi pago</label>
+                            <div class="mb-3">
+                                <label for="gasto_date" class="form-label text-label">Data</label>
+                                <input type="date" class="form-control bg-dark text-white border-secondary" id="gasto_date"
+                                    name="date_paid" value="{% now 'Y-m-d' %}">
+                            </div>
+
+                            <div class="mb-3 form-check">
+                                <input type="checkbox" class="form-check-input" id="gasto_is_paid" name="is_paid" value="True" checked>
+                                <label class="form-check-label text-label" for="gasto_is_paid">Já foi pago</label>
+                            </div>
+                        </div>
+
+                        <!-- Aba Gasto Parcelado -->
+                        <div class="tab-pane fade" id="parcelado-gasto-pane" role="tabpanel" aria-labelledby="parcelado-tab" tabindex="0">
+                            <div class="mb-3">
+                                <label for="gasto_total_value" class="form-label text-label">Valor Total (R$)</label>
+                                <input type="number" step="0.01" min="0" class="form-control bg-dark text-white border-secondary"
+                                    id="gasto_total_value" name="total_value" placeholder="0,00">
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="gasto_installments_count" class="form-label text-label">Número de Parcelas</label>
+                                <input type="number" min="2" max="120" class="form-control bg-dark text-white border-secondary"
+                                    id="gasto_installments_count" name="installments_count" placeholder="Ex: 3">
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="gasto_first_date" class="form-label text-label">Data da 1ª Parcela</label>
+                                <input type="date" class="form-control bg-dark text-white border-secondary" id="gasto_first_date"
+                                    name="first_date" value="{% now 'Y-m-d' %}">
+                            </div>
+
+                            <!-- Campo Informativo (Auto-calculado) -->
+                            <div class="mb-3 p-3 bg-secondary bg-opacity-10 rounded border border-secondary border-opacity-50">
+                                <span class="text-label d-block mb-1 small">Valor estimado de cada parcela:</span>
+                                <h5 class="text-warning mb-0 font-monospace" id="gasto_installment_preview">R$ 0,00</h5>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="mb-3">
@@ -97,6 +145,75 @@
         </div>
     </div>
 </div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const tabNormal = document.getElementById('normal-tab');
+        const tabParcelado = document.getElementById('parcelado-tab');
+        const inputTipo = document.getElementById('gasto_tipo');
+        const inputIsInstallment = document.getElementById('gasto_is_installment');
+        
+        const inputVal = document.getElementById('gasto_value');
+        const inputTotalVal = document.getElementById('gasto_total_value');
+        const inputInstallments = document.getElementById('gasto_installments_count');
+        const inputFirstDate = document.getElementById('gasto_first_date');
+        const inputDate = document.getElementById('gasto_date');
+        const inputPaid = document.getElementById('gasto_is_paid');
+
+        // Toggle required attributes on tab switch
+        if (tabNormal && tabParcelado) {
+            tabNormal.addEventListener('shown.bs.tab', function () {
+                inputTipo.value = 'comum';
+                inputIsInstallment.value = 'False';
+                inputVal.required = true;
+                inputTotalVal.required = false;
+                inputInstallments.required = false;
+            });
+
+            tabParcelado.addEventListener('shown.bs.tab', function () {
+                inputTipo.value = 'parcelado';
+                inputIsInstallment.value = 'True';
+                inputVal.required = false;
+                inputTotalVal.required = true;
+                inputInstallments.required = true;
+            });
+        }
+
+        // Real-time calculation preview
+        function calculatePreview() {
+            const total = parseFloat(inputTotalVal.value) || 0;
+            const count = parseInt(inputInstallments.value) || 0;
+            const preview = document.getElementById('gasto_installment_preview');
+            if (total > 0 && count > 0) {
+                const installmentVal = (total / count).toFixed(2);
+                preview.textContent = 'R$ ' + parseFloat(installmentVal).toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + ' por parcela';
+            } else {
+                preview.textContent = 'R$ 0,00';
+            }
+        }
+
+        if (inputTotalVal && inputInstallments) {
+            inputTotalVal.addEventListener('input', calculatePreview);
+            inputInstallments.addEventListener('input', calculatePreview);
+        }
+
+        // Sync values on submit if parcelado
+        const formGasto = document.querySelector('#modalgasto form');
+        if (formGasto) {
+            formGasto.addEventListener('submit', function (e) {
+                if (inputTipo.value === 'parcelado') {
+                    const total = parseFloat(inputTotalVal.value) || 0;
+                    const count = parseInt(inputInstallments.value) || 1;
+                    
+                    // Simulate installment value for Django view to create standard first transaction
+                    inputVal.value = (total / count).toFixed(2);
+                    inputDate.value = inputFirstDate.value;
+                    inputPaid.checked = false; // Installment gasto starts unpaid by default
+                }
+            });
+        }
+    });
+</script>
 
 <!-- Modal: Nova Receita -->
 <div class="modal fade" id="modalreceita" tabindex="-1" aria-labelledby="modalreceitaLabel" aria-hidden="true">
@@ -161,7 +278,7 @@
 
                     <div class="modal-footer border-0 p-0 pt-3">
                         <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Fechar</button>
-                        <button type="submit" class="btn btn-filtrar">Salvar Receita</button>
+                        <button type="submit" class="btn btn-filtrar btn-add-receita">Salvar Receita</button>
                     </div>
                 </form>
             </div>

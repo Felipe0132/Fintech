@@ -438,3 +438,27 @@ body.bg-custom {
         padding-right: 0.5rem;
     }
 }
+
+/* Custom Nav Pills inside Modals */
+.modal .nav-pills {
+    background-color: #1f2937;
+    padding: 4px;
+    border-radius: 8px;
+    border: 1px solid var(--cor-border);
+}
+.modal .nav-pills .nav-link {
+    color: var(--cor-texto-secundario);
+    border-radius: 6px;
+    font-weight: 600;
+    transition: all 0.25s ease;
+    padding: 0.5rem 1rem;
+}
+.modal .nav-pills .nav-link.active {
+    background: linear-gradient(135deg, #6366f1, #4f46e5) !important;
+    color: #ffffff !important;
+    box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);
+}
+.modal .nav-pills .nav-link:hover:not(.active) {
+    color: var(--cor-texto-principal);
+    background-color: rgba(255, 255, 255, 0.05);
+}

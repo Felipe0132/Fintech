@@ -62,13 +62,13 @@ def inicio(request):
 
     saldo_atual = total_receitas - total_gastos
 
-    gastos_not_paid = gastos.filter(is_paid=False, transaction_installment=None)
+    gastos_not_paid = gastos.filter(is_paid=False, transaction_installment__isnull=True)
 
-    gastos_parcelados_aberto = gastos_not_paid.filter(transaction_installment__isnull=False)
+    gastos_parcelados_aberto = gastos.filter(is_paid=False, transaction_installment__isnull=False)
 
     gastos = gastos.filter(is_paid=True)
 
-    saldo_imaginario = saldo_atual - sum_by_value(gastos_not_paid)
+    saldo_imaginario = saldo_atual - sum_by_value(gastos_not_paid) - sum_by_value(gastos_parcelados_aberto)
 
     total_parcelado_aberto = sum_by_value(gastos_parcelados_aberto)
 
@@ -83,7 +83,7 @@ def inicio(request):
                     "categories_gasto":categories_gasto, 
                     "accounts":accounts, 
                     "gastos_not_paid":gastos_not_paid.order_by('-id')[:5], 
-                    "gastos_parcelados":gastos_parcelados_aberto,
+                    "gastos_parcelados":gastos_parcelados_aberto.order_by('-id')[:5],
                     "saldo_imaginario":saldo_imaginario,
                     "total_parcelado":total_parcelado_aberto,
                     "total_account":total_account
@@ -119,7 +119,6 @@ def registrar_transiction(request):
     
     type = request.POST.get('type')
     description = request.POST.get('description')
-    value = request.POST.get('value')
     date = request.POST.get('date_paid')
     is_paid = request.POST.get('is_paid') == 'True' # Recebe ou True ou Null do html
 
@@ -135,7 +134,22 @@ def registrar_transiction(request):
         account_default, _ = Account.objects.get_or_create(name="Padrao", user=request.user)
         account_id = account_default.id
 
-    Transaction.objects.create(value=value, type=type, description=description, date=date, is_paid=is_paid, category_id=category_id if category_id else None, account_id=account_id, user=request.user)
+    installments_count = request.POST.get('installments_count') # If post route
+    if installments_count:
+        first_date = datetime.strptime(request.POST.get('first_date'), '%Y-%m-%d').date() # Recive first_date nd coverte string to date
+        installment = Transaction_installment.objects.create(
+            description=description, total_value=request.POST.get('total_value'),
+            installments_count=int(installments_count), # However use in range,Django don't can converte before save
+            first_date=first_date,
+            category_id=category_id,
+            account_id=account_id,
+            user=request.user
+        )
+        installment.generate_installments()
+    else:
+
+        value = request.POST.get('value') # only recive of forms if that don't be a installment
+        Transaction.objects.create(value=value, type=type, description=description, date=date, is_paid=is_paid, category_id=category_id if category_id else None, account_id=account_id, user=request.user)
 
     referer = request.META.get('HTTP_REFERER')
     if referer:
@@ -161,7 +175,6 @@ def registrar_category(request):
         return redirect(referer)
     return redirect('finance:inicio')
 
-    
 @login_required(login_url="/finance/login/")
 def gastos_by_params(request):
     user = request.user
@@ -217,13 +230,13 @@ def gastos_by_params(request):
 
     gastos_not_paid = Transaction.objects.filter(user=user, type="G", is_paid=False)
 
-    gastos_parcelados_aberto = Transaction.objects.filter(user=user, type="G", transaction_installment__isnull=False)
+    gastos_parcelados_aberto = Transaction.objects.filter(user=user, type="G", is_paid=False, transaction_installment__isnull=False)
 
     total_gastos_not_paid = sum_by_value(gastos_not_paid)
 
     total_parcelado_aberto = sum_by_value(gastos_parcelados_aberto)
 
-    saldo_imaginario = saldo_atual - total_gastos_not_paid
+    saldo_imaginario = saldo_atual - total_gastos_not_paid - total_parcelado_aberto
 
     context = {"gastos_consultados":gastos_consultados.order_by('-date'), 
                "categories":categories, 
@@ -493,15 +506,16 @@ def dashboard_mensal(request):
 
     saldo_atual = total_receitas - total_gastos
 
-    gastos_not_paid = Transaction.objects.filter(user=user, type="G", is_paid=False, transaction_installment__isnull=True)
-    gasto_parcelado = Transaction.objects.filter(user=user, type="G", transaction_installment__isnull=False)
+    gastos_not_paid = Transaction.objects.filter(user=user, type="G", date__year=selected_ref.year, date__month=selected_ref.month, is_paid=False, transaction_installment__isnull=True)
+    gasto_parcelado = Transaction.objects.filter(user=user, type="G", date__year=selected_ref.year, date__month=selected_ref.month, transaction_installment__isnull=False)
     gastos_parcelados_aberto = gasto_parcelado.filter(is_paid=False)
+    gasto_parcelado.filter(is_paid=True)
 
     total_gastos_not_paid = sum_by_value(gastos_not_paid)
     total_parcelado =  sum_by_value(gasto_parcelado)
     total_parcelado_aberto = sum_by_value(gastos_parcelados_aberto)
 
-    saldo_imaginario = saldo_atual - total_gastos_not_paid
+    saldo_imaginario = saldo_atual - total_gastos_not_paid - total_parcelado_aberto
 
     receitas_account = sum_by_account(receitas_selected)
     gastos_account = sum_by_account(gastos_selected)

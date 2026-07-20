@@ -46,7 +46,7 @@ class Transaction_installment(models.Model):
 
     @property # Used because it behaves like a computed attribute — no parentheses needed to get the value
     def installment_value(self):
-        return round(self.total_value / self.installments_count, 2)
+        return round(int(self.total_value) / self.installments_count, 2)
     
     @property
     def remaining_installments(self):
@@ -58,10 +58,10 @@ class Transaction_installment(models.Model):
     def generate_installments(self):
         transactions = [
             Transaction(
-                description=f"{self.description} ({i + 1}/{self.installments_count})",
+                description=f"{self.description}",
                 value = self.installment_value,
                 type=Transaction.Type.GASTO,
-                data=self.first_date + relativedelta(months=i),
+                date=self.first_date + relativedelta(months=i),
                 is_paid=False,
                 category=self.category,
                 account=self.account,

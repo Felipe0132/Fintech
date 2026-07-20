@@ -7,34 +7,59 @@
 
 {% block content %}
 <div class="row g-4 mb-4">
-    <div class="col-12 col-md-3">
+    <!-- Card 1: Total de gastos -->
+    <div class="col-12 col-md-6 col-lg-3">
         <div class="card card-dark p-4 h-100">
             <span class="text-label mb-2">Total de gastos</span>
             <span class="summary-value text-negative">R$ {{ total_gastos }}</span>
         </div>
     </div>
-    <div class="col-12 col-md-3">
+    
+    <!-- Card 2: Total de não pagos (Comum) -->
+    <div class="col-12 col-md-6 col-lg-3">
         <div class="card card-dark p-4 h-100">
-            <span class="text-label mb-2">Total de gastos não pagos</span>
-            <span class="summary-value text-warning">R$ {{ total_gastos_not_paid }}</span>
+            <span class="text-label mb-2">Gasto não pago (Comum)</span>
+            <span class="summary-value text-warning">R$ {{ total_gastos_comum_not_paid|default:total_gastos_not_paid }}</span>
         </div>
     </div>
-    <div class="col-12 col-md-3">
-        <div class="card card-dark p-4 h-100">
-            <span class="text-label mb-2">Saldo</span>
-            {% if saldo_atual > 0 %}
-            <span class="summary-value text-positive">R$ {{ saldo_atual }}</span>
-            {% elif 0 > saldo_atual %}
-            <span class="summary-value text-negative">R$ {{ saldo_atual }}</span>
-            {% else %}
-            <span class="summary-value text-warning">R$ {{ saldo_atual }}</span>
-            {% endif %}
+
+    <!-- Card 3: Resumo de Parcelas -->
+    <div class="col-12 col-md-6 col-lg-3">
+        <div class="card card-dark p-4 h-100 d-flex flex-column justify-content-between">
+            <div>
+                <span class="text-label mb-2 d-block text-info"><i class="bi bi-calendar-range me-1"></i> Resumo de Parcelas</span>
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <small class="text-muted">Pagas no mês:</small>
+                    <span class="text-positive fw-bold font-monospace">R$ {{ total_parcelado_pago_mes|default:"0,00" }}</span>
+                </div>
+                <div class="d-flex justify-content-between align-items-center">
+                    <small class="text-muted">Total em aberto:</small>
+                    <span class="text-warning fw-bold font-monospace">R$ {{ total_parcelado_aberto|default:"0,00" }}</span>
+                </div>
+            </div>
         </div>
     </div>
-    <div class="col-12 col-md-3">
-        <div class="card card-dark p-4 h-100">
-            <span class="text-label mb-2">Saldo imaginário (atual - não pagos)</span>
-            <span class="summary-value text-warning">R$ {{ saldo_imaginario }}</span>
+
+    <!-- Card 4: Saldos -->
+    <div class="col-12 col-md-6 col-lg-3">
+        <div class="card card-dark p-4 h-100 d-flex flex-column justify-content-between">
+            <div>
+                <span class="text-label mb-2 d-block">Saldos</span>
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <small class="text-muted">Saldo Real:</small>
+                    {% if saldo_atual > 0 %}
+                    <span class="text-positive fw-bold font-monospace">R$ {{ saldo_atual }}</span>
+                    {% elif 0 > saldo_atual %}
+                    <span class="text-negative fw-bold font-monospace">R$ {{ saldo_atual }}</span>
+                    {% else %}
+                    <span class="text-warning fw-bold font-monospace">R$ {{ saldo_atual }}</span>
+                    {% endif %}
+                </div>
+                <div class="d-flex justify-content-between align-items-center">
+                    <small class="text-muted">Saldo Imaginário:</small>
+                    <span class="text-warning fw-bold font-monospace">R$ {{ saldo_imaginario }}</span>
+                </div>
+            </div>
         </div>
     </div>
 </div>
@@ -132,7 +157,16 @@
             <tbody>
                 {% for transaction in gastos_consultados %}
                 <tr>
-                    <td onclick="abrirDetalheModal('{{ transaction.id }}')" style="cursor: pointer;">{{ transaction.description }}</td>
+                    <td onclick="abrirDetalheModal('{{ transaction.id }}')" style="cursor: pointer;">
+                        {{ transaction.description }}
+                        {% if transaction.transaction_installment %}
+                        <span class="badge bg-info text-dark ms-1" style="font-size: 0.7rem; font-weight: 600;">
+                            Parcela {{ transaction.installment_number }}/{{ transaction.transaction_installment.installments_count }}
+                        </span>
+                        {% else %}
+                        <span class="badge bg-secondary ms-1" style="font-size: 0.7rem; font-weight: 500; opacity: 0.85;">Comum</span>
+                        {% endif %}
+                    </td>
                     <td onclick="abrirDetalheModal('{{ transaction.id }}')" style="cursor: pointer;" class="text-negative" data-sort="{{ transaction.value }}">R$ {{ transaction.value }}</td>
                     <td onclick="abrirDetalheModal('{{ transaction.id }}')" style="cursor: pointer;" data-sort="{{ transaction.date|date:'Y-m-d' }}">{{ transaction.date }}</td>
                     <td onclick="abrirDetalheModal('{{ transaction.id }}')" style="cursor: pointer;" data-sort="{{ transaction.is_paid|yesno:'1,0' }}">
