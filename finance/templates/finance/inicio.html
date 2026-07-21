@@ -37,6 +37,12 @@
             <span class="summary-value text-warning">R$ {{ saldo_imaginario }}</span>
         </div>
     </div>
+    <div class="col-12 col-md-3">
+        <div class="card card-dark p-4 h-100">
+            <span class="text-label mb-2">Total parcelado em  aberto</span>
+            <span class="summary-value text-warning">R$ {{ total_parcelado }}</span>
+        </div>
+    </div>
 </div>
 
 <div class="row g-4 mb-4">
@@ -58,7 +64,7 @@
                     <tbody>
                         {% for conta, total in total_account.items %}
                         <tr>
-                            <td class="text-claro">{{ conta }}</td>
+                            <td class="text-claro"><span class="text-claro">{{ conta }}</span></td>
                             <td class="text-end">
                                 {% if total > 0 %}
                                 <span class="value-pill text-positive">R$ {{ total|floatformat:2 }}</span>
