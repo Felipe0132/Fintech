@@ -93,5 +93,23 @@
     }
     .section-icon {
         font-size: 0.95rem;
+        margin-right: 0.3rem;
+    }
+
+    /* Novo: tabela de categorias */
+    .category-table td {
+        padding-top: 0.45rem;
+        padding-bottom: 0.45rem;
+        font-size: 0.85rem;
+    }
+    .category-table .category-name {
+        font-size: 0.85rem;
+    }
+
+    /* Novo: título das seções (ícone + texto) */
+    .card-title-row {
+        font-size: 0.95rem;
+        flex-wrap: wrap;
+        gap: 0.25rem;
     }
 }
