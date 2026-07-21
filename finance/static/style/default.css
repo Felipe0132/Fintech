@@ -466,3 +466,49 @@ body.bg-custom {
     color: var(--cor-texto-principal);
     background-color: rgba(255, 255, 255, 0.05);
 }
+
+@media (max-width: 575.98px) {
+    .summary-value {
+        font-size: 1.35rem;
+    }
+
+    .card-dark {
+        padding: 1rem !important;
+        border-radius: 12px !important;
+    }
+
+    .text-title {
+        font-size: 1.05rem;
+    }
+
+    .table-dark-custom thead th,
+    .table-dark-custom tbody td {
+        padding: 0.6rem;
+        font-size: 0.8rem;
+    }
+
+    .btn {
+        font-size: 0.85rem;
+        padding: 0.55rem 1rem;
+    }
+
+    .value-pill {
+        font-size: 0.75rem;
+        padding: 0.3rem 0.65rem;
+    }
+
+    .badge-value {
+        font-size: 0.875rem;
+    }
+
+    .sidebar-fixed .nav-link {
+        font-size: 0.875rem;
+        padding: 0.65rem 0.85rem;
+    }
+
+    .modal-header,
+    .modal-body,
+    .modal-footer {
+        padding: 1rem !important;
+    }
+}
