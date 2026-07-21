@@ -305,7 +305,7 @@
                                 <span class="value-pill value-pill-positive">R$ {{ datas.0|floatformat:2 }}</span>
                             </td>
                             <td class="text-end">
-                                <span class="text-claro">R$ {{ datas.1|floatformat:2 }}</span>
+                                <span class="value-pill text-claro">{{ datas.1|floatformat:1 }} %</span>
                             </td>
                         </tr>
                         {% endfor %}
@@ -345,7 +345,7 @@
                                 <span class="value-pill value-pill-negative">R$ {{ datas.0|floatformat:2 }}</span>
                             </td>
                             <td class="text-end">
-                                <span class="text-claro">R$ {{ datas.1|floatformat:2 }}</span>
+                                <span class="value-pill text-claro">{{ datas.1|floatformat:1 }} %</span>
                             </td>
                         </tr>
                         {% endfor %}
