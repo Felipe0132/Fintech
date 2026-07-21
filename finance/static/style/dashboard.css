@@ -20,7 +20,6 @@
 }
 
 .category-table .category-name {
-    color: var(--cor-texto-principal);
     font-weight: 500;
 }
 
@@ -75,4 +74,24 @@
     background-color: #00996c;
     border-color: #00996c;
     transform: translateY(-1px);
+}
+
+@media (max-width: 575.98px) {
+    .value-pill {
+        padding: 2px 8px;
+        font-size: 0.75rem;
+    }
+    .empty-state {
+        padding: 1.5rem 0;
+    }
+    .empty-state i {
+        font-size: 1.5rem;
+    }
+    .btn-filtrar {
+        padding: 6px 12px;
+        font-size: 0.8rem;
+    }
+    .section-icon {
+        font-size: 0.95rem;
+    }
 }

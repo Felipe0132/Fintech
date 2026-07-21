@@ -253,3 +253,26 @@ body.bg-custom {
         margin-left: 0;
     }
 }
+
+@media (max-width: 575.98px) {
+    .summary-value {
+        font-size: 1.1rem !important;
+    }
+    .card-dark {
+        padding: 0.75rem !important;
+        border-radius: 10px !important;
+    }
+    .text-title {
+        font-size: 0.9rem !important;
+        margin-bottom: 0.5rem !important;
+    }
+    .table-dark-custom thead th,
+    .table-dark-custom tbody td {
+        padding: 0.4rem;
+        font-size: 0.75rem;
+    }
+    .btn-add-ganho, .btn-add-gasto {
+        padding: 6px 12px;
+        font-size: 0.8rem;
+    }
+}

@@ -169,3 +169,36 @@
     font-size: 0.85rem;
     margin: 0;
 }
+
+@media (max-width: 575.98px) {
+    .hero-index {
+        padding: 4rem 1rem 3rem;
+    }
+    .hero-index h1 {
+        font-size: 2rem;
+    }
+    .hero-index p {
+        font-size: 1rem;
+        margin-bottom: 1.5rem;
+    }
+    .hero-index .btn {
+        padding: 0.5rem 1rem;
+        font-size: 0.85rem;
+        margin: 0.2rem;
+    }
+    .features-index {
+        padding: 2rem 1rem 3rem;
+    }
+    .feature-card {
+        padding: 1.5rem;
+    }
+    .feature-card i {
+        font-size: 1.5rem;
+    }
+    .feature-card h3 {
+        font-size: 1.1rem;
+    }
+    .footer-index {
+        padding: 1.5rem 1rem 1rem;
+    }
+}
