@@ -24,7 +24,7 @@ def sum_by_category(transactions):
     total = sum_by_value(transactions)
 
     total_by = df.groupby('category__name')['value'].sum()
-    porcentagem = resultado.div(total).mul(100).round(2) # Porcentagem de cada valor referente ao total
+    porcentagem = total_by.div(total).mul(100).round(2) # Porcentagem de cada valor referente ao total
 
     resultado = pd.DataFrame({'valor': total_by, 'porcentagem': porcentagem})
     # Antes tinhamos 2 series separadas, total_by e porcentagem, as duas com as mesmas categorias, agora, juntamos elas e fizemos categoria ter o valor e porcentagens
