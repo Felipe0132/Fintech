@@ -294,14 +294,18 @@
                         <tr>
                             <th onclick="ordenarTabela(this, 0)" style="cursor:pointer">Categoria <i class="bi bi-arrow-down-up"></i></th>
                             <th onclick="ordenarTabela(this, 1)" style="cursor:pointer">Valor <i class="bi bi-arrow-down-up"></i></th>
+                            <th onclick="ordenarTabela(this, 2)" style="cursor:pointer">Porcentagem <i class="bi bi-arrow-down-up"></i></th>
                         </tr>
                     </thead>
                     <tbody>
-                        {% for categoria, total in value_by_category_receitas_selected.items %}
+                        {% for categoria, datas in value_by_category_receitas_selected.items %}
                         <tr>
                             <td><span class="text-claro">{{ categoria }}</span></td>
                             <td class="text-end">
-                                <span class="value-pill value-pill-positive">R$ {{ total|floatformat:2 }}</span>
+                                <span class="value-pill value-pill-positive">R$ {{ datas.0|floatformat:2 }}</span>
+                            </td>
+                            <td class="text-end">
+                                <span class="text-claro">R$ {{ datas.1|floatformat:2 }}</span>
                             </td>
                         </tr>
                         {% endfor %}
@@ -330,14 +334,18 @@
                         <tr>
                             <th onclick="ordenarTabela(this, 0)" style="cursor:pointer">Categoria <i class="bi bi-arrow-down-up"></i></th>
                             <th onclick="ordenarTabela(this, 1)" style="cursor:pointer">Valor <i class="bi bi-arrow-down-up"></i></th>
+                            <th onclick="ordenarTabela(this, 2)" style="cursor:pointer">Porcentagem <i class="bi bi-arrow-down-up"></i></th>
                         </tr>
                     </thead>
                     <tbody>
-                        {% for categoria, total in value_by_category_gastos_selected.items %}
+                        {% for categoria, datas in value_by_category_gastos_selected.items %}
                         <tr>
                             <td><span class="text-claro">{{ categoria }}</span></td>
                             <td class="text-end">
-                                <span class="value-pill value-pill-negative">R$ {{ total|floatformat:2 }}</span>
+                                <span class="value-pill value-pill-negative">R$ {{ datas.0|floatformat:2 }}</span>
+                            </td>
+                            <td class="text-end">
+                                <span class="text-claro">R$ {{ datas.1|floatformat:2 }}</span>
                             </td>
                         </tr>
                         {% endfor %}
