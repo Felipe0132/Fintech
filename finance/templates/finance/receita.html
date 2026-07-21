@@ -117,7 +117,7 @@
                 {% for transaction in receita_consultados %}
                 <tr>
                     <td onclick="abrirDetalheModal('{{ transaction.id }}')" style="cursor: pointer;"><span class="text-claro">{{ transaction.description }}</span></td>
-                    <td onclick="abrirDetalheModal('{{ transaction.id }}')" style="cursor: pointer;" class="text-positive" data-sort="{{ transaction.value }}"><span class="text-positive">R${{ transaction.value }}</span></td>
+                    <td onclick="abrirDetalheModal('{{ transaction.id }}')" style="cursor: pointer;" class="text-positive" data-sort="{{ transaction.value }}"><span class="value-pill text-positive">R${{ transaction.value }}</span></td>
                     <td onclick="abrirDetalheModal('{{ transaction.id }}')" style="cursor: pointer;" data-sort="{{ transaction.date|date:'Ymd' }}"><span class="text-claro">{{ transaction.date }}</span></td>
                     <td onclick="abrirDetalheModal('{{ transaction.id }}')" style="cursor: pointer;"><span class="text-claro">{{ transaction.category }}</span></td>
                     <td onclick="abrirDetalheModal('{{ transaction.id }}')" style="cursor: pointer;"><span class="text-claro">{{ transaction.account }}</span></td>

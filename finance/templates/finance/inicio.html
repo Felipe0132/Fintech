@@ -97,7 +97,7 @@
                 {% for gasto in gastos %}
                 <div class="list-item d-flex justify-content-between align-items-center py-2 border-bottom border-secondary">
                     <span class="text-escuro">{{ gasto.description }}</span>
-                    <span class="badge-value text-negative">R$ {{ gasto.value }}</span>
+                    <span class="badge-value value-pill text-negative">R$ {{ gasto.value }}</span>
                 </div>
                 {% empty %}
                 <p class="text-label mb-0">Nenhum gasto registrado ainda.</p>
@@ -119,7 +119,7 @@
                 {% for receita in receitas %}
                 <div class="list-item d-flex justify-content-between align-items-center py-2 border-bottom border-secondary">
                     <span class="text-escuro">{{ receita.description }}</span>
-                    <span class="badge-value text-positive">R$ {{ receita.value }}</span>
+                    <span class="badge-value value-pill text-positive">R$ {{ receita.value }}</span>
                 </div>
                 {% empty %}
                 <p class="text-label mb-0">Nenhum receita registrado ainda.</p>
