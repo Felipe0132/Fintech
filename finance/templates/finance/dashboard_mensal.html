@@ -250,7 +250,7 @@
                         <td onclick="abrirDetalheGastoModal('{{ transaction.id }}')" style="cursor: pointer;">
                             <span class="text-claro">{{ transaction.description }}</span>
                             <span class="badge bg-info text-dark ms-1" style="font-size: 0.7rem; font-weight: 600;">
-                                Parcela {{ transaction.installment_number }}/{{ transaction.transaction_installment.installments_count }}
+                            Par. {{ transaction.installment_number }}/{{ transaction.transaction_installment.installments_count }}
                             </span>
                         </td>
                         <td onclick="abrirDetalheGastoModal('{{ transaction.id }}')" style="cursor: pointer;" class="text-negative" data-sort="{{ transaction.value }}"><span class="value-pill text-negative">R$ {{ transaction.value }}</span></td>
