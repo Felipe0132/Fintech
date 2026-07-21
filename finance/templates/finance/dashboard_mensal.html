@@ -335,7 +335,7 @@
                     <tbody>
                         {% for categoria, total in value_by_category_gastos_selected.items %}
                         <tr>
-                            <td><span class="text-claro">{{ categoria }}</span></td>
+                            <td><span class="text-escuro">{{ categoria }}</span></td>
                             <td class="text-end">
                                 <span class="value-pill value-pill-negative">R$ {{ total|floatformat:2 }}</span>
                             </td>
@@ -374,7 +374,7 @@
                     <tbody>
                         {% for account, total in receitas_account.items %}
                         <tr>
-                            <td class="text-claro">{{ account }}</td>
+                            <td class="text-escuro">{{ account }}</td>
                             <td class="text-positive" data-sort="{{ total }}">R$ {{ total }}</td>
                         </tr>
                         {% endfor %}
@@ -408,7 +408,7 @@
                     <tbody>
                         {% for account, total in gastos_account.items %}
                         <tr>
-                            <td class="text-claro">{{ account }}</td>
+                            <td class="text-escuro">{{ account }}</td>
                             <td class="text-negative" data-sort="{{ total }}">R$ {{ total }}</td>
                         </tr>
                         {% endfor %}
