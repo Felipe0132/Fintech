@@ -158,7 +158,7 @@
                 {% for transaction in gastos_consultados %}
                 <tr>
                     <td onclick="abrirDetalheModal('{{ transaction.id }}')" style="cursor: pointer;">
-                        {{ transaction.description }}
+                        <span class="text-escuro">{{ transaction.description }}</span>
                         {% if transaction.transaction_installment %}
                         <span class="badge bg-info text-dark ms-1" style="font-size: 0.7rem; font-weight: 600;">
                             Parcela {{ transaction.installment_number }}/{{ transaction.transaction_installment.installments_count }}
@@ -167,8 +167,8 @@
                         <span class="badge bg-secondary ms-1" style="font-size: 0.7rem; font-weight: 500; opacity: 0.85;">Comum</span>
                         {% endif %}
                     </td>
-                    <td onclick="abrirDetalheModal('{{ transaction.id }}')" style="cursor: pointer;" class="text-negative" data-sort="{{ transaction.value }}">R$ {{ transaction.value }}</td>
-                    <td onclick="abrirDetalheModal('{{ transaction.id }}')" style="cursor: pointer;" data-sort="{{ transaction.date|date:'Ymd' }}">{{ transaction.date }}</td>
+                    <td onclick="abrirDetalheModal('{{ transaction.id }}')" style="cursor: pointer;" class="text-negative" data-sort="{{ transaction.value }}">R$ <span class="text-negative">{{ transaction.value }}</span></td>
+                    <td onclick="abrirDetalheModal('{{ transaction.id }}')" style="cursor: pointer;" data-sort="{{ transaction.date|date:'Ymd' }}"><span class="text-escuro">{{ transaction.date }}</span></td>
                     <td onclick="abrirDetalheModal('{{ transaction.id }}')" style="cursor: pointer;" data-sort="{{ transaction.is_paid|yesno:'1,0' }}">
                         {% if transaction.is_paid %}
                         <span class="text-positive">Pago</span>
@@ -176,8 +176,8 @@
                         <span class="text-warning">Não pago</span>
                         {% endif %}
                     </td>
-                    <td onclick="abrirDetalheModal('{{ transaction.id }}')" style="cursor: pointer;">{{ transaction.category }}</td>
-                    <td onclick="abrirDetalheModal('{{ transaction.id }}')" style="cursor: pointer;">{{ transaction.account }}</td>
+                    <td onclick="abrirDetalheModal('{{ transaction.id }}')" style="cursor: pointer;"><span class="text-escuro">{{ transaction.category }}</span></td>
+                    <td onclick="abrirDetalheModal('{{ transaction.id }}')" style="cursor: pointer;"><span class="text-escuro">{{ transaction.account }}</span></td>
                     <td>
                         <button type="button" class="btn btn-sm btn-outline-danger"
                             data-bs-toggle="modal"

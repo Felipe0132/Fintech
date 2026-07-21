@@ -58,7 +58,7 @@
                     <tbody>
                         {% for conta, total in total_account.items %}
                         <tr>
-                            <td>{{ conta }}</td>
+                            <td class="text-escuro">{{ conta }}</td>
                             <td class="text-end">
                                 {% if total > 0 %}
                                 <span class="value-pill text-positive">R$ {{ total|floatformat:2 }}</span>
@@ -90,7 +90,7 @@
                 <h5 class="mb-3 text-title">Últimos gastos</h5>
                 {% for gasto in gastos %}
                 <div class="list-item d-flex justify-content-between align-items-center py-2 border-bottom border-secondary">
-                    <span>{{ gasto.description }}</span>
+                    <span class="text-claro">{{ gasto.description }}</span>
                     <span class="badge-value text-negative">R$ {{ gasto.value }}</span>
                 </div>
                 {% empty %}
@@ -112,7 +112,7 @@
                 <h5 class="mb-3 text-title">Últimos receitas</h5>
                 {% for receita in receitas %}
                 <div class="list-item d-flex justify-content-between align-items-center py-2 border-bottom border-secondary">
-                    <span>{{ receita.description }}</span>
+                    <span class="text-claro">{{ receita.description }}</span>
                     <span class="badge-value text-positive">R$ {{ receita.value }}</span>
                 </div>
                 {% empty %}
@@ -134,7 +134,7 @@
                 <h5 class="mb-3 text-title">Últimos não pagos</h5>
                 {% for receita in gastos_not_paid %}
                 <div class="list-item d-flex justify-content-between align-items-center py-2 border-bottom border-secondary">
-                    <span>{{ receita.description }}</span>
+                    <span class="text-claro">{{ receita.description }}</span>
                     <span class="badge-value text-warning">R$ {{ receita.value }}</span>
                 </div>
                 {% empty %}
@@ -151,7 +151,7 @@
                 {% for gasto in gastos_parcelados %}
                 <div class="list-item py-2 border-bottom border-secondary">
                     <div class="d-flex justify-content-between align-items-center">
-                        <span>{{ gasto.description }}</span>
+                        <span class="text-claro">{{ gasto.description }}</span>
                         <span class="badge-value text-warning">R$ {{ gasto.value }}</span>
                     </div>
                     {% if gasto.installment_number and gasto.transaction_installment %}

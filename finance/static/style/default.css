@@ -11,6 +11,7 @@
     --cor-texto-principal: #f9fafb; /* Branco suave off-white */
     --cor-texto-secundario: #9ca3af;/* Cinza claro para descrição */
     --cor-texto-mutado: #6b7280;    /* Cinza mais escuro para labels */
+    --cor-texto-bglight: var(--bg-cards)
 
     --cor-border: #1f2937;         /* Borda sutil de divisão */
     --cor-border-glow: rgba(99, 102, 241, 0.15); /* Brilho de foco indigo */
@@ -168,6 +169,9 @@ body.bg-custom {
 .text-positive { color: var(--cor-positivo) !important; }
 .text-negative { color: var(--cor-negativo) !important; }
 .text-warning  { color: var(--color-warning) !important; }
+
+.text-claro {color: var(--cor-texto-bglight)}
+.text-escuro {color: var(--cor-texto-principal)}
 
 /* ==================== Botões ==================== */
 

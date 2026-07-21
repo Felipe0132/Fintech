@@ -133,11 +133,11 @@
                     <tbody>
                         {% for transaction in receitas_selected %}
                         <tr>
-                            <td onclick="abrirDetalheReceitaModal('{{ transaction.id }}')" style="cursor: pointer;">{{ transaction.description }}</td>
-                            <td onclick="abrirDetalheReceitaModal('{{ transaction.id }}')" style="cursor: pointer;" class="text-positive" data-sort="{{ transaction.value }}">R$ {{ transaction.value }}</td>
-                            <td onclick="abrirDetalheReceitaModal('{{ transaction.id }}')" style="cursor: pointer;" data-sort="{{ transaction.date|date:'Ymd' }}">{{ transaction.date }}</td>
-                            <td onclick="abrirDetalheReceitaModal('{{ transaction.id }}')" style="cursor: pointer;">{{ transaction.category }}</td>
-                            <td onclick="abrirDetalheReceitaModal('{{ transaction.id }}')" style="cursor: pointer;">{{ transaction.account }}</td>
+                            <td onclick="abrirDetalheReceitaModal('{{ transaction.id }}')" style="cursor: pointer;"><span class="text-escuro">{{ transaction.description }}</span></td>
+                            <td onclick="abrirDetalheReceitaModal('{{ transaction.id }}')" style="cursor: pointer;" class="text-positive" data-sort="{{ transaction.value }}">R$ <span class="text-positive">{{ transaction.value }}</span></td>
+                            <td onclick="abrirDetalheReceitaModal('{{ transaction.id }}')" style="cursor: pointer;" data-sort="{{ transaction.date|date:'Ymd' }}"><span class="text-escuro">{{ transaction.date }}</span></td>
+                            <td onclick="abrirDetalheReceitaModal('{{ transaction.id }}')" style="cursor: pointer;"><span class="text-escuro">{{ transaction.category }}</span></td>
+                            <td onclick="abrirDetalheReceitaModal('{{ transaction.id }}')" style="cursor: pointer;"><span class="text-escuro">{{ transaction.account }}</span></td>
                             <td>
                                 <button type="button" class="btn btn-sm btn-outline-danger"
                                     data-bs-toggle="modal"
@@ -183,7 +183,7 @@
                         {% for transaction in gastos_selected %}
                         <tr>
                             <td onclick="abrirDetalheGastoModal('{{ transaction.id }}')" style="cursor: pointer;">
-                                {{ transaction.description }}
+                                <span class="text-escuro">{{ transaction.description }}</span>
                                 {% if transaction.transaction_installment %}
                                 <span class="badge bg-info text-dark ms-1" style="font-size: 0.7rem; font-weight: 600;">
                                     Parcela {{ transaction.installment_number }}/{{ transaction.transaction_installment.installments_count }}
@@ -192,8 +192,8 @@
                                 <span class="badge bg-secondary ms-1" style="font-size: 0.7rem; font-weight: 500; opacity: 0.85;">Comum</span>
                                 {% endif %}
                             </td>
-                            <td onclick="abrirDetalheGastoModal('{{ transaction.id }}')" style="cursor: pointer;" class="text-negative" data-sort="{{ transaction.value }}">R$ {{ transaction.value }}</td>
-                            <td onclick="abrirDetalheGastoModal('{{ transaction.id }}')" style="cursor: pointer;" data-sort="{{ transaction.date|date:'Ymd' }}">{{ transaction.date }}</td>
+                            <td onclick="abrirDetalheGastoModal('{{ transaction.id }}')" style="cursor: pointer;" class="text-negative" data-sort="{{ transaction.value }}">R$ <span class="text-negative">{{ transaction.value }}</span></td>
+                            <td onclick="abrirDetalheGastoModal('{{ transaction.id }}')" style="cursor: pointer;" data-sort="{{ transaction.date|date:'Ymd' }}"><span class="text-escuro">{{ transaction.date }}</span></td>
                             <td onclick="abrirDetalheGastoModal('{{ transaction.id }}')" style="cursor: pointer;" data-sort="{{ transaction.is_paid|yesno:'1,0' }}">
                                 {% if transaction.is_paid %}
                                 <span class="text-positive">Pago</span>
@@ -201,8 +201,8 @@
                                 <span class="text-warning">Não pago</span>
                                 {% endif %}
                             </td>
-                            <td onclick="abrirDetalheGastoModal('{{ transaction.id }}')" style="cursor: pointer;">{{ transaction.category }}</td>
-                            <td onclick="abrirDetalheGastoModal('{{ transaction.id }}')" style="cursor: pointer;">{{ transaction.account }}</td>
+                            <td onclick="abrirDetalheGastoModal('{{ transaction.id }}')" style="cursor: pointer;"><span class="text-escuro">{{ transaction.category }}</span></td>
+                            <td onclick="abrirDetalheGastoModal('{{ transaction.id }}')" style="cursor: pointer;"><span class="text-escuro">{{ transaction.account }}</span></td>
                             <td>
                                 <button type="button" class="btn btn-sm btn-outline-danger"
                                     data-bs-toggle="modal"
@@ -248,13 +248,13 @@
                     {% if transaction.transaction_installment %}
                     <tr>
                         <td onclick="abrirDetalheGastoModal('{{ transaction.id }}')" style="cursor: pointer;">
-                            {{ transaction.description }}
+                            <span class="text-escuro">{{ transaction.description }}</span>
                             <span class="badge bg-info text-dark ms-1" style="font-size: 0.7rem; font-weight: 600;">
                                 Parcela {{ transaction.installment_number }}/{{ transaction.transaction_installment.installments_count }}
                             </span>
                         </td>
-                        <td onclick="abrirDetalheGastoModal('{{ transaction.id }}')" style="cursor: pointer;" class="text-negative" data-sort="{{ transaction.value }}">R$ {{ transaction.value }}</td>
-                        <td onclick="abrirDetalheGastoModal('{{ transaction.id }}')" style="cursor: pointer;" data-sort="{{ transaction.date|date:'Ymd' }}">{{ transaction.date }}</td>
+                        <td onclick="abrirDetalheGastoModal('{{ transaction.id }}')" style="cursor: pointer;" class="text-negative" data-sort="{{ transaction.value }}">R$ <span class="text-negative">{{ transaction.value }}</span></td>
+                        <td onclick="abrirDetalheGastoModal('{{ transaction.id }}')" style="cursor: pointer;" data-sort="{{ transaction.date|date:'Ymd' }}"><span class="text-escuro">{{ transaction.date }}</span></td>
                         <td onclick="abrirDetalheGastoModal('{{ transaction.id }}')" style="cursor: pointer;" data-sort="{{ transaction.is_paid|yesno:'1,0' }}">
                             {% if transaction.is_paid %}
                             <span class="text-positive">Pago</span>
@@ -262,8 +262,8 @@
                             <span class="text-warning">Não pago</span>
                             {% endif %}
                         </td>
-                        <td onclick="abrirDetalheGastoModal('{{ transaction.id }}')" style="cursor: pointer;">{{ transaction.category }}</td>
-                        <td onclick="abrirDetalheGastoModal('{{ transaction.id }}')" style="cursor: pointer;">{{ transaction.account }}</td>
+                        <td onclick="abrirDetalheGastoModal('{{ transaction.id }}')" style="cursor: pointer;"><span class="text-escuro">{{ transaction.category }}</span></td>
+                        <td onclick="abrirDetalheGastoModal('{{ transaction.id }}')" style="cursor: pointer;"><span class="text-escuro">{{ transaction.account }}</span></td>
                         <td>
                             <button type="button" class="btn btn-sm btn-outline-danger"
                                 data-bs-toggle="modal"
@@ -299,7 +299,7 @@
                     <tbody>
                         {% for categoria, total in value_by_category_receitas_selected.items %}
                         <tr>
-                            <td>{{ categoria }}</td>
+                            <td class="text-escuro">{{ categoria }}</td>
                             <td class="text-end">
                                 <span class="value-pill value-pill-positive">R$ {{ total|floatformat:2 }}</span>
                             </td>
@@ -335,7 +335,7 @@
                     <tbody>
                         {% for categoria, total in value_by_category_gastos_selected.items %}
                         <tr>
-                            <td>{{ categoria }}</td>
+                            <td class="text-escuro">{{ categoria }}</td>
                             <td class="text-end">
                                 <span class="value-pill value-pill-negative">R$ {{ total|floatformat:2 }}</span>
                             </td>
@@ -374,7 +374,7 @@
                     <tbody>
                         {% for account, total in receitas_account.items %}
                         <tr>
-                            <td>{{ account }}</td>
+                            <td class="text-escuro">{{ account }}</td>
                             <td class="text-positive" data-sort="{{ total }}">R$ {{ total }}</td>
                         </tr>
                         {% endfor %}
@@ -408,7 +408,7 @@
                     <tbody>
                         {% for account, total in gastos_account.items %}
                         <tr>
-                            <td>{{ account }}</td>
+                            <td class="text-escuro">{{ account }}</td>
                             <td class="text-negative" data-sort="{{ total }}">R$ {{ total }}</td>
                         </tr>
                         {% endfor %}
