@@ -3,7 +3,6 @@ from django.contrib.auth.admin import UserAdmin
 from .models import *
 
 admin.site.register(ProfileUser, UserAdmin)
-admin.site.register(Gasto)
-admin.site.register(TipoGasto)
-admin.site.register(Ganho)
-admin.site.register(TipoGanho)
+admin.site.register(Category)
+admin.site.register(Transaction)
+admin.site.register(Account)

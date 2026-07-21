@@ -6,6 +6,8 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user_model
 from .models import *
 from .analytics import *
+from datetime import date, datetime
+from dateutil.relativedelta import relativedelta
 
 
 ProfileUser = get_user_model() # Substituir o User
@@ -24,7 +26,7 @@ def login(request):
 
     if user:
         login_django(request, user) # Navegador logado
-        return redirect('finance:dashboard')        
+        return redirect('finance:inicio')        
     
     return HttpResponse("Dados incorretos")
 
@@ -44,139 +46,164 @@ def cadastro(request):
     return redirect('finance:login')
 
 @login_required(login_url="/finance/login/")
-def dashboard(request):
+def inicio(request):
     user = request.user
 
-    gastos = Gasto.objects.filter(user=user, is_paid=True)
-    ganhos = Ganho.objects.filter(user=user)
+    accounts = Account.objects.filter(user=user)
 
-    tipos_gastos = TipoGasto.objects.filter(user=user)
-    tipos_ganhos = TipoGanho.objects.filter(user=user)
+    receitas = Transaction.objects.filter(user=user, type="R")
+    gastos = Transaction.objects.filter(user=user, type="G")
 
+    categories_receita = Category.objects.filter(user=user, type="R")
+    categories_gasto = Category.objects.filter(user=user, type="G")
+
+    total_receitas = sum_by_value(receitas)
     total_gastos = sum_by_value(gastos)
-    total_ganhos = sum_by_value(ganhos)
 
-    saldo_atual = total_ganhos - total_gastos
+    saldo_atual = total_receitas - total_gastos
 
-    gastos_not_paid = Gasto.objects.filter(user=user, is_paid=False)
+    gastos_not_paid = gastos.filter(is_paid=False, transaction_installment__isnull=True)
 
-    saldo_imaginario = saldo_atual - sum_by_value(gastos_not_paid)
+    gastos_parcelados_aberto = gastos.filter(is_paid=False, transaction_installment__isnull=False)
 
-    grafico_gasto = grafico_by_category_gasto(gastos, user)
-    grafico_ganho = grafico_by_category_ganho(ganhos, user)
-    grafico_gasto_not_paid = grafico_by_category_gasto_not_paid(gastos_not_paid, user)
+    gastos = gastos.filter(is_paid=True)
 
-    user_context = {"gastos":gastos.order_by('-id')[:5], "ganhos":ganhos.order_by('-id')[:5], "total_gastos":total_gastos, "total_ganhos":total_ganhos, "saldo_atual":saldo_atual, "tipos_gastos":tipos_gastos, "tipos_ganhos":tipos_ganhos, 'gastos_not_paid':gastos_not_paid, "saldo_imaginario":saldo_imaginario, "grafico_gasto":grafico_gasto, "grafico_ganho":grafico_ganho, "grafico_gasto_not_paid":grafico_gasto_not_paid}
+    saldo_imaginario = saldo_atual - sum_by_value(gastos_not_paid) - sum_by_value(gastos_parcelados_aberto)
 
-    return render(request, "finance/dashboard.html", context=user_context)
+    total_parcelado_aberto = sum_by_value(gastos_parcelados_aberto)
+
+    total_account = total_by_account(Transaction.objects.filter(user=user))
+
+    user_context = {"gastos":gastos.order_by('-id')[:5],            
+                    "receitas":receitas.order_by('-id')[:5], 
+                    "total_gastos":total_gastos, 
+                    "total_receitas":total_receitas, 
+                    "saldo_atual":saldo_atual, 
+                    "categories_receita":categories_receita, 
+                    "categories_gasto":categories_gasto, 
+                    "accounts":accounts, 
+                    "gastos_not_paid":gastos_not_paid.order_by('-id')[:5], 
+                    "gastos_parcelados":gastos_parcelados_aberto.order_by('-id')[:5],
+                    "saldo_imaginario":saldo_imaginario,
+                    "total_parcelado":total_parcelado_aberto,
+                    "total_account":total_account
+                    }
+
+    return render(request, "finance/inicio.html", context=user_context)
 
 @login_required(login_url="/finance/login/")
-def registrar_gasto(request):
+def registrar_account(request):
     if request.method == "GET":
         referer = request.META.get('HTTP_REFERER')
         if referer:
             return redirect(referer)
-        return redirect('finance:dashboard')
+        return redirect('finance:inicio')
     
-    value = request.POST.get('value')
-    description = request.POST.get('description')
-    date_paid = request.POST.get('date_paid')
-    is_paid = request.POST.get('is_paid') == 'True' # Recebe ou True ou Null do html
-
-    type_id = request.POST.get('type') # Do html recebe so o id, ai o Django entende linkando so o type_id
-
-    Gasto.objects.create(value=value, description=description, date_paid=date_paid, is_paid=is_paid, type_id=type_id if type_id else None, user=request.user)
-
-    referer = request.META.get('HTTP_REFERER')
-    if referer:
-        return redirect(referer)
-    return redirect('finance:dashboard')
-
-@login_required(login_url="/finance/login/")
-def registrar_ganho(request):
-    if request.method == "GET":
-        referer = request.META.get('HTTP_REFERER')
-        if referer:
-            return redirect(referer)
-        return redirect('finance:dashboard')
-    
-    value = request.POST.get('value')
-    description = request.POST.get('description')
-    date_paid = request.POST.get('date_paid')
-    is_paid = request.POST.get('is_paid') == 'True' # Recebe ou True ou Null do html
-
-    type_id = request.POST.get('type') # Do html recebe so o id, ai o Django entende linkando so o type_id
-
-    Ganho.objects.create(value=value, description=description, date_paid=date_paid, is_paid=is_paid, type_id=type_id if type_id else None, user=request.user)
-
-    referer = request.META.get('HTTP_REFERER')
-    if referer:
-        return redirect(referer)
-    return redirect('finance:dashboard')
-
-@login_required(login_url="/finance/login/")
-def registrar_tipo_gasto(request):
-    if request.method == "GET":
-        referer = request.META.get('HTTP_REFERER')
-        if referer:
-            return redirect(referer)
-        return redirect('finance:dashboard')
-
     name = request.POST.get('name')
 
-    if not(TipoGasto.objects.filter(name=name, user=request.user).exists()):     
-        TipoGasto.objects.create(name=name, user=request.user)
+    if not(Account.objects.filter(name=name, user=request.user).exists()):     
+        Account.objects.create(name=name, user=request.user)
 
     referer = request.META.get('HTTP_REFERER')
     if referer:
         return redirect(referer)
-    return redirect('finance:dashboard')
+    return redirect('finance:inicio')
 
 @login_required(login_url="/finance/login/")
-def registrar_tipo_ganho(request):
+def registrar_transiction(request):
     if request.method == "GET":
         referer = request.META.get('HTTP_REFERER')
         if referer:
             return redirect(referer)
-        return redirect('finance:dashboard')
+        return redirect('finance:inicio')
+    
+    type = request.POST.get('type')
+    description = request.POST.get('description')
+    date = request.POST.get('date_paid')
+    is_paid = request.POST.get('is_paid') == 'True' # Recebe ou True ou Null do html
 
-    name = request.POST.get('name')
+    category_id = request.POST.get('category') # Do html recebe so o id, ai o Django entende linkando so o category_id
 
-    if not(TipoGanho.objects.filter(name=name, user=request.user).exists()):     
-        TipoGanho.objects.create(name=name, user=request.user)
+    if not category_id:
+        category_default, _ = Category.objects.get_or_create(name="Padrao", type=type, user=request.user)
+        category_id = category_default.id
+
+    account_id = request.POST.get('account')
+
+    if not account_id:
+        account_default, _ = Account.objects.get_or_create(name="Padrao", user=request.user)
+        account_id = account_default.id
+
+    installments_count = request.POST.get('installments_count') # If post route
+    if installments_count:
+        first_date = datetime.strptime(request.POST.get('first_date'), '%Y-%m-%d').date() # Recive first_date nd coverte string to date
+        installment = Transaction_installment.objects.create(
+            description=description, total_value=request.POST.get('total_value'),
+            installments_count=int(installments_count), # However use in range,Django don't can converte before save
+            first_date=first_date,
+            category_id=category_id,
+            account_id=account_id,
+            user=request.user
+        )
+        installment.generate_installments()
+    else:
+
+        value = request.POST.get('value') # only recive of forms if that don't be a installment
+        Transaction.objects.create(value=value, type=type, description=description, date=date, is_paid=is_paid, category_id=category_id if category_id else None, account_id=account_id, user=request.user)
 
     referer = request.META.get('HTTP_REFERER')
     if referer:
         return redirect(referer)
-    return redirect('finance:dashboard')
+    return redirect('finance:inicio')
+    
+@login_required(login_url="/finance/login/")
+def registrar_category(request):
+    if request.method == "GET":
+        referer = request.META.get('HTTP_REFERER')
+        if referer:
+            return redirect(referer)
+        return redirect('finance:inicio')
+    
+    name = request.POST.get('name')
+    type = request.POST.get('type')
+
+    if not(Category.objects.filter(name=name, type=type, user=request.user).exists()):     
+        Category.objects.create(name=name, type=type, user=request.user)
+
+    referer = request.META.get('HTTP_REFERER')
+    if referer:
+        return redirect(referer)
+    return redirect('finance:inicio')
 
 @login_required(login_url="/finance/login/")
-def consultar_gastos_by_params(request):
+def gastos_by_params(request):
     user = request.user
-    gastos_consultados = Gasto.objects.filter(user=user)
+    gastos_consultados = Transaction.objects.filter(user=user, type="G")
 
     if request.method == "POST":
         description_search = request.POST.get('description_search')
         date_start = request.POST.get('date_start')
         date_end = request.POST.get('date_end')
         value = request.POST.get('value')
-        type_id = request.POST.get('type')
+        category_id = request.POST.get('category')
         is_paid = request.POST.get('is_paid')
+        account_id = request.POST.get('account')
+        is_installment = request.POST.get('installment')
 
         if description_search:
             gastos_consultados = gastos_consultados.filter(description__icontains=description_search)
 
         if date_start:
-            gastos_consultados = gastos_consultados.filter(date_paid__gte=date_start)
+            gastos_consultados = gastos_consultados.filter(date__gte=date_start)
 
         if date_end:
-            gastos_consultados = gastos_consultados.filter(date_paid__lte=date_end)
+            gastos_consultados = gastos_consultados.filter(date__lte=date_end)
 
         if value:
             gastos_consultados = gastos_consultados.filter(value=value)
 
-        if type_id:
-            gastos_consultados = gastos_consultados.filter(type_id=type_id)
+        if category_id:
+            gastos_consultados = gastos_consultados.filter(category_id=category_id)
 
         if is_paid == "True":
             gastos_consultados = gastos_consultados.filter(is_paid=True)
@@ -184,148 +211,337 @@ def consultar_gastos_by_params(request):
         if is_paid == "False":
             gastos_consultados = gastos_consultados.filter(is_paid=False)
 
-    tipos_gastos = TipoGasto.objects.filter(user=user)
+        if account_id:
+            gastos_consultados = gastos_consultados.filter(account_id=account_id)
 
-    context = {"gastos_consultados":gastos_consultados.order_by('-date_paid'), "tipos_gastos":tipos_gastos}
+        if is_installment == "True":
+            gastos_consultados = gastos_consultados.filter(transaction_installment__isnull=False)
+
+    categories = Category.objects.filter(user=user, type="G")
+    accounts = Account.objects.filter(user=user)
+
+    receitas = Transaction.objects.filter(user=user, type="R")
+    gastos = Transaction.objects.filter(user=user, type="G", is_paid=True)
+
+    total_receitas = sum_by_value(receitas)
+    total_gastos = sum_by_value(gastos)
+
+    saldo_atual = total_receitas - total_gastos
+
+    gastos_not_paid = Transaction.objects.filter(user=user, type="G", is_paid=False)
+
+    gastos_parcelados_aberto = Transaction.objects.filter(user=user, type="G", is_paid=False, transaction_installment__isnull=False)
+
+    total_gastos_not_paid = sum_by_value(gastos_not_paid)
+
+    total_parcelado_aberto = sum_by_value(gastos_parcelados_aberto)
+
+    saldo_imaginario = saldo_atual - total_gastos_not_paid - total_parcelado_aberto
+
+    context = {"gastos_consultados":gastos_consultados.order_by('-date'), 
+               "categories":categories, 
+               "accounts":accounts,
+               "total_gastos":total_gastos,
+               "saldo_atual":saldo_atual,
+               "total_gastos_not_paid":total_gastos_not_paid,
+               "saldo_imaginario":saldo_imaginario,
+               "total_parcelado_aberto":total_parcelado_aberto,
+               }
 
     return render(request, 'finance/gastos.html', context=context)    
 
 @login_required(login_url="/finance/login/")
-def consultar_ganhos_by_params(request):
+def receitas_by_params(request):
     user = request.user
-    ganhos_consultados = Ganho.objects.filter(user=user)
+    receita_consultados = Transaction.objects.filter(user=user, type="R")
 
     if request.method == "POST":
         description_search = request.POST.get('description_search')
         date_start = request.POST.get('date_start')
         date_end = request.POST.get('date_end')
         value = request.POST.get('value')
-        type_id = request.POST.get('type')
+        category_id = request.POST.get('category')
+        account_id = request.POST.get('account')
 
         if description_search:
-            ganhos_consultados = ganhos_consultados.filter(description__icontains=description_search)
+            receita_consultados = receita_consultados.filter(description__icontains=description_search)
 
         if date_start:
-            ganhos_consultados = ganhos_consultados.filter(date_paid__gte=date_start)
+            receita_consultados = receita_consultados.filter(date__gte=date_start)
 
         if date_end:
-            ganhos_consultados = ganhos_consultados.filter(date_paid__lte=date_end)
+            receita_consultados = receita_consultados.filter(date__lte=date_end)
 
         if value:
-            ganhos_consultados = ganhos_consultados.filter(value=value)
+            receita_consultados = receita_consultados.filter(value=value)
 
-        if type_id:
-            ganhos_consultados = ganhos_consultados.filter(type_id=type_id)
+        if category_id:
+            receita_consultados = receita_consultados.filter(category_id=category_id)
 
+        if account_id:
+            receita_consultados = receita_consultados.filter(account_id=account_id)
 
-    tipos_ganhos = TipoGanho.objects.filter(user=user)
+    categories = Category.objects.filter(user=user, type="R")
+    accounts = Account.objects.filter(user=user)
 
-    context = {"ganhos_consultados":ganhos_consultados.order_by('-date_paid'), "tipos_ganhos":tipos_ganhos}
+    receitas = Transaction.objects.filter(user=user, type="R")
+    gastos = Transaction.objects.filter(user=user, type="G", is_paid=True)
 
-    return render(request, 'finance/ganhos.html', context=context)    
+    total_receitas = sum_by_value(receitas)
+    total_gastos = sum_by_value(gastos)
 
-@login_required(login_url="/finance/login/")
-def atualizar_gasto(request):
-    user = request.user
+    saldo_atual = total_receitas - total_gastos
 
+    gastos_not_paid = Transaction.objects.filter(user=user, type="G", is_paid=False)
+
+    total_gastos_not_paid = sum_by_value(gastos_not_paid)
+
+    saldo_imaginario = saldo_atual - total_gastos_not_paid
+
+    context = {"receita_consultados":receita_consultados.order_by('-date'), 
+               "categories":categories, 
+               "accounts":accounts,
+               "total_receitas":total_receitas,
+               "saldo_atual":saldo_atual,
+               "saldo_imaginario":saldo_imaginario
+               }
+
+    return render(request, 'finance/receita.html', context=context)   
+    
+@login_required(login_url="/finance/login/")    
+def update_transiction(request):
     if request.method == "GET":
         referer = request.META.get('HTTP_REFERER')
         if referer:
             return redirect(referer)
-        return redirect('finance:dashboard')
+        return redirect('finance:inicio')
     
-    gasto_to_update = get_object_or_404(Gasto, id=request.POST.get('gasto_id'), user=user)
-
-    description = request.POST.get('description')
-    date = request.POST.get('date_paid')
-    value = request.POST.get('value')
-    is_paid = request.POST.get('is_paid')
-
-    if description:
-        gasto_to_update.description = description
-    if date:
-        gasto_to_update.date = date
-    if value:
-        gasto_to_update.value = value
-    if is_paid:
-        gasto_to_update.is_paid = is_paid
-
-    gasto_to_update.save()
-
-    referer = request.META.get('HTTP_REFERER')
-    if referer:
-        return redirect(referer)
-    return redirect('finance:dashboard')
-
-@login_required(login_url="/finance/login/")
-def atualizar_ganho(request):
     user = request.user
-
-    if request.method == "GET":
-        referer = request.META.get('HTTP_REFERER')
-        if referer:
-            return redirect(referer)
-        return redirect('finance:dashboard')
-    
-    ganho_to_update = get_object_or_404(Ganho, id=request.POST.get('ganho_id'), user=user)
-
-    description = request.POST.get('description')
-    date = request.POST.get('date_paid')
-    value = request.POST.get('value')
-    is_paid = request.POST.get('is_paid')
     type_id = request.POST.get('type')
+    
+    transaction_to_update = get_object_or_404(Transaction, id=request.POST.get('transaction_id'), type=type_id, user=user)
 
+    description = request.POST.get('description')
+    date = request.POST.get('date_paid')
+    value = request.POST.get('value')
+    category_id = request.POST.get('category')
+    account_id = request.POST.get('account')
 
     if description:
-        ganho_to_update.description = description
+        transaction_to_update.description = description
     if date:
-        ganho_to_update.date_paid = date
+        transaction_to_update.date = date
     if value:
-        ganho_to_update.value = value
-    if is_paid:
-        ganho_to_update.is_paid = is_paid
-    if type_id:
-        ganho_to_update.type_id = type_id
+        transaction_to_update.value = value
+    transaction_to_update.is_paid = request.POST.get('is_paid') == 'True'
+    if category_id:
+        transaction_to_update.category_id = category_id
+    if account_id:
+        transaction_to_update.account_id = account_id
 
-    ganho_to_update.save()
+    transaction_to_update.save()
 
     referer = request.META.get('HTTP_REFERER')
     if referer:
         return redirect(referer)
-    return redirect('finance:dashboard')
+    return redirect('finance:inicio')
 
 @login_required(login_url="/finance/login/")
-def delete_ganho(request):
+def delete_transiction(request):
+    if request.method == "GET":
+        referer = request.META.get('HTTP_REFERER')
+        if referer:
+            return redirect(referer)
+        return redirect('finance:inicio')
+    
     user = request.user
 
-    if request.method == "GET":
-            referer = request.META.get('HTTP_REFERER')
-            if referer:
-                return redirect(referer)
-            return redirect('finance:dashboard')
-    
-    ganho = get_object_or_404(Ganho, id=request.POST.get('ganho_id'), user=user)
-    ganho.delete()
+    transaction = get_object_or_404(Transaction, id=request.POST.get('transaction_id'), user=user)
+    transaction.delete()
 
     referer = request.META.get('HTTP_REFERER')
     if referer:
         return redirect(referer)
-    return redirect('finance:dashboard')
+    return redirect('finance:inicio')
 
 @login_required(login_url="/finance/login/")
-def delete_gasto(request):
+def delete_account(request):
+    if request.method == "GET":
+        referer = request.META.get('HTTP_REFERER')
+        if referer:
+            return redirect(referer)
+        return redirect('finance:inicio')
+    
     user = request.user
 
-    if request.method == "GET":
-            referer = request.META.get('HTTP_REFERER')
-            if referer:
-                return redirect(referer)
-            return redirect('finance:dashboard')
-    
-    gasto = get_object_or_404(Gasto, id=request.POST.get('gasto_id'), user=user)
-    gasto.delete()
+    account = get_object_or_404(Account, id=request.POST.get('account_id'), user=user)
+    account.delete()
 
     referer = request.META.get('HTTP_REFERER')
     if referer:
         return redirect(referer)
-    return redirect('finance:dashboard')
+    return redirect('finance:inicio')
+
+@login_required(login_url="/finance/login/")
+def delete_category(request):
+    if request.method == "GET":
+        referer = request.META.get('HTTP_REFERER')
+        if referer:
+            return redirect(referer)
+        return redirect('finance:inicio')
+    
+    user = request.user
+
+    category = get_object_or_404(Category, id=request.POST.get('category_id'), user=user)
+    category.delete()
+
+    referer = request.META.get('HTTP_REFERER')
+    if referer:
+        return redirect(referer)
+    return redirect('finance:inicio')
+
+@login_required(login_url="/finance/login/")    
+def update_account(request):
+    if request.method == "GET":
+        referer = request.META.get('HTTP_REFERER')
+        if referer:
+            return redirect(referer)
+        return redirect('finance:inicio')
+    
+    user = request.user
+    
+    account_to_update = get_object_or_404(Account, id=request.POST.get('account_id'), user=user)
+
+    name = request.POST.get('name')
+
+    if name:
+        account_to_update.name = name
+
+    account_to_update.save()
+
+    referer = request.META.get('HTTP_REFERER')
+    if referer:
+        return redirect(referer)
+    return redirect('finance:inicio')
+
+@login_required(login_url="/finance/login/")    
+def update_category(request):
+    if request.method == "GET":
+        referer = request.META.get('HTTP_REFERER')
+        if referer:
+            return redirect(referer)
+        return redirect('finance:inicio')
+    
+    user = request.user
+    
+    category_to_update = get_object_or_404(Category, id=request.POST.get('category_id'), user=user)
+
+    name = request.POST.get('name')
+
+    if name:
+        category_to_update.name = name
+
+    category_to_update.save()
+
+    referer = request.META.get('HTTP_REFERER')
+    if referer:
+        return redirect(referer)
+    return redirect('finance:inicio')
+
+
+@login_required(login_url="/finance/login")
+def accounts_categories(request):
+
+    user = request.user
+
+    accounts = Account.objects.filter(user=user)
+
+    categories = Category.objects.filter(user=user)
+
+    categories_receita = categories.filter(type="R")
+    categories_gasto = categories.filter( type="G")
+
+    user_context = {"categories":categories,
+                    "categories_receita":categories_receita, 
+                    "categories_gasto":categories_gasto, 
+                    "accounts":accounts,
+                    }
+
+    return render(request, 'finance/accounts_categories.html', user_context)
+
+@login_required(login_url="/finance/login")
+def dashboard_mensal(request):
+    today = date.today()
+    user = request.user
+
+    if request.method == "POST":
+        selected_month = request.POST.get("selected_month")
+        compare_month = request.POST.get("compare_month")
+    else:
+        selected_month = today.strftime("%Y-%m")
+        compare_month = (today - relativedelta(months=1)).strftime("%Y-%m")
+
+    selected_ref = datetime.strptime(selected_month, "%Y-%m")
+    compare_ref = datetime.strptime(compare_month, "%Y-%m")
+        
+    receitas_selected = Transaction.objects.filter(user=user, type="R", date__year=selected_ref.year, date__month=selected_ref.month)
+    gastos_selected = Transaction.objects.filter(user=user, type="G", date__year=selected_ref.year, date__month=selected_ref.month)
+
+    
+    receitas_compare = Transaction.objects.filter(user=user, type="R", date__year=compare_ref.year, date__month=compare_ref.month)
+    gastos_compare = Transaction.objects.filter(user=user, type="G", date__year=compare_ref.year, date__month=compare_ref.month)
+    
+    accounts = Account.objects.filter(user=user)
+    categories_receita = Category.objects.filter(user=user, type="R")
+    categories_gastos = Category.objects.filter(user=user, type="G")
+
+    value_by_category_receita_selected = sum_by_category(receitas_selected)
+    value_by_category_gastos_selected = sum_by_category(gastos_selected)
+
+    value_by_category_receita_compare = sum_by_category(receitas_compare)
+    value_by_category_gastos_compare = sum_by_category(gastos_compare)
+
+    total_receitas = sum_by_value(receitas_selected)
+    total_gastos = sum_by_value(gastos_selected)
+
+    saldo_atual = total_receitas - total_gastos
+
+    gastos_not_paid = Transaction.objects.filter(user=user, type="G", date__year=selected_ref.year, date__month=selected_ref.month, is_paid=False, transaction_installment__isnull=True)
+    gasto_parcelado = Transaction.objects.filter(user=user, type="G", date__year=selected_ref.year, date__month=selected_ref.month, transaction_installment__isnull=False)
+    gastos_parcelados_aberto = gasto_parcelado.filter(is_paid=False)
+    gasto_parcelado.filter(is_paid=True)
+
+    total_gastos_not_paid = sum_by_value(gastos_not_paid)
+    total_parcelado =  sum_by_value(gasto_parcelado)
+    total_parcelado_aberto = sum_by_value(gastos_parcelados_aberto)
+
+    saldo_imaginario = saldo_atual - total_gastos_not_paid - total_parcelado_aberto
+
+    receitas_account = sum_by_account(receitas_selected)
+    gastos_account = sum_by_account(gastos_selected)
+
+    total_account = total_by_account(Transaction.objects.filter(user=user, date__year=selected_ref.year, date__month=selected_ref.month))
+
+    user_context = {"selected_month":selected_month,
+                    "compare_month":compare_month,
+                    "receitas_selected":receitas_selected,
+                    "gastos_selected": gastos_selected,
+                    "accounts":accounts,
+                    "categories_receita":categories_receita,
+                    "categories_gastos":categories_gastos,
+                    "value_by_category_receitas_selected":value_by_category_receita_selected,
+                    "value_by_category_gastos_selected":value_by_category_gastos_selected,
+                    "value_by_category_receitas_compare":value_by_category_receita_compare,
+                    "value_by_category_gastos_compare":value_by_category_gastos_compare,
+                    "total_gastos":total_gastos,
+                    "saldo_atual":saldo_atual,
+                    "total_gastos_not_paid":total_gastos_not_paid,
+                    "total_parcelado":total_parcelado,
+                    "total_parcelado_aberto":total_parcelado_aberto,
+                    "saldo_imaginario":saldo_imaginario,
+                    "receitas_account":receitas_account,
+                    "gastos_account":gastos_account,
+                    "total_account":total_account
+                    }
+
+    return render(request, 'finance/dashboard_mensal.html', user_context)

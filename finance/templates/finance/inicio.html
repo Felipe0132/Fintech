@@ -1,0 +1,197 @@
+{% extends 'finance/base.html' %}
+{% load static %}
+
+{% block title %}Início{% endblock %}
+
+{% block active_inicio %}active{% endblock %}
+
+{% block content %}
+<div class="row g-4 mb-4">
+    <div class="col-12 col-md-3">
+        <div class="card card-dark p-4 h-100">
+            <span class="text-label mb-2">Total de receitas</span>
+            <span class="summary-value text-positive">R$ {{ total_receitas }}</span>
+        </div>
+    </div>
+    <div class="col-12 col-md-3">
+        <div class="card card-dark p-4 h-100">
+            <span class="text-label mb-2">Total de gastos</span>
+            <span class="summary-value text-negative">R$ {{ total_gastos }}</span>
+        </div>
+    </div>
+    <div class="col-12 col-md-3">
+        <div class="card card-dark p-4 h-100">
+            <span class="text-label mb-2">Saldo</span>
+            {% if saldo_atual > 0 %}
+            <span class="summary-value text-positive">R$ {{ saldo_atual }}</span>
+            {% elif 0 > saldo_atual %}
+            <span class="summary-value text-negative">R$ {{ saldo_atual }}</span>
+            {% else %}
+            <span class="summary-value text-warning">R$ {{ saldo_atual }}</span>
+            {% endif %}
+        </div>
+    </div>
+    <div class="col-12 col-md-3">
+        <div class="card card-dark p-4 h-100">
+            <span class="text-label mb-2">Saldo imaginário (atual - não pagos)</span>
+            <span class="summary-value text-warning">R$ {{ saldo_imaginario }}</span>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4 mb-4">
+    <!-- Total por Conta -->
+    <div class="col-md-6">
+        <div class="card card-dark p-4 h-100">
+            <h5 class="mb-3 text-title card-title-row">
+                <i class="bi bi-pie-chart-fill section-icon text-negative"></i>Total por conta
+            </h5>
+            {% if total_account %}
+            <div class="table-responsive table-scroll-container">
+                <table class="table table-dark-custom mb-0 table-hover">
+                    <thead>
+                        <tr>
+                            <th onclick="ordenarTabela(this, 0)" style="cursor:pointer">Conta <i class="bi bi-arrow-down-up"></i></th>
+                            <th onclick="ordenarTabela(this, 1)" style="cursor:pointer">Valor <i class="bi bi-arrow-down-up"></i></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for conta, total in total_account.items %}
+                        <tr>
+                            <td>{{ conta }}</td>
+                            <td class="text-end">
+                                {% if total > 0 %}
+                                <span class="value-pill text-positive">R$ {{ total|floatformat:2 }}</span>
+                                {% elif 0 > total %}
+                                <span class="value-pill text-negative">R$ {{ total|floatformat:2 }}</span>
+                                {% else %}
+                                <span class="value-pill text-warning">R$ {{ total|floatformat:2 }}</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="empty-state">
+                <i class="bi bi-pie-chart-fill"></i>
+                <span>Nenhum gasto encontrado.</span>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-12 col-md-3">
+        <div class="card card-dark h-100 d-flex flex-column justify-content-between">
+            <div class="p-3">
+                <h5 class="mb-3 text-title">Últimos gastos</h5>
+                {% for gasto in gastos %}
+                <div class="list-item d-flex justify-content-between align-items-center py-2 border-bottom border-secondary">
+                    <span>{{ gasto.description }}</span>
+                    <span class="badge-value text-negative">R$ {{ gasto.value }}</span>
+                </div>
+                {% empty %}
+                <p class="text-label mb-0">Nenhum gasto registrado ainda.</p>
+                {% endfor %}
+            </div>
+            <div class="p-3 pt-0 mt-auto">
+                <button type="button" class="btn btn-primary btn-add-gasto w-100 text-center"
+                    data-bs-toggle="modal" data-bs-target="#modalgasto">
+                    + Adicionar gasto
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12 col-md-3">
+        <div class="card card-dark h-100 d-flex flex-column justify-content-between">
+            <div class="p-3">
+                <h5 class="mb-3 text-title">Últimos receitas</h5>
+                {% for receita in receitas %}
+                <div class="list-item d-flex justify-content-between align-items-center py-2 border-bottom border-secondary">
+                    <span>{{ receita.description }}</span>
+                    <span class="badge-value text-positive">R$ {{ receita.value }}</span>
+                </div>
+                {% empty %}
+                <p class="text-label mb-0">Nenhum receita registrado ainda.</p>
+                {% endfor %}
+            </div>
+            <div class="p-3 pt-0 mt-auto">
+                <button type="button" class="btn btn-primary btn-add-receita w-100 text-center"
+                    data-bs-toggle="modal" data-bs-target="#modalreceita">
+                    + Adicionar receita
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12 col-md-3">
+        <div class="card card-dark h-100 d-flex flex-column justify-content-between">
+            <div class="p-3">
+                <h5 class="mb-3 text-title">Últimos não pagos</h5>
+                {% for receita in gastos_not_paid %}
+                <div class="list-item d-flex justify-content-between align-items-center py-2 border-bottom border-secondary">
+                    <span>{{ receita.description }}</span>
+                    <span class="badge-value text-warning">R$ {{ receita.value }}</span>
+                </div>
+                {% empty %}
+                <p class="text-label mb-0">Nenhum gasto não pago registrado ainda.</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12 col-md-3">
+        <div class="card card-dark h-100 d-flex flex-column justify-content-between">
+            <div class="p-3">
+                <h5 class="mb-3 text-title">Gastos parcelados</h5>
+                {% for gasto in gastos_parcelados %}
+                <div class="list-item py-2 border-bottom border-secondary">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span>{{ gasto.description }}</span>
+                        <span class="badge-value text-warning">R$ {{ gasto.value }}</span>
+                    </div>
+                    {% if gasto.installment_number and gasto.transaction_installment %}
+                    <small class="text-muted d-block mt-1">
+                        Parcela {{ gasto.installment_number }}/{{ gasto.transaction_installment.installments_count }}
+                    </small>
+                    {% endif %}
+                </div>
+                {% empty %}
+                <p class="text-label mb-0">Nenhum gasto parcelado em aberto.</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function ordenarTabela(thElement, colIndex) {
+        const table = thElement.closest('table');
+        const tbody = table.querySelector('tbody');
+        const linhas = Array.from(tbody.querySelectorAll('tr'));
+
+        const th = table.querySelectorAll('th')[colIndex];
+        const asc = th.dataset.asc !== 'true';
+        table.querySelectorAll('th').forEach(h => h.dataset.asc = '');
+        th.dataset.asc = asc;
+
+        linhas.sort((a, b) => {
+            const va = a.children[colIndex].dataset.sort ?? a.children[colIndex].textContent.trim();
+            const vb = b.children[colIndex].dataset.sort ?? b.children[colIndex].textContent.trim();
+            const na = parseFloat(va), nb = parseFloat(vb);
+            const cmp = !isNaN(na) && !isNaN(nb)
+                ? na - nb
+                : va.localeCompare(vb, 'pt-BR');
+            return asc ? cmp : -cmp;
+        });
+
+        linhas.forEach(linha => tbody.appendChild(linha));
+    }
+</script>
+{% endblock %}

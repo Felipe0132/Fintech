@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt
 from .models import *
+from decimal import Decimal
 
 def sum_by_value(movimentacao):
 
@@ -12,76 +12,36 @@ def sum_by_value(movimentacao):
 
         return df["value"].sum()
     
-    return 0.0
+    return Decimal(0.0)
 
-def grafico_by_category_gasto(movimentacao, user):
-    movimentacao = movimentacao.values('type__name', 'value') # Data that will use
+def sum_by_category(transactions):
+    transactions = transactions.values('category__name', 'value')
+    df = pd.DataFrame(list(transactions))
 
-    if not movimentacao:
-        return None
+    if df.empty:
+        return {}
 
-    df = pd.DataFrame(movimentacao)
-    df['value'] = df['value'].astype(float)
+    resultado = df.groupby('category__name')['value'].sum()
+    return resultado.to_dict()
 
-    por_type = df[['type__name', 'value']].groupby('type__name').sum() # Group entries with the same type_id and sum their value
+def sum_by_account(transactions):
+    transactions = transactions.values('account__name', 'value')
+    df = pd.DataFrame(list(transactions))
 
-    fig, ax = plt.subplots(figsize=(8, 5))
-    pie = ax.pie(por_type['value'])
+    if df.empty:
+        return {}
 
-    ax.pie_label(pie, '{frac:.1%}\n(R${absval:.2f})', textprops=dict(color="w", size=8, weight="bold"))
-    ax.legend(pie.wedges, df['type__name'], title="Ingredients", loc="center left", bbox_to_anchor=(1, 0, 0.5, 1))
+    resultado = df.groupby('account__name')['value'].sum()
+    return resultado.to_dict()
 
+def total_by_account(transactions):
+    transactions = transactions.values('account__name', 'value', 'type')
+    df = pd.DataFrame(list(transactions))
 
+    df.loc[df["type"]=="G", "value"] = df["value"] * -1
 
-    plt.savefig(f'finance/static/assets/images/graficos/graficoCompareGasto{user.id}.png')
-    plt.close(fig)
+    if df.empty:
+        return {}
 
-    return f'assets/images/graficos/graficoCompareGasto{user.id}.png'
-
-def grafico_by_category_ganho(movimentacao, user):
-    movimentacao = movimentacao.values('type__name', 'value') # Data that will use
-
-    if not movimentacao:
-        return None
-
-    df = pd.DataFrame(movimentacao)
-    df['value'] = df['value'].astype(float)
-
-    por_type = df[['type__name', 'value']].groupby('type__name').sum() # Group entries with the same type_id and sum their value
-
-    fig, ax = plt.subplots(figsize=(8, 5))
-    pie = ax.pie(por_type['value'])
-
-    ax.pie_label(pie, '{frac:.1%}\n(R${absval:.2f})', textprops=dict(color="w", size=8, weight="bold"))
-    ax.legend(pie.wedges, df['type__name'], title="Ingredients", loc="center left", bbox_to_anchor=(1, 0, 0.5, 1))
-
-
-
-    plt.savefig(f'finance/static/assets/images/graficos/graficoCompareGanho{user.id}.png')
-    plt.close(fig)
-
-    return f'assets/images/graficos/graficoCompareGanho{user.id}.png'
-
-def grafico_by_category_gasto_not_paid(movimentacao, user):
-    movimentacao = movimentacao.values('type__name', 'value') # Data that will use
-
-    if not movimentacao:
-        return None
-
-    df = pd.DataFrame(movimentacao)
-    df['value'] = df['value'].astype(float)
-
-    por_type = df[['type__name', 'value']].groupby('type__name').sum() # Group entries with the same type_id and sum their value
-
-    fig, ax = plt.subplots(figsize=(8, 5))
-    pie = ax.pie(por_type['value'])
-
-    ax.pie_label(pie, '{frac:.1%}\n(R${absval:.2f})', textprops=dict(color="w", size=8, weight="bold"))
-    ax.legend(pie.wedges, df['type__name'], title="Ingredients", loc="center left", bbox_to_anchor=(1, 0, 0.5, 1))
-
-
-
-    plt.savefig(f'finance/static/assets/images/graficos/graficoCompareGastoNotPaid{user.id}.png')
-    plt.close(fig)
-
-    return f'assets/images/graficos/graficoCompareGastoNotPaid{user.id}.png'
+    resultado = df.groupby('account__name')['value'].sum()
+    return resultado.to_dict()
