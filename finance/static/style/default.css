@@ -170,7 +170,7 @@ body.bg-custom {
 .text-negative { color: var(--cor-negativo) !important; }
 .text-warning  { color: var(--color-warning) !important; }
 
-.text-claro {color: #1f2937 !important;} /* Cinza escuro/quase preto para fundos claros */
+.text-claro {color: #0d1116 !important;} /* Cinza escuro/quase preto para fundos claros */
 .text-escuro {color: #f9fafb !important;} /* Branco para fundos escuros */
 
 /* ==================== Botões ==================== */
