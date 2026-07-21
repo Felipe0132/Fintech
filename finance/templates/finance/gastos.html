@@ -167,7 +167,7 @@
                         <span class="badge bg-secondary ms-1" style="font-size: 0.7rem; font-weight: 500; opacity: 0.85;">Comum</span>
                         {% endif %}
                     </td>
-                    <td onclick="abrirDetalheModal('{{ transaction.id }}')" style="cursor: pointer;" class="text-negative" data-sort="{{ transaction.value }}"><span class="text-escuro">R$ {{ transaction.value }}</span></td>
+                    <td onclick="abrirDetalheModal('{{ transaction.id }}')" style="cursor: pointer;" class="text-negative" data-sort="{{ transaction.value }}"><span class="text-negative">R$ {{ transaction.value }}</span></td>
                     <td onclick="abrirDetalheModal('{{ transaction.id }}')" style="cursor: pointer;" data-sort="{{ transaction.date|date:'Ymd' }}"><span class="text-escuro">{{ transaction.date }}</span></td>
                     <td onclick="abrirDetalheModal('{{ transaction.id }}')" style="cursor: pointer;" data-sort="{{ transaction.is_paid|yesno:'1,0' }}">
                         {% if transaction.is_paid %}
