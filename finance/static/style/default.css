@@ -170,8 +170,8 @@ body.bg-custom {
 .text-negative { color: var(--cor-negativo) !important; }
 .text-warning  { color: var(--color-warning) !important; }
 
-.text-escuro {color: var(--cor-texto-bglight) !important;} 
-.text-claro {color: var(--cor-texto-principal) !important;}
+.text-escuro {color: var(--cor-texto-secundario) !important;} /* Ajustado para cinza claro legível no fundo escuro */
+.text-claro {color: var(--cor-texto-principal) !important;} /* Ajustado para branco (alto contraste) */
 
 /* ==================== Botões ==================== */
 
