@@ -304,6 +304,7 @@ body.bg-custom {
     padding: 1rem;
     border-bottom: 1px solid var(--cor-border) !important;
     vertical-align: middle;
+    color: #f9fafb !important;
 }
 
 .table-dark-custom tbody tr {
@@ -411,6 +412,9 @@ body.bg-custom {
 /* ==================== Responsivo ==================== */
 
 @media (max-width: 991.98px) {
+    .global.d-flex {
+        flex-direction: column !important;
+    }
     .sidebar-fixed {
         width: 100%;
         height: auto;

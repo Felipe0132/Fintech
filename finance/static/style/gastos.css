@@ -244,6 +244,9 @@ body.bg-custom {
 }
 
 @media (max-width: 767.98px) {
+    .global.d-flex {
+        flex-direction: column !important;
+    }
     .sidebar-fixed {
         width: 100%;
         height: auto;
