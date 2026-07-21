@@ -7,5 +7,5 @@ urlpatterns = [
 
     path('admin/', admin.site.urls),
     path('finance/', include('finance.urls')),
-    path("__reload__/", include("django_browser_reload.urls")),
+    #path("__reload__/", include("django_browser_reload.urls")),
 ]
