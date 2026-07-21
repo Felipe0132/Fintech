@@ -243,7 +243,7 @@ body.bg-custom {
     border-radius: 0;
 }
 
-@media (max-width: 767.98px) {
+@media (max-width: 991.98px) {
     .global.d-flex {
         flex-direction: column !important;
     }
@@ -254,6 +254,14 @@ body.bg-custom {
     }
     .main-content {
         margin-left: 0;
+    }
+    .sidebar-fixed .nav {
+        flex-direction: row !important;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+    .sidebar-fixed .nav-link {
+        margin-bottom: 0;
     }
 }
 
