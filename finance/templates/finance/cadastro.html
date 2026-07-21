@@ -8,12 +8,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register</title>
 
-    <link rel="stylesheet" href="../../static/style/login.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 </head>
 
-<body>
-    <section class="vh-100 gradient-custom">
+<body class="bg-dark">
+    <section class="vh-100" style="background: linear-gradient(to right, #0f0c29, #302b63, #24243e);">
         <div class="container py-5 h-100">
             <div class="row d-flex justify-content-center align-items-center h-100">
                 <div class="col-12 col-md-8 col-lg-6 col-xl-5">
@@ -32,42 +32,69 @@
                                     </p>
 
                                     <!-- Username -->
-                                    <div class="form-outline form-white mb-4">
+                                    <div class="form-floating mb-4">
                                         <input
                                             type="text"
                                             id="typeUsernameX"
                                             class="form-control form-control-lg"
                                             name="username"
+                                            placeholder="Username"
                                             required>
-                                        <label class="form-label" for="typeUsernameX">
+                                        <label for="typeUsernameX" class="text-dark">
                                             Username
                                         </label>
                                     </div>
 
                                     <!-- Email -->
-                                    <div class="form-outline form-white mb-4">
+                                    <div class="form-floating mb-4">
                                         <input
                                             type="email"
                                             id="typeEmailX"
                                             class="form-control form-control-lg"
                                             name="email"
+                                            placeholder="Email"
                                             required>
-                                        <label class="form-label" for="typeEmailX">
+                                        <label for="typeEmailX" class="text-dark">
                                             Email
                                         </label>
                                     </div>
 
                                     <!-- Password -->
-                                    <div class="form-outline form-white mb-4">
+                                    <div class="input-group mb-4">
                                         <input
                                             type="password"
                                             id="typePasswordX"
                                             class="form-control form-control-lg"
                                             name="password"
+                                            placeholder="Password"
                                             required>
-                                        <label class="form-label" for="typePasswordX">
-                                            Password
-                                        </label>
+                                        <button
+                                            class="btn btn-outline-light"
+                                            type="button"
+                                            onclick="togglePassword('typePasswordX', this)">
+                                            <i class="bi bi-eye"></i>
+                                        </button>
+                                    </div>
+
+                                    <!-- Confirm Password -->
+                                    <div class="input-group mb-4">
+                                        <input
+                                            type="password"
+                                            id="typeConfirmPasswordX"
+                                            class="form-control form-control-lg"
+                                            name="confirm_password"
+                                            placeholder="Confirm password"
+                                            required>
+                                        <button
+                                            class="btn btn-outline-light"
+                                            type="button"
+                                            onclick="togglePassword('typeConfirmPasswordX', this)">
+                                            <i class="bi bi-eye"></i>
+                                        </button>
+                                    </div>
+
+                                    <div id="passwordMismatch" class="text-danger small mb-3 d-none">
+                                        Passwords do not match.
                                     </div>
 
                                     <button
@@ -98,6 +125,30 @@
     </section>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function togglePassword(inputId, button) {
+            const input = document.getElementById(inputId);
+            const icon = button.querySelector("i");
+            const isHidden = input.type === "password";
+            input.type = isHidden ? "text" : "password";
+            icon.classList.toggle("bi-eye", !isHidden);
+            icon.classList.toggle("bi-eye-slash", isHidden);
+        }
+
+        // Basic client-side check before submitting (server should still validate)
+        document.querySelector("form").addEventListener("submit", function (event) {
+            const password = document.getElementById("typePasswordX").value;
+            const confirmPassword = document.getElementById("typeConfirmPasswordX").value;
+            const mismatchAlert = document.getElementById("passwordMismatch");
+
+            if (password !== confirmPassword) {
+                event.preventDefault();
+                mismatchAlert.classList.remove("d-none");
+            } else {
+                mismatchAlert.classList.add("d-none");
+            }
+        });
+    </script>
 </body>
 
 </html>
