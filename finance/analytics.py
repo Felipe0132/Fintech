@@ -38,10 +38,10 @@ def total_by_account(transactions):
     transactions = transactions.values('account__name', 'value', 'type')
     df = pd.DataFrame(list(transactions))
 
-    df.loc[df["type"]=="G", "value"] = df["value"] * -1
-
     if df.empty:
         return {}
+
+    df.loc[df["type"]=="G", "value"] = df["value"] * -1
 
     resultado = df.groupby('account__name')['value'].sum()
     return resultado.to_dict()
