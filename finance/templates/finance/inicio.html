@@ -64,7 +64,7 @@
                     <tbody>
                         {% for conta, total in total_account.items %}
                         <tr>
-                            <td><span class="text-claro">{{ conta }}</span></td>
+                            <td><span class="text-escuro">{{ conta }}</span></td>
                             <td class="text-end">
                                 {% if total > 0 %}
                                 <span class="value-pill text-positive">R$ {{ total|floatformat:2 }}</span>
