@@ -31,7 +31,7 @@ def login(request):
     else:
         messages.error(request, 'Usuário ou senha inválidos.')
 
-    return HttpResponse("Dados incorretos")
+    return redirect('finance:login')
 
 
 def cadastro(request):
@@ -43,7 +43,8 @@ def cadastro(request):
     password = request.POST.get('password')
 
     if ProfileUser.objects.filter(email=email).exists():
-        return HttpResponse("Ja existe um usuario com este Email!")
+        messages.error(request, "Ja existe um usuario com este Email!")
+        return redirect('finance:cadastro')
     
     ProfileUser.objects.create_user(username=username, email=email, password=password)
 

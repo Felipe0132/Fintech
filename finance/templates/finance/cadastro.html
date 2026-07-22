@@ -20,6 +20,12 @@
 
                     <div class="card bg-dark text-white" style="border-radius: 1rem;">
                         <div class="card-body p-5 text-center">
+                            
+                            {% if messages %}
+                                {% for message in messages %}
+                                    <div class="alert alert-danger">{{ message }}</div>
+                                {% endfor %}
+                            {% endif %}
 
                             <form action="{% url 'finance:cadastro' %}" method="post">
                                 {% csrf_token %}
