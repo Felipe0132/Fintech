@@ -29,11 +29,11 @@
             <div>
                 <span class="text-label mb-2 d-block text-info"><i class="bi bi-calendar-range me-1"></i> Resumo de Parcelas</span>
                 <div class="d-flex justify-content-between align-items-center mb-2">
-                    <small class="text-cor-texto-mutado">Pagas no mês:</small>
+                    <small class="text-cor-texto-mutado text-escuro">Pagas no mês:</small>
                     <span class="text-positive fw-bold font-monospace">R$ {{ total_parcelado_pago_mes|default:"0,00" }}</span>
                 </div>
                 <div class="d-flex justify-content-between align-items-center">
-                    <small class="text-cor-texto-mutado">Total em aberto:</small>
+                    <small class="text-cor-texto-mutado text-escuro">Total em aberto:</small>
                     <span class="text-warning fw-bold font-monospace">R$ {{ total_parcelado_aberto|default:"0,00" }}</span>
                 </div>
             </div>
@@ -46,7 +46,7 @@
             <div>
                 <span class="text-label mb-2 d-block">Saldos</span>
                 <div class="d-flex justify-content-between align-items-center mb-2">
-                    <small class="text-text-cor-texto-mutado">Saldo Real:</small>
+                    <small class="text-text-cor-texto-mutado text-escuro">Saldo Real:</small>
                     {% if saldo_atual > 0 %}
                     <span class="text-positive fw-bold font-monospace">R$ {{ saldo_atual }}</span>
                     {% elif 0 > saldo_atual %}
@@ -56,7 +56,7 @@
                     {% endif %}
                 </div>
                 <div class="d-flex justify-content-between align-items-center">
-                    <small class="text-text-cor-texto-mutado">Saldo Imaginário:</small>
+                    <small class="text-text-cor-texto-mutado text-escuro">Saldo Imaginário:</small>
                     <span class="text-warning fw-bold font-monospace">R$ {{ saldo_imaginario }}</span>
                 </div>
             </div>

@@ -4,6 +4,7 @@ from django.contrib.auth import authenticate
 from django.contrib.auth import login as login_django
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user_model
+from django.contrib import messages
 from .models import *
 from .analytics import *
 from datetime import date, datetime
@@ -27,8 +28,11 @@ def login(request):
     if user:
         login_django(request, user) # Navegador logado
         return redirect('finance:inicio')        
-    
+    else:
+        messages.error(request, 'Usuário ou senha inválidos.')
+
     return HttpResponse("Dados incorretos")
+
 
 def cadastro(request):
     if request.method == 'GET':
