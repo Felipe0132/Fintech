@@ -9,6 +9,8 @@ from .models import *
 from .analytics import *
 from datetime import date, datetime
 from dateutil.relativedelta import relativedelta
+from .validacao_email import *
+from .enviar_email import *
 
 
 ProfileUser = get_user_model() # Substituir o User
@@ -38,17 +40,45 @@ def cadastro(request):
     if request.method == 'GET':
         return render(request, 'finance/cadastro.html')
     
-    username = request.POST.get('username')
-    email = request.POST.get('email')
-    password = request.POST.get('password')
+    request.session['username'] = request.POST.get('username') # Agora ficam salvos na sessao
+    request.session['email'] = request.POST.get('email')
+    request.session['password'] = request.POST.get('password')
 
-    if ProfileUser.objects.filter(email=email).exists():
+    if ProfileUser.objects.filter(email=request.session.get("email")).exists():
         messages.error(request, "Ja existe um usuario com este Email!")
         return redirect('finance:cadastro')
-    
-    ProfileUser.objects.create_user(username=username, email=email, password=password)
 
-    return redirect('finance:login')
+    enviar_codigo(request.session.get("email"))
+
+    return render(request, 'finance/validar_cadastro.html')
+
+def validar_cadastro(request):
+    if request.method == "GET":
+        return render(request, 'finance/validar_cadastro.html')
+
+    email = request.session.get("email")
+    username = request.session.get("username")
+    password = request.session.get("password")
+
+    reenviar_codigo = request.POST.get('reenviar') == 'Reenviar'
+
+    if reenviar_codigo:
+        enviar_codigo(email)
+        messages.success(request, "Código reenviado!")
+        return redirect('finance:validar_cadastro')
+
+    token = request.POST.get('token')
+
+    validacao = validar_codigo(email, token)
+    if validacao:
+        ProfileUser.objects.create_user(username=username, email=email, password=password)
+
+        
+
+        return redirect('finance:login')
+    
+    messages.error(request, "Codigo incorreto!")
+    return redirect('finance:validar_cadastro')
 
 @login_required(login_url="/finance/login/")
 def inicio(request):
