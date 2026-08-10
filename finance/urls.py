@@ -1,11 +1,16 @@
 from django.urls import path
 from . import views
+from django.contrib.auth import views as auth_views
+from django.urls import reverse_lazy
 
 app_name = 'finance'
 
 urlpatterns = [
     path('', views.index, name='index'),
     path('login/', views.login, name='login'),
+    path('password-reset/', views.ResetPasswordView.as_view(), name='password_reset'),
+    path('password-reset-confirm/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(template_name='finance/password_reset_confirm.html', success_url=reverse_lazy('finance:password_reset_complete')), name='password_reset_confirm'),
+    path('password-reset-complete/', auth_views.PasswordResetCompleteView.as_view(template_name='finance/password_reset_complete.html'), name='password_reset_complete'),
     path('cadastro/', views.cadastro, name='cadastro'),
     path('validar-cadastro/', views.validar_cadastro, name='validar_cadastro'),
     path('inicio/', views.inicio, name='inicio'),
