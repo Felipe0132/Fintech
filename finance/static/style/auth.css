@@ -1,0 +1,35 @@
+
+/* ==================== Password Reset (auth) ==================== */
+
+.auth-page-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 2rem 1rem;
+}
+
+.auth-card {
+    /* reaproveita a mesma linguagem visual do .card-dark */
+    background-color: var(--bg-cards);
+    border: 1px solid var(--cor-border);
+    border-radius: 14px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.auth-card .card-header {
+    background-color: transparent;
+    border-bottom: 1px solid var(--cor-border);
+}
+
+.auth-card .card-header h3 {
+    color: var(--cor-texto-principal);
+}
+
+.auth-alert-info {
+    background-color: rgba(99, 102, 241, 0.1);
+    border: 1px solid rgba(99, 102, 241, 0.3);
+    color: var(--cor-texto-principal);
+    border-radius: 10px;
+    padding: 1rem 1.25rem;
+}

@@ -11,6 +11,9 @@ from datetime import date, datetime
 from dateutil.relativedelta import relativedelta
 from .validacao_email import *
 from .enviar_email import *
+from django.urls import reverse_lazy
+from django.contrib.auth.views import PasswordResetView
+from django.contrib.messages.views import SuccessMessageMixin
 
 
 ProfileUser = get_user_model() # Substituir o User
@@ -35,6 +38,12 @@ def login(request):
 
     return redirect('finance:login')
 
+class ResetPasswordView(SuccessMessageMixin, PasswordResetView):
+    template_name = 'finance/password_reset.html'
+    email_template_name = 'finance/password_reset_email.html'
+    subject_template_name = 'finance/password_reset_subject.txt'
+    success_message = "Enviamos as instruções para definição de senha para o seu e-mail, caso exista uma conta associada ao endereço informado. Você deverá recebê-las em breve. Se não receber o e-mail, certifique-se de ter digitado o endereço cadastrado e verifique sua caixa de spam."
+    success_url = reverse_lazy('finance:login')
 
 def cadastro(request):
     if request.method == 'GET':
