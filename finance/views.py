@@ -102,7 +102,8 @@ def inicio(request):
     categories_gasto = Category.objects.filter(user=user, type="G")
 
     total_receitas = sum_by_value(receitas)
-    total_gastos = sum_by_value(gastos)
+    gastos_paid = gastos.filter(is_paid=True)
+    total_gastos = sum_by_value(gastos_paid)
 
     saldo_atual = total_receitas - total_gastos
 
