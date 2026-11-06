@@ -6,21 +6,32 @@
 {% block active_inicio %}active{% endblock %}
 
 {% block content %}
+<section class="page-heading d-flex flex-wrap justify-content-between align-items-end gap-3 mb-4">
+    <div>
+        <span class="eyebrow">RESUMO FINANCEIRO</span>
+        <h1 class="page-title mb-1">Seu dinheiro, em perspectiva.</h1>
+        <p class="page-subtitle mb-0">Acompanhe suas movimentações e mantenha tudo sob controle.</p>
+    </div>
+    <span class="today-chip"><i class="bi bi-calendar3 me-2"></i>{{ now|date:"d/m/Y" }}</span>
+</section>
 <div class="row g-4 mb-4">
-    <div class="col-12 col-md-3">
-        <div class="card card-dark p-4 h-100">
+    <div class="col-12 col-sm-6 col-xl">
+        <div class="card card-dark metric-card metric-income p-4 h-100">
+            <span class="metric-icon"><i class="bi bi-arrow-down-left"></i></span>
             <span class="text-label mb-2">Total de receitas</span>
             <span class="summary-value text-positive">R$ {{ total_receitas }}</span>
         </div>
     </div>
-    <div class="col-12 col-md-3">
-        <div class="card card-dark p-4 h-100">
+    <div class="col-12 col-sm-6 col-xl">
+        <div class="card card-dark metric-card metric-expense p-4 h-100">
+            <span class="metric-icon"><i class="bi bi-arrow-up-right"></i></span>
             <span class="text-label mb-2">Total de gastos</span>
             <span class="summary-value text-negative">R$ {{ total_gastos }}</span>
         </div>
     </div>
-    <div class="col-12 col-md-3">
-        <div class="card card-dark p-4 h-100">
+    <div class="col-12 col-sm-6 col-xl">
+        <div class="card card-dark metric-card metric-balance p-4 h-100">
+            <span class="metric-icon"><i class="bi bi-wallet2"></i></span>
             <span class="text-label mb-2">Saldo</span>
             {% if saldo_atual > 0 %}
             <span class="summary-value text-positive">R$ {{ saldo_atual }}</span>
@@ -31,15 +42,17 @@
             {% endif %}
         </div>
     </div>
-    <div class="col-12 col-md-3">
-        <div class="card card-dark p-4 h-100">
+    <div class="col-12 col-sm-6 col-xl">
+        <div class="card card-dark metric-card metric-projection p-4 h-100">
+            <span class="metric-icon"><i class="bi bi-hourglass-split"></i></span>
             <span class="text-label mb-2">Saldo imaginário (atual - não pagos)</span>
             <span class="summary-value text-warning">R$ {{ saldo_imaginario }}</span>
         </div>
     </div>
-    <div class="col-12 col-md-3">
-        <div class="card card-dark p-4 h-100">
-            <span class="text-label mb-2">Total parcelado em  aberto</span>
+    <div class="col-12 col-sm-6 col-xl">
+        <div class="card card-dark metric-card metric-installments p-4 h-100">
+            <span class="metric-icon"><i class="bi bi-credit-card-2-front"></i></span>
+            <span class="text-label mb-2">Parcelas em aberto</span>
             <span class="summary-value text-warning">R$ {{ total_parcelado }}</span>
         </div>
     </div>

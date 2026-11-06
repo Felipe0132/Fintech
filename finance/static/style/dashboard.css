@@ -13,6 +13,9 @@
     align-items: center;
 }
 
+.report-chart { position: relative; min-height: 280px; max-height: 340px; }
+@media (max-width: 575.98px) { .report-chart { min-height: 240px; } }
+
 /* Tabelas de categoria */
 .category-table td {
     padding-top: 0.65rem;

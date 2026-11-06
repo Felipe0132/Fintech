@@ -3,6 +3,7 @@ from django.contrib.auth.models import AbstractUser
 from django.contrib.auth import get_user_model
 from django.conf import settings
 from dateutil.relativedelta import relativedelta
+from decimal import Decimal
 import uuid
 
 class ProfileUser(AbstractUser):
@@ -46,7 +47,7 @@ class Transaction_installment(models.Model):
 
     @property # Used because it behaves like a computed attribute — no parentheses needed to get the value
     def installment_value(self):
-        return round(int(self.total_value) / self.installments_count, 2)
+        return (self.total_value / self.installments_count).quantize(Decimal("0.01"))
     
     @property
     def remaining_installments(self):
@@ -56,10 +57,12 @@ class Transaction_installment(models.Model):
         return f"{self.description} ({self.installments_count}x)"
 
     def generate_installments(self):
+        total_cents = int(self.total_value * 100)
+        base_cents, remainder = divmod(total_cents, self.installments_count)
         transactions = [
             Transaction(
                 description=f"{self.description}",
-                value = self.installment_value,
+                value = Decimal(base_cents + (1 if i < remainder else 0)) / Decimal(100),
                 type=Transaction.Type.GASTO,
                 date=self.first_date + relativedelta(months=i),
                 is_paid=False,

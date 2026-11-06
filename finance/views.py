@@ -273,7 +273,7 @@ def gastos_by_params(request):
 
     saldo_atual = total_receitas - total_gastos
 
-    gastos_not_paid = Transaction.objects.filter(user=user, type="G", is_paid=False)
+    gastos_not_paid = Transaction.objects.filter(user=user, type="G", is_paid=False, transaction_installment__isnull=True)
 
     gastos_parcelados_aberto = Transaction.objects.filter(user=user, type="G", is_paid=False, transaction_installment__isnull=False)
 
@@ -547,7 +547,7 @@ def dashboard_mensal(request):
     value_by_category_gastos_compare = sum_by_category(gastos_compare)
 
     total_receitas = sum_by_value(receitas_selected)
-    total_gastos = sum_by_value(gastos_selected)
+    total_gastos = sum_by_value(gastos_selected.filter(is_paid=True))
 
     saldo_atual = total_receitas - total_gastos
 
@@ -557,7 +557,7 @@ def dashboard_mensal(request):
     gasto_parcelado.filter(is_paid=True)
 
     total_gastos_not_paid = sum_by_value(gastos_not_paid)
-    total_parcelado =  sum_by_value(gasto_parcelado)
+    total_parcelado =  sum_by_value(gastos_parcelados_aberto)
     total_parcelado_aberto = sum_by_value(gastos_parcelados_aberto)
 
     saldo_imaginario = saldo_atual - total_gastos_not_paid - total_parcelado_aberto
