@@ -13,3 +13,4 @@ __pycache__/
 .vscode/
 .idea/
 staticfiles/
+0001_initial.py
