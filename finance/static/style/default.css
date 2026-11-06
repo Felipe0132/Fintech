@@ -96,9 +96,13 @@ body.bg-custom {
 /* ==================== Navbar Superior ==================== */
 
 .navbar-dash {
+    position: sticky;
+    top: 0;
+    z-index: 1020;
     background-color: var(--bg-navbar) !important;
     border-bottom: 1px solid var(--cor-border);
     padding: 0.85rem 2rem;
+    backdrop-filter: blur(14px);
 }
 
 .text-user {
@@ -182,6 +186,41 @@ body.bg-custom {
     flex-direction: column;
 }
 
+.main-content > .container-fluid.py-5 { padding-bottom: 7rem !important; }
+.quick-actions {
+    position: fixed;
+    right: max(1.25rem, env(safe-area-inset-right));
+    bottom: max(1.25rem, env(safe-area-inset-bottom));
+    z-index: 1025;
+    display: flex;
+    gap: .7rem;
+}
+.quick-action {
+    display: inline-flex;
+    min-height: 48px;
+    align-items: center;
+    justify-content: center;
+    gap: .55rem;
+    padding: .75rem 1rem;
+    border: 1px solid transparent;
+    border-radius: 999px;
+    box-shadow: 0 8px 24px rgba(12, 25, 42, .24);
+    color: #fff;
+    font: inherit;
+    font-size: .88rem;
+    font-weight: 700;
+    transition: transform .18s ease, box-shadow .18s ease;
+}
+.quick-action i { font-size: 1rem; }
+.quick-action:hover { transform: translateY(-3px); box-shadow: 0 12px 28px rgba(12, 25, 42, .3); }
+.quick-action:focus-visible { outline: 3px solid var(--btn-filtrar-bg); outline-offset: 3px; }
+.quick-action-expense { background: var(--btn-add-gasto-bg); }
+.quick-action-expense:hover { background: var(--btn-add-gasto-hover); }
+.quick-action-income { background: var(--btn-add-receita-bg); }
+.quick-action-income:hover { background: var(--btn-add-receita-hover); }
+:root[data-theme="light"] .navbar-dash { box-shadow: 0 3px 16px rgba(34, 54, 79, .06); }
+:root[data-theme="light"] .quick-action { box-shadow: 0 8px 22px rgba(34, 54, 79, .2); }
+
 /* ==================== Cards ==================== */
 
 .card-dark {
@@ -236,11 +275,12 @@ body.bg-custom {
 }
 
 .btn-theme-toggle {
-    display: inline-grid;
-    width: 38px;
+    display: inline-flex;
     height: 36px;
-    padding: 0;
-    place-items: center;
+    align-items: center;
+    justify-content: center;
+    gap: .45rem;
+    padding: 0 .8rem;
     border: 1px solid var(--cor-border);
     background: transparent;
     color: var(--cor-texto-secundario);
@@ -510,6 +550,14 @@ body.bg-custom {
         padding-left: 0.5rem;
         padding-right: 0.5rem;
     }
+}
+
+@media (max-width: 575.98px) {
+    .quick-actions { flex-direction: column; align-items: flex-end; gap: .55rem; }
+    .quick-action { min-height: 44px; padding: .65rem .9rem; font-size: .82rem; }
+    .main-content > .container-fluid.py-5 { padding-bottom: 8rem !important; }
+    .navbar-dash { padding: .65rem .55rem; }
+    .text-user { max-width: 9rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: .82rem; }
 }
 
 /* Custom Nav Pills inside Modals */

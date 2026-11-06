@@ -21,7 +21,7 @@
         try { document.documentElement.dataset.theme = localStorage.getItem('fintech-theme') || 'dark'; }
         catch (_) { document.documentElement.dataset.theme = 'dark'; }
     </script>
-    <link rel="stylesheet" href="{% static 'style/default.css' %}?v=20261106-7">
+    <link rel="stylesheet" href="{% static 'style/default.css' %}?v=20261106-9">
     {% block extra_css %}{% endblock %}
 </head>
 <body class="bg-custom">
@@ -69,7 +69,7 @@
                 <div class="container-fluid justify-content-end align-items-center">
                     <span class="text-user me-3">Olá, {{ request.user.username }}</span>
                     <button type="button" class="btn btn-theme-toggle btn-sm me-2" id="theme-toggle" aria-label="Ativar tema claro" title="Ativar tema claro" aria-pressed="false">
-                        <i class="bi bi-sun-fill" aria-hidden="true"></i><span class="visually-hidden">Alternar tema</span>
+                        <i class="bi bi-sun-fill" aria-hidden="true"></i><span class="theme-toggle-label">Claro</span>
                     </button>
                     <a href="{% url 'finance:login' %}" class="btn btn-logout btn-sm">Logout</a>
                 </div>
@@ -82,6 +82,15 @@
         </div>
     </div>
 
+    <div class="quick-actions" role="group" aria-label="Ações rápidas">
+        <button type="button" class="quick-action quick-action-expense" data-bs-toggle="modal" data-bs-target="#modalgasto">
+            <i class="bi bi-plus-lg" aria-hidden="true"></i><span>Adicionar gasto</span>
+        </button>
+        <button type="button" class="quick-action quick-action-income" data-bs-toggle="modal" data-bs-target="#modalreceita">
+            <i class="bi bi-plus-lg" aria-hidden="true"></i><span>Adicionar receita</span>
+        </button>
+    </div>
+
     <!-- Modais Globais Centralizados -->
     {% include 'finance/includes/modals.html' %}
 
@@ -92,6 +101,7 @@
             const root = document.documentElement;
             const button = document.getElementById('theme-toggle');
             const icon = button.querySelector('i');
+            const label = button.querySelector('.theme-toggle-label');
             const applyTheme = theme => {
                 root.dataset.theme = theme;
                 const light = theme === 'light';
@@ -99,6 +109,7 @@
                 button.setAttribute('aria-label', light ? 'Ativar tema escuro' : 'Ativar tema claro');
                 button.title = light ? 'Ativar tema escuro' : 'Ativar tema claro';
                 icon.className = light ? 'bi bi-moon-stars-fill' : 'bi bi-sun-fill';
+                label.textContent = light ? 'Escuro' : 'Claro';
             };
             applyTheme(root.dataset.theme || 'dark');
             button.addEventListener('click', () => {
