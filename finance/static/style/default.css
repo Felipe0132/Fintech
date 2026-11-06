@@ -3,17 +3,17 @@
    ==================================================================== */
 
 :root {
-    --bg-principal: #101a2b;       /* Azul-marinho acolhedor */
-    --bg-cards: #192840;           /* Superfície elevada */
-    --bg-navbar: #152238;          /* Barra superior */
-    --bg-sidebar: #111d30;         /* Menu lateral */
+    --bg-principal: #18283c;       /* Azul-marinho mais leve */
+    --bg-cards: #22364f;           /* Superfície elevada */
+    --bg-navbar: #1d3048;          /* Barra superior */
+    --bg-sidebar: #192b42;         /* Menu lateral */
 
     --cor-texto-principal: #f3f7fb; /* Branco frio confortável */
     --cor-texto-secundario: #b5c3d3;/* Azul acinzentado para descrições */
     --cor-texto-mutado: #8496ad;    /* Labels discretos */
     --cor-texto-bglight: #dce6f0;
 
-    --cor-border: #2b3e58;         /* Borda azul suave */
+    --cor-border: #344c68;         /* Borda azul suave */
     --cor-border-glow: rgba(83, 163, 178, 0.22);
 
     --cor-positivo: #20a36b;        /* Verde dos gráficos de ganhos */
@@ -36,6 +36,30 @@
     --font-primary: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
 }
 
+:root[data-theme="light"] {
+    --bg-principal: #edf3f8;
+    --bg-cards: #ffffff;
+    --bg-navbar: #ffffff;
+    --bg-sidebar: #e4edf5;
+    --cor-texto-principal: #1c3046;
+    --cor-texto-secundario: #526a82;
+    --cor-texto-mutado: #71859a;
+    --cor-texto-bglight: #344c63;
+    --cor-border: #d3dfeb;
+    --cor-border-glow: rgba(61, 120, 158, .18);
+    --cor-positivo: #16845b;
+    --cor-negativo: #bd414c;
+    --color-warning: #9a690d;
+    --btn-logout-cor: #bd414c;
+    --btn-logout-hover-bg: #bd414c;
+    --btn-add-receita-bg: #16845b;
+    --btn-add-receita-hover: #126f4d;
+    --btn-add-gasto-bg: #b9414b;
+    --btn-add-gasto-hover: #a93645;
+    --btn-filtrar-bg: #3979a8;
+    --btn-filtrar-hover: #30678f;
+}
+
 /* ==================== Base ==================== */
 
 body.bg-custom {
@@ -46,6 +70,28 @@ body.bg-custom {
     padding: 0;
     min-height: 100vh;
 }
+
+:root[data-theme="light"] body.bg-custom { background-image: none; }
+:root[data-theme="light"] .card-dark { box-shadow: 0 4px 18px rgba(34, 54, 79, .07); }
+:root[data-theme="light"] .card-dark:hover { box-shadow: 0 8px 24px rgba(34, 54, 79, .11); }
+:root[data-theme="light"] .sidebar-fixed { box-shadow: 4px 0 18px rgba(34, 54, 79, .04); }
+:root[data-theme="light"] .sidebar-fixed .nav-link:hover { background-color: rgba(57, 121, 168, .08); }
+:root[data-theme="light"] .table-dark-custom thead th { background-color: #e6eef5 !important; }
+:root[data-theme="light"] .table-dark-custom tbody td { background-color: #fff !important; }
+:root[data-theme="light"] .table-dark-custom tbody tr:hover td { background-color: #f3f7fa !important; }
+:root[data-theme="light"] .form-control,
+:root[data-theme="light"] .form-select,
+:root[data-theme="light"] .form-check-input,
+:root[data-theme="light"] .modal .nav-pills { background-color: #fff !important; color: var(--cor-texto-principal) !important; }
+:root[data-theme="light"] .form-control::placeholder { color: #7a8da1 !important; }
+:root[data-theme="light"] .modal-content.bg-dark { background-color: #fff !important; color: var(--cor-texto-principal) !important; }
+:root[data-theme="light"] .modal-content.bg-dark .text-white { color: var(--cor-texto-principal) !important; }
+:root[data-theme="light"] .bg-dark { background-color: #fff !important; }
+:root[data-theme="light"] .text-white { color: var(--cor-texto-principal) !important; }
+:root[data-theme="light"] .border-secondary { border-color: var(--cor-border) !important; }
+:root[data-theme="light"] .table-scroll-container { background: #fff; }
+:root[data-theme="light"] .modal .nav-pills .nav-link { color: var(--cor-texto-secundario) !important; }
+:root[data-theme="light"] .modal .nav-pills .nav-link.active { color: #fff !important; }
 
 /* ==================== Navbar Superior ==================== */
 
@@ -189,6 +235,18 @@ body.bg-custom {
     font-size: 0.825rem;
 }
 
+.btn-theme-toggle {
+    display: inline-grid;
+    width: 38px;
+    height: 36px;
+    padding: 0;
+    place-items: center;
+    border: 1px solid var(--cor-border);
+    background: transparent;
+    color: var(--cor-texto-secundario);
+}
+.btn-theme-toggle:hover { border-color: var(--btn-filtrar-bg); background: rgba(61, 120, 158, .12); color: var(--cor-texto-principal); }
+
 .btn-logout {
     color: var(--btn-logout-cor);
     border: 1px solid rgba(248, 113, 113, 0.3);
@@ -280,6 +338,7 @@ body.bg-custom {
     background-color: var(--cor-positivo) !important;
     border-color: var(--cor-positivo) !important;
 }
+:root[data-theme="light"] .form-check-input:checked { background-color: var(--cor-positivo) !important; }
 
 /* ==================== Tabelas ==================== */
 
