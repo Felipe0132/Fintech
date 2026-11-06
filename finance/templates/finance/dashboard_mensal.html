@@ -29,6 +29,7 @@
             {% else %}
             <span class="summary-value text-warning">R$ {{ saldo_atual }}</span>
             {% endif %}
+            <div class="report-chart mt-3"><canvas id="chartTotalConta" aria-label="Gráfico de total por conta"></canvas></div>
         </div>
     </div>
     <div class="col-12 col-md-3">
@@ -318,6 +319,7 @@
                 <span>Nenhuma receita encontrada.</span>
             </div>
             {% endif %}
+            <div class="report-chart mt-3"><canvas id="chartReceitasCategoria" aria-label="Gráfico de receitas por categoria"></canvas></div>
         </div>
     </div>
 
@@ -358,6 +360,7 @@
                 <span>Nenhum gasto encontrado.</span>
             </div>
             {% endif %}
+            <div class="report-chart mt-3"><canvas id="chartGastosCategoria" aria-label="Gráfico de gastos por categoria"></canvas></div>
         </div>
     </div>
 </div>
@@ -395,6 +398,7 @@
                 <span>Nenhuma receita encontrada.</span>
             </div>
             {% endif %}
+            <div class="report-chart mt-3"><canvas id="chartReceitasConta" aria-label="Gráfico de receitas por conta"></canvas></div>
         </div>
     </div>
 
@@ -429,6 +433,7 @@
                 <span>Nenhum gasto encontrado.</span>
             </div>
             {% endif %}
+            <div class="report-chart mt-3"><canvas id="chartGastosConta" aria-label="Gráfico de gastos por conta"></canvas></div>
         </div>
     </div>
 </div>
@@ -638,13 +643,34 @@
 {% endfor %}
 {% endblock %}
 
+{{ total_account|json_script:"data-total-conta" }}
+{{ value_by_category_receitas_selected|json_script:"data-receitas-categoria" }}
+{{ value_by_category_gastos_selected|json_script:"data-gastos-categoria" }}
+{{ receitas_account|json_script:"data-receitas-conta" }}
+{{ gastos_account|json_script:"data-gastos-conta" }}
+
 {% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
 <script>
 document.addEventListener("DOMContentLoaded", function() {
     const tableBody = document.querySelector('#table-gastos-parcelados tbody');
     if (tableBody && tableBody.querySelectorAll('tr').length === 0) {
         tableBody.innerHTML = '<tr><td colspan="7" class="text-center text-label py-4"><i class="bi bi-calendar-range d-block fs-3 mb-2 opacity-50 text-info"></i>Nenhum gasto parcelado registrado neste mês.</td></tr>';
     }
+    const palette = ['#818cf8', '#34d399', '#fb7185', '#fbbf24', '#38bdf8', '#c084fc', '#2dd4bf', '#f97316'];
+    function makeChart(canvasId, dataId, category = false) {
+        const canvas = document.getElementById(canvasId);
+        const raw = JSON.parse(document.getElementById(dataId).textContent);
+        const labels = Object.keys(raw);
+        if (!canvas || labels.length === 0) return;
+        const values = labels.map(label => Number(category ? raw[label][0] : raw[label]));
+        new Chart(canvas, { type: 'doughnut', data: { labels, datasets: [{ data: values, backgroundColor: labels.map((_, i) => palette[i % palette.length]), borderColor: '#111a2b', borderWidth: 3 }] }, options: { responsive: true, maintainAspectRatio: false, cutout: '62%', plugins: { legend: { position: 'bottom', labels: { color: '#cbd5e1', padding: 14, usePointStyle: true } }, tooltip: { callbacks: { label: context => `${context.label}: R$ ${Number(context.raw).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}` } } } } });
+    }
+    makeChart('chartTotalConta', 'data-total-conta');
+    makeChart('chartReceitasCategoria', 'data-receitas-categoria', true);
+    makeChart('chartGastosCategoria', 'data-gastos-categoria', true);
+    makeChart('chartReceitasConta', 'data-receitas-conta');
+    makeChart('chartGastosConta', 'data-gastos-conta');
 });
 
 function abrirDetalheGastoModal(id) {
