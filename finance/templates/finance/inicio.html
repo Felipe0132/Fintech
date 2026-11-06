@@ -5,22 +5,37 @@
 
 {% block active_inicio %}active{% endblock %}
 
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'style/inicio.css' %}?v=20261106-1">
+{% endblock %}
+
 {% block content %}
+<header class="home-heading mb-4">
+    <div>
+        <span class="home-eyebrow">VISÃO GERAL</span>
+        <h1 class="home-title">Seu financeiro em um só lugar</h1>
+        <p class="home-subtitle mb-0">Acompanhe entradas, gastos e compromissos com clareza.</p>
+    </div>
+</header>
+
 <div class="row g-4 mb-4">
-    <div class="col-12 col-md-3">
-        <div class="card card-dark p-4 h-100">
+    <div class="col-12 col-sm-6 col-xl-4 col-xxl">
+        <div class="card card-dark home-summary home-income p-4 h-100">
+            <span class="home-metric-icon"><i class="bi bi-arrow-down-left"></i></span>
             <span class="text-label mb-2">Total de receitas</span>
             <span class="summary-value text-positive">R$ {{ total_receitas }}</span>
         </div>
     </div>
-    <div class="col-12 col-md-3">
-        <div class="card card-dark p-4 h-100">
+    <div class="col-12 col-sm-6 col-xl-4 col-xxl">
+        <div class="card card-dark home-summary home-expense p-4 h-100">
+            <span class="home-metric-icon"><i class="bi bi-arrow-up-right"></i></span>
             <span class="text-label mb-2">Total de gastos</span>
             <span class="summary-value text-negative">R$ {{ total_gastos }}</span>
         </div>
     </div>
-    <div class="col-12 col-md-3">
-        <div class="card card-dark p-4 h-100">
+    <div class="col-12 col-sm-6 col-xl-4 col-xxl">
+        <div class="card card-dark home-summary home-balance p-4 h-100">
+            <span class="home-metric-icon"><i class="bi bi-wallet2"></i></span>
             <span class="text-label mb-2">Saldo</span>
             {% if saldo_atual > 0 %}
             <span class="summary-value text-positive">R$ {{ saldo_atual }}</span>
@@ -31,15 +46,17 @@
             {% endif %}
         </div>
     </div>
-    <div class="col-12 col-md-3">
-        <div class="card card-dark p-4 h-100">
+    <div class="col-12 col-sm-6 col-xl-4 col-xxl">
+        <div class="card card-dark home-summary home-projection p-4 h-100">
+            <span class="home-metric-icon"><i class="bi bi-hourglass-split"></i></span>
             <span class="text-label mb-2">Saldo imaginário (atual - não pagos)</span>
             <span class="summary-value text-warning">R$ {{ saldo_imaginario }}</span>
         </div>
     </div>
-    <div class="col-12 col-md-3">
-        <div class="card card-dark p-4 h-100">
-            <span class="text-label mb-2">Total parcelado em  aberto</span>
+    <div class="col-12 col-sm-6 col-xl-4 col-xxl">
+        <div class="card card-dark home-summary home-installments p-4 h-100">
+            <span class="home-metric-icon"><i class="bi bi-credit-card-2-front"></i></span>
+            <span class="text-label mb-2">Parcelas em aberto</span>
             <span class="summary-value text-warning">R$ {{ total_parcelado }}</span>
         </div>
     </div>
@@ -47,7 +64,7 @@
 
 <div class="row g-4 mb-4">
     <!-- Total por Conta -->
-    <div class="col-md-6">
+    <div class="col-12 col-xl-8">
         <div class="card card-dark p-4 h-100">
             <h5 class="mb-3 text-title card-title-row">
                 <i class="bi bi-pie-chart-fill section-icon text-negative"></i>Total por conta
@@ -89,8 +106,8 @@
     </div>
 </div>
 
-<div class="row g-4">
-    <div class="col-12 col-md-3">
+<div class="row g-4 home-reports">
+    <div class="col-12 col-sm-6 col-xl-3">
         <div class="card card-dark h-100 d-flex flex-column justify-content-between">
             <div class="p-3">
                 <h5 class="mb-3 text-title">Últimos gastos</h5>
@@ -112,7 +129,7 @@
         </div>
     </div>
 
-    <div class="col-12 col-md-3">
+    <div class="col-12 col-sm-6 col-xl-3">
         <div class="card card-dark h-100 d-flex flex-column justify-content-between">
             <div class="p-3">
                 <h5 class="mb-3 text-title">Últimos receitas</h5>
@@ -134,7 +151,7 @@
         </div>
     </div>
 
-    <div class="col-12 col-md-3">
+    <div class="col-12 col-sm-6 col-xl-3">
         <div class="card card-dark h-100 d-flex flex-column justify-content-between">
             <div class="p-3">
                 <h5 class="mb-3 text-title">Últimos não pagos</h5>
@@ -150,7 +167,7 @@
         </div>
     </div>
 
-    <div class="col-12 col-md-3">
+    <div class="col-12 col-sm-6 col-xl-3">
         <div class="card card-dark h-100 d-flex flex-column justify-content-between">
             <div class="p-3">
                 <h5 class="mb-3 text-title">Gastos parcelados</h5>

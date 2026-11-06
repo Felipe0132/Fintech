@@ -66,14 +66,14 @@
     background-color: var(--btn-add-receita-bg);
     color: #ffffff;
     border: 1px solid var(--btn-add-receita-bg);
-    box-shadow: 0 4px 14px rgba(16, 185, 129, 0.3);
+    box-shadow: 0 4px 14px rgba(32, 163, 107, 0.3);
 }
 
 .btn-hero-primary:hover {
     background-color: var(--btn-add-receita-hover);
     color: #ffffff;
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+    box-shadow: 0 6px 20px rgba(32, 163, 107, 0.4);
 }
 
 .btn-hero-secondary {
@@ -106,7 +106,7 @@
 
 .feature-card:hover {
     transform: translateY(-4px);
-    box-shadow: 0 6px 24px rgba(16, 185, 129, 0.08);
+    box-shadow: 0 6px 24px rgba(32, 163, 107, 0.08);
 }
 
 .feature-card i {

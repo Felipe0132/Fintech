@@ -3,35 +3,35 @@
    ==================================================================== */
 
 :root {
-    --bg-principal: #0b0f19;       /* Fundo escuro profundo e moderno */
-    --bg-cards: #111827;           /* Fundo dos cartões em cinza-azul escuro */
-    --bg-navbar: #111827;          /* Fundo da barra superior */
-    --bg-sidebar: #0f172a;         /* Fundo do menu lateral */
+    --bg-principal: #101a2b;       /* Azul-marinho acolhedor */
+    --bg-cards: #192840;           /* Superfície elevada */
+    --bg-navbar: #152238;          /* Barra superior */
+    --bg-sidebar: #111d30;         /* Menu lateral */
 
-    --cor-texto-principal: #f9fafb; /* Branco suave off-white */
-    --cor-texto-secundario: #9ca3af;/* Cinza claro para descrição */
-    --cor-texto-mutado: #6b7280;    /* Cinza mais escuro para labels */
-    --cor-texto-bglight: #d1d5db;
+    --cor-texto-principal: #f3f7fb; /* Branco frio confortável */
+    --cor-texto-secundario: #b5c3d3;/* Azul acinzentado para descrições */
+    --cor-texto-mutado: #8496ad;    /* Labels discretos */
+    --cor-texto-bglight: #dce6f0;
 
-    --cor-border: #1f2937;         /* Borda sutil de divisão */
-    --cor-border-glow: rgba(99, 102, 241, 0.15); /* Brilho de foco indigo */
+    --cor-border: #2b3e58;         /* Borda azul suave */
+    --cor-border-glow: rgba(83, 163, 178, 0.22);
 
-    --cor-positivo: #10b981;        /* Esmeralda suave */
-    --cor-negativo: #ef4444;         /* Vermelho moderno */
-    --color-warning: #f59e0b;       /* Âmbar suave */
+    --cor-positivo: #20a36b;        /* Verde dos gráficos de ganhos */
+    --cor-negativo: #d1535c;        /* Vermelho dos gráficos de gastos */
+    --color-warning: #edc575;       /* Âmbar para alertas */
 
-    --btn-logout-cor: #f87171;
-    --btn-logout-hover-bg: #ef4444;
+    --btn-logout-cor: #f08b91;
+    --btn-logout-hover-bg: #bd5963;
     --btn-logout-hover-texto: #ffffff;
 
-    --btn-add-receita-bg: #10b981;
-    --btn-add-receita-hover: #059669;
+    --btn-add-receita-bg: #16845b;
+    --btn-add-receita-hover: #126f4d;
 
-    --btn-add-gasto-bg: #ef4444;
-    --btn-add-gasto-hover: #dc2626;
+    --btn-add-gasto-bg: #b9414b;
+    --btn-add-gasto-hover: #a93645;
 
-    --btn-filtrar-bg: #6366f1;     /* Índigo moderno para buscas/ações neutras */
-    --btn-filtrar-hover: #4f46e5;
+    --btn-filtrar-bg: #3d789e;     /* Azul confiável para ações principais */
+    --btn-filtrar-hover: #315f82;
 
     --font-primary: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
 }
@@ -123,10 +123,10 @@ body.bg-custom {
 }
 
 .sidebar-fixed .nav-link.active {
-    background: linear-gradient(135deg, #6366f1, #4f46e5); /* Gradiente índigo lindo */
+    background: linear-gradient(135deg, #3d789e, #315f82);
     color: #ffffff !important;
     font-weight: 600;
-    box-shadow: 0 4px 14px rgba(99, 102, 241, 0.3);
+    box-shadow: 0 4px 14px rgba(61, 120, 158, 0.24);
 }
 
 .main-content {
@@ -147,7 +147,7 @@ body.bg-custom {
 }
 
 .card-dark:hover {
-    box-shadow: 0 6px 24px rgba(99, 102, 241, 0.08), 0 4px 20px rgba(0, 0, 0, 0.25);
+    box-shadow: 0 6px 24px rgba(61, 120, 158, 0.08), 0 4px 20px rgba(0, 0, 0, 0.25);
 }
 
 .text-title {
@@ -170,8 +170,8 @@ body.bg-custom {
 .text-negative { color: var(--cor-negativo) !important; }
 .text-warning  { color: var(--color-warning) !important; }
 
-.text-claro {color: #0d1116 !important;} /* Cinza escuro/quase preto para fundos claros */
-.text-escuro {color: #f9fafb !important;} /* Branco para fundos escuros */
+.text-claro {color: var(--cor-texto-principal) !important;}
+.text-escuro {color: var(--cor-texto-principal) !important;}
 
 /* ==================== Botões ==================== */
 
@@ -265,8 +265,8 @@ body.bg-custom {
 }
 
 .form-control:focus, .form-select:focus {
-    border-color: #6366f1 !important;
-    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2) !important;
+    border-color: #5a9bb8 !important;
+    box-shadow: 0 0 0 3px rgba(90, 155, 184, 0.2) !important;
     outline: none !important;
 }
 
@@ -284,13 +284,17 @@ body.bg-custom {
 /* ==================== Tabelas ==================== */
 
 .table-dark-custom {
+    --bs-table-bg: transparent;
+    --bs-table-color: var(--cor-texto-principal);
+    --bs-table-hover-bg: rgba(102, 155, 174, 0.07);
+    --bs-table-hover-color: var(--cor-texto-principal);
     background-color: transparent !important;
     color: var(--cor-texto-principal) !important;
     margin-bottom: 0;
 }
 
 .table-dark-custom thead th {
-    background-color: #1f2937 !important;
+    background-color: #22334a !important;
     color: var(--cor-texto-secundario) !important;
     font-weight: 600;
     font-size: 0.85rem;
@@ -301,6 +305,8 @@ body.bg-custom {
 }
 
 .table-dark-custom tbody td {
+    background-color: #192840 !important;
+    color: var(--cor-texto-principal);
     padding: 1rem;
     border-bottom: 1px solid var(--cor-border) !important;
     vertical-align: middle;
@@ -372,12 +378,12 @@ body.bg-custom {
 }
 
 .value-pill-positive {
-    background-color: rgba(16, 185, 129, 0.12) !important;
+    background-color: rgba(32, 163, 107, 0.14) !important;
     color: var(--cor-positivo) !important;
 }
 
 .value-pill-negative {
-    background-color: rgba(239, 68, 68, 0.12) !important;
+    background-color: rgba(209, 83, 92, 0.14) !important;
     color: var(--cor-negativo) !important;
 }
 
@@ -462,9 +468,9 @@ body.bg-custom {
     padding: 0.5rem 1rem;
 }
 .modal .nav-pills .nav-link.active {
-    background: linear-gradient(135deg, #6366f1, #4f46e5) !important;
+    background: linear-gradient(135deg, #3d789e, #315f82) !important;
     color: #ffffff !important;
-    box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);
+    box-shadow: 0 2px 8px rgba(61, 120, 158, 0.25);
 }
 .modal .nav-pills .nav-link:hover:not(.active) {
     color: var(--cor-texto-principal);

@@ -566,6 +566,10 @@ def dashboard_mensal(request):
     gastos_account = sum_by_account(gastos_selected)
 
     total_account = total_by_account(Transaction.objects.filter(user=user, date__year=selected_ref.year, date__month=selected_ref.month))
+    for account in accounts:
+        receitas_account.setdefault(account.name, 0)
+        gastos_account.setdefault(account.name, 0)
+        total_account.setdefault(account.name, 0)
 
     user_context = {"selected_month":selected_month,
                     "compare_month":compare_month,

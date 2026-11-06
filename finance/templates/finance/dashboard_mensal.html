@@ -5,12 +5,16 @@
 
 {% block active_dashboard %}active{% endblock %}
 
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'style/dashboard.css' %}?v=20261106-10">
+{% endblock %}
+
 {% block content %}
 <div class="row g-4 mb-4">
     <div class="col-12 col-md-3">
         <div class="card card-dark p-4 h-100">
             <span class="text-label mb-2">Total de receitas mês</span>
-            <span class="summary-value text-positive">R$ {{ total_receitas }}</span>
+            <span class="summary-value text-positive">R$ {{ total_receitas|default_if_none:0|floatformat:2 }}</span>
         </div>
     </div>
     <div class="col-12 col-md-3">
@@ -29,7 +33,6 @@
             {% else %}
             <span class="summary-value text-warning">R$ {{ saldo_atual }}</span>
             {% endif %}
-            <div class="report-chart mt-3"><canvas id="chartTotalConta" aria-label="Gráfico de total por conta"></canvas></div>
         </div>
     </div>
     <div class="col-12 col-md-3">
@@ -40,6 +43,14 @@
     </div>
 </div>
 
+<div class="d-flex flex-wrap align-items-center gap-3 mb-4">
+    <span class="text-label fw-semibold">Visualizar por:</span>
+    <div class="report-view-toggle" role="group" aria-label="Visualização geral dos relatórios">
+        <button type="button" class="btn btn-sm btn-outline-light active" data-report-view-all="table">Visualizar por tabela</button>
+        <button type="button" class="btn btn-sm btn-outline-light" data-report-view-all="chart">Visualizar por gráfico</button>
+    </div>
+</div>
+
 <div class="row g-4 mb-4">
     <!-- Total por Conta -->
     <div class="col-md-6">
@@ -47,6 +58,7 @@
             <h5 class="mb-3 text-title card-title-row">
                 <i class="bi bi-pie-chart-fill section-icon text-negative"></i>Total por conta
             </h5>
+            <div id="total-conta-table">
             {% if total_account %}
             <div class="table-responsive table-scroll-container">
                 <table class="table table-dark-custom mb-0 table-hover">
@@ -80,6 +92,8 @@
                 <span>Nenhum gasto encontrado.</span>
             </div>
             {% endif %}
+            </div>
+            <div id="total-conta-chart" class="report-chart d-none"><canvas id="chartTotalConta" aria-label="Gráfico de total por conta"></canvas></div>
         </div>
     </div>
 </div>
@@ -118,6 +132,7 @@
             <h5 class="mb-3 text-title card-title-row">
                 <i class="bi bi-arrow-up-circle section-icon text-positive"></i>Receitas
             </h5>
+            <div id="receitas-lancamentos-table">
             {% if receitas_selected %}
             <div class="table-responsive table-scroll-container">
                 <table class="table table-dark-custom mb-0 table-hover">
@@ -157,6 +172,8 @@
                 <span>Nenhuma receita encontrada.</span>
             </div>
             {% endif %}
+            </div>
+            <div id="receitas-lancamentos-chart" class="report-chart d-none"></div>
         </div>
     </div>
 
@@ -166,6 +183,7 @@
             <h5 class="mb-3 text-title card-title-row">
                 <i class="bi bi-arrow-down-circle section-icon text-negative"></i>Gastos
             </h5>
+            <div id="gastos-lancamentos-table">
             {% if gastos_selected %}
             <div class="table-responsive table-scroll-container">
                 <table class="table table-dark-custom mb-0 table-hover">
@@ -222,6 +240,8 @@
                 <span>Nenhum gasto encontrado.</span>
             </div>
             {% endif %}
+            </div>
+            <div id="gastos-lancamentos-chart" class="report-chart d-none"></div>
         </div>
     </div>
 </div>
@@ -231,6 +251,7 @@
     <h5 class="mb-3 text-title card-title-row">
         <i class="bi bi-calendar-range section-icon text-info"></i>Gastos Parcelados do Mês
     </h5>
+    <div id="parcelas-table">
     <div class="table-responsive table-scroll-container">
         <table class="table table-dark-custom mb-0 table-hover" id="table-gastos-parcelados">
             <thead>
@@ -278,6 +299,8 @@
             </tbody>
         </table>
     </div>
+    </div>
+    <div id="parcelas-chart" class="report-chart d-none"></div>
 </div>
 
 <!-- Receitas e Gastos por Categoria -->
@@ -288,6 +311,7 @@
             <h5 class="mb-3 text-title card-title-row">
                 <i class="bi bi-pie-chart section-icon text-positive"></i>Receitas por Categoria
             </h5>
+            <div id="receitas-categoria-table">
             {% if value_by_category_receitas_selected %}
             <div class="table-responsive">
                 <table class="table table-dark-custom mb-0 table-hover">
@@ -319,7 +343,7 @@
                 <span>Nenhuma receita encontrada.</span>
             </div>
             {% endif %}
-            <div class="report-chart mt-3"><canvas id="chartReceitasCategoria" aria-label="Gráfico de receitas por categoria"></canvas></div>
+            </div><div id="receitas-categoria-chart" class="report-chart d-none"><canvas id="chartReceitasCategoria" aria-label="Gráfico de receitas por categoria"></canvas></div>
         </div>
     </div>
 
@@ -329,6 +353,7 @@
             <h5 class="mb-3 text-title card-title-row">
                 <i class="bi bi-pie-chart-fill section-icon text-negative"></i>Gastos por Categoria
             </h5>
+            <div id="gastos-categoria-table">
             {% if value_by_category_gastos_selected %}
             <div class="table-responsive">
                 <table class="table table-dark-custom mb-0 table-hover">
@@ -360,7 +385,7 @@
                 <span>Nenhum gasto encontrado.</span>
             </div>
             {% endif %}
-            <div class="report-chart mt-3"><canvas id="chartGastosCategoria" aria-label="Gráfico de gastos por categoria"></canvas></div>
+            </div><div id="gastos-categoria-chart" class="report-chart d-none"><canvas id="chartGastosCategoria" aria-label="Gráfico de gastos por categoria"></canvas></div>
         </div>
     </div>
 </div>
@@ -373,6 +398,7 @@
             <h5 class="mb-3 text-title card-title-row">
                 <i class="bi bi-wallet2 section-icon text-positive"></i>Receitas por conta
             </h5>
+            <div id="receitas-conta-table">
             {% if receitas_account %}
             <div class="table-responsive table-scroll-container">
                 <table class="table table-dark-custom mb-0 table-hover">
@@ -398,7 +424,7 @@
                 <span>Nenhuma receita encontrada.</span>
             </div>
             {% endif %}
-            <div class="report-chart mt-3"><canvas id="chartReceitasConta" aria-label="Gráfico de receitas por conta"></canvas></div>
+            </div><div id="receitas-conta-chart" class="report-chart d-none"><canvas id="chartReceitasConta" aria-label="Gráfico de receitas por conta"></canvas></div>
         </div>
     </div>
 
@@ -408,6 +434,7 @@
             <h5 class="mb-3 text-title card-title-row">
                 <i class="bi bi-wallet2 section-icon text-negative"></i>Gastos por conta
             </h5>
+            <div id="gastos-conta-table">
             {% if gastos_account %}
             <div class="table-responsive table-scroll-container">
                 <table class="table table-dark-custom mb-0 table-hover">
@@ -433,7 +460,7 @@
                 <span>Nenhum gasto encontrado.</span>
             </div>
             {% endif %}
-            <div class="report-chart mt-3"><canvas id="chartGastosConta" aria-label="Gráfico de gastos por conta"></canvas></div>
+            </div><div id="gastos-conta-chart" class="report-chart d-none"><canvas id="chartGastosConta" aria-label="Gráfico de gastos por conta"></canvas></div>
         </div>
     </div>
 </div>
@@ -641,36 +668,129 @@
     </div>
 </div>
 {% endfor %}
-{% endblock %}
-
 {{ total_account|json_script:"data-total-conta" }}
 {{ value_by_category_receitas_selected|json_script:"data-receitas-categoria" }}
 {{ value_by_category_gastos_selected|json_script:"data-gastos-categoria" }}
 {{ receitas_account|json_script:"data-receitas-conta" }}
 {{ gastos_account|json_script:"data-gastos-conta" }}
+{% endblock %}
 
 {% block extra_js %}
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
 <script>
 document.addEventListener("DOMContentLoaded", function() {
+    const reportCharts = [];
+    const reportTargets = ['total-conta', 'receitas-lancamentos', 'gastos-lancamentos', 'parcelas', 'receitas-categoria', 'gastos-categoria', 'receitas-conta', 'gastos-conta'];
+    document.querySelectorAll('[data-report-view-all]').forEach(button => {
+        button.addEventListener('click', () => {
+            const view = button.dataset.reportViewAll;
+            reportTargets.forEach(target => {
+                document.getElementById(`${target}-table`).classList.toggle('d-none', view !== 'table');
+                document.getElementById(`${target}-chart`).classList.toggle('d-none', view !== 'chart');
+            });
+            document.querySelectorAll('[data-report-view-all]').forEach(option => option.classList.toggle('active', option === button));
+            if (view === 'chart') renderTransactionCharts();
+        });
+    });
     const tableBody = document.querySelector('#table-gastos-parcelados tbody');
     if (tableBody && tableBody.querySelectorAll('tr').length === 0) {
         tableBody.innerHTML = '<tr><td colspan="7" class="text-center text-label py-4"><i class="bi bi-calendar-range d-block fs-3 mb-2 opacity-50 text-info"></i>Nenhum gasto parcelado registrado neste mês.</td></tr>';
     }
-    const palette = ['#818cf8', '#34d399', '#fb7185', '#fbbf24', '#38bdf8', '#c084fc', '#2dd4bf', '#f97316'];
-    function makeChart(canvasId, dataId, category = false) {
-        const canvas = document.getElementById(canvasId);
-        const raw = JSON.parse(document.getElementById(dataId).textContent);
-        const labels = Object.keys(raw);
-        if (!canvas || labels.length === 0) return;
-        const values = labels.map(label => Number(category ? raw[label][0] : raw[label]));
-        new Chart(canvas, { type: 'doughnut', data: { labels, datasets: [{ data: values, backgroundColor: labels.map((_, i) => palette[i % palette.length]), borderColor: '#111a2b', borderWidth: 3 }] }, options: { responsive: true, maintainAspectRatio: false, cutout: '62%', plugins: { legend: { position: 'bottom', labels: { color: '#cbd5e1', padding: 14, usePointStyle: true } }, tooltip: { callbacks: { label: context => `${context.label}: R$ ${Number(context.raw).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}` } } } } });
+    const incomePalette = ['#16845b', '#20a36b', '#35b978', '#54c98c', '#238f66', '#42ad7b', '#6bcf9b', '#83d9a8'];
+    const expensePalette = ['#b9414b', '#d1535c', '#e06a70', '#ed8283', '#a93645', '#c64c58', '#dd626b', '#ee9692'];
+    const totalIncomePalette = ['#f6c445', '#ff8c42', '#f45b9a', '#b36bfa', '#ffd166', '#ff6b6b', '#d98cff', '#f7a928'];
+    const totalExpensePalette = ['#4a90c2', '#61b6d7', '#7185c8', '#5d9aa6', '#88a9d6', '#487b9e', '#7a91ad', '#58a6a6'];
+    const mixedPalette = [...totalIncomePalette.slice(0, 4), ...totalExpensePalette.slice(0, 4)];
+    function makeChart(containerId, data, kind = 'mixed') {
+        const container = document.getElementById(containerId);
+        if (!container) return;
+        const entries = Object.entries(data).map(([label, value]) => [label, Number(Array.isArray(value) ? value[0] : value)]).filter(([, value]) => Number.isFinite(value));
+        container.replaceChildren();
+        const nonZeroEntries = entries.filter(([, value]) => Math.abs(value) > 0);
+        if (!entries.length) { container.innerHTML = '<div class="chart-empty">Sem lançamentos neste período.</div>'; return; }
+        const layout = document.createElement('div'); layout.className = 'pie-layout';
+        const tooltip = document.createElement('div'); tooltip.className = 'pie-tooltip'; tooltip.setAttribute('aria-live', 'polite');
+        if (!nonZeroEntries.length) {
+            const empty = document.createElement('div'); empty.className = 'chart-empty'; empty.textContent = 'Sem valores diferentes de zero neste período.';
+            layout.append(empty);
+        } else {
+        const total = nonZeroEntries.reduce((sum, [, value]) => sum + Math.abs(value), 0);
+        const svgNS = 'http://www.w3.org/2000/svg';
+        const pie = document.createElementNS(svgNS, 'svg'); pie.setAttribute('viewBox', '0 0 220 220'); pie.classList.add('pie-chart'); pie.setAttribute('role', 'group'); pie.setAttribute('aria-label', 'Gráfico de pizza interativo');
+        let angle = -90;
+        nonZeroEntries.forEach(([label, value], index) => {
+            const portion = Math.abs(value) / total;
+            const nextAngle = angle + portion * 360;
+            const color = kind === 'net' ? (value >= 0 ? totalIncomePalette[index % totalIncomePalette.length] : totalExpensePalette[index % totalExpensePalette.length]) : (kind === 'income' ? incomePalette[index % incomePalette.length] : kind === 'expense' ? expensePalette[index % expensePalette.length] : mixedPalette[index % mixedPalette.length]);
+            let d;
+            if (portion >= 0.9999) d = 'M110 10 A100 100 0 1 1 109.99 10 Z';
+            else {
+                const start = { x: 110 + 100 * Math.cos(angle * Math.PI / 180), y: 110 + 100 * Math.sin(angle * Math.PI / 180) };
+                const end = { x: 110 + 100 * Math.cos(nextAngle * Math.PI / 180), y: 110 + 100 * Math.sin(nextAngle * Math.PI / 180) };
+                d = `M110 110 L${start.x} ${start.y} A100 100 0 ${portion > .5 ? 1 : 0} 1 ${end.x} ${end.y} Z`;
+            }
+            const path = document.createElementNS(svgNS, 'path'); path.setAttribute('d', d); path.setAttribute('fill', color); path.setAttribute('stroke', '#fff'); path.setAttribute('stroke-width', '2'); path.setAttribute('tabindex', '0'); path.classList.add('pie-slice');
+            const showDetail = event => {
+                tooltip.textContent = `${label} · R$ ${Math.abs(value).toLocaleString('pt-BR', { minimumFractionDigits: 2 })} · ${(portion * 100).toLocaleString('pt-BR', { maximumFractionDigits: 1 })}%`;
+                tooltip.classList.add('is-visible');
+                if (event && Number.isFinite(event.clientX) && event.clientX > 0) {
+                    const bounds = container.getBoundingClientRect();
+                    const left = Math.min(Math.max(event.clientX - bounds.left + 12, 8), bounds.width - tooltip.offsetWidth - 8);
+                    const top = Math.min(Math.max(event.clientY - bounds.top + 12, 8), bounds.height - tooltip.offsetHeight - 8);
+                    tooltip.style.left = `${left}px`; tooltip.style.top = `${top}px`; tooltip.style.right = 'auto';
+                } else {
+                    tooltip.style.left = 'auto'; tooltip.style.top = '12px'; tooltip.style.right = '12px';
+                }
+            };
+            const hideDetail = () => tooltip.classList.remove('is-visible');
+            path.addEventListener('mouseenter', showDetail); path.addEventListener('mousemove', showDetail);
+            path.addEventListener('focus', showDetail); path.addEventListener('click', showDetail);
+            path.addEventListener('mouseleave', hideDetail); path.addEventListener('blur', hideDetail);
+            const middleAngle = (angle + nextAngle) / 2;
+            const labelRadius = portion > .12 ? 64 : 70;
+            const sliceLabel = document.createElementNS(svgNS, 'text');
+            sliceLabel.setAttribute('x', 110 + labelRadius * Math.cos(middleAngle * Math.PI / 180));
+            sliceLabel.setAttribute('y', 110 + labelRadius * Math.sin(middleAngle * Math.PI / 180));
+            sliceLabel.setAttribute('text-anchor', 'middle'); sliceLabel.setAttribute('dominant-baseline', 'middle');
+            sliceLabel.setAttribute('font-size', portion > .12 ? '10' : portion > .06 ? '8' : '6');
+            sliceLabel.setAttribute('class', 'pie-slice-label'); sliceLabel.setAttribute('aria-hidden', 'true');
+            sliceLabel.textContent = label.length > 14 ? `${label.slice(0, 13)}…` : label;
+            pie.append(path, sliceLabel); angle = nextAngle;
+        });
+        layout.append(pie);
+        }
+        const legend = document.createElement('ul'); legend.className = 'pie-legend';
+        entries.forEach(([label, value], index) => {
+            const item = document.createElement('li');
+            const entryColor = kind === 'net' ? (value >= 0 ? totalIncomePalette[index % totalIncomePalette.length] : totalExpensePalette[index % totalExpensePalette.length]) : (kind === 'income' ? incomePalette[index % incomePalette.length] : kind === 'expense' ? expensePalette[index % expensePalette.length] : mixedPalette[index % mixedPalette.length]);
+            const swatch = document.createElement('span'); swatch.className = 'pie-swatch'; swatch.style.backgroundColor = entryColor;
+            const name = document.createElement('span'); name.className = 'pie-name'; name.textContent = label;
+            const amount = document.createElement('strong'); amount.textContent = `R$ ${Math.abs(value).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
+            item.append(swatch, name, amount); legend.append(item);
+        });
+        layout.append(legend); container.append(tooltip, layout);
     }
-    makeChart('chartTotalConta', 'data-total-conta');
-    makeChart('chartReceitasCategoria', 'data-receitas-categoria', true);
-    makeChart('chartGastosCategoria', 'data-gastos-categoria', true);
-    makeChart('chartReceitasConta', 'data-receitas-conta');
-    makeChart('chartGastosConta', 'data-gastos-conta');
+    function tableData(tableId) {
+        return Array.from(document.querySelectorAll(`#${tableId} tbody tr`)).map((row, index) => {
+            const cells = row.querySelectorAll('td');
+            const value = Number(cells[1]?.dataset.sort || '0');
+            const label = cells[0]?.innerText.trim().replace(/\\s+/g, ' ') || `Lançamento ${index + 1}`;
+            return [`${label} · ${index + 1}`, Math.abs(value)];
+        }).filter(([label, value]) => label && value > 0);
+    }
+    function makeTableChart(containerId, tableId, kind) {
+        makeChart(containerId, Object.fromEntries(tableData(tableId)), kind);
+    }
+    function renderTransactionCharts() {
+        makeTableChart('receitas-lancamentos-chart', 'receitas-lancamentos-table', 'income');
+        makeTableChart('gastos-lancamentos-chart', 'gastos-lancamentos-table', 'expense');
+        makeTableChart('parcelas-chart', 'table-gastos-parcelados', 'expense');
+    }
+    makeChart('total-conta-chart', JSON.parse(document.getElementById('data-total-conta').textContent), 'net');
+    makeChart('receitas-categoria-chart', JSON.parse(document.getElementById('data-receitas-categoria').textContent), 'income');
+    makeChart('gastos-categoria-chart', JSON.parse(document.getElementById('data-gastos-categoria').textContent), 'expense');
+    makeChart('receitas-conta-chart', JSON.parse(document.getElementById('data-receitas-conta').textContent), 'income');
+    makeChart('gastos-conta-chart', JSON.parse(document.getElementById('data-gastos-conta').textContent), 'expense');
+    renderTransactionCharts();
 });
 
 function abrirDetalheGastoModal(id) {
