@@ -1,10 +1,99 @@
-.gradient-custom {
-/* fallback for old browsers */
-background: #6a11cb;
+/* Shared palette and surfaces for login, registration, and code verification. */
+.auth-page {
+    min-height: 100vh;
+    background: var(--bg-principal);
+    color: var(--cor-texto-secundario);
+    font-family: var(--font-primary);
+}
 
-/* Chrome 10-25, Safari 5.1-6 */
-background: -webkit-linear-gradient(to right, rgba(106, 17, 203, 1), rgba(37, 117, 252, 1));
+.auth-stage {
+    min-height: 100vh;
+    background:
+        radial-gradient(circle at 18% 12%, color-mix(in srgb, var(--btn-filtrar-bg) 20%, transparent), transparent 38%),
+        radial-gradient(circle at 86% 86%, color-mix(in srgb, var(--cor-positivo) 11%, transparent), transparent 34%),
+        var(--bg-principal);
+}
 
-/* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
-background: linear-gradient(to right, rgba(106, 17, 203, 1), rgba(37, 117, 252, 1))
+.auth-card {
+    color: var(--cor-texto-secundario);
+    background: var(--bg-cards);
+    border: 1px solid var(--cor-border);
+    border-radius: 1.25rem;
+    box-shadow: 0 24px 70px rgba(4, 16, 30, .24);
+}
+
+.auth-card h1,
+.auth-card h2,
+.auth-card h3,
+.auth-card .text-white,
+.auth-card .text-dark {
+    color: var(--cor-texto-principal) !important;
+}
+
+.auth-card .text-white-50,
+.auth-card .text-muted {
+    color: var(--cor-texto-mutado) !important;
+}
+
+.auth-card .form-control {
+    min-height: 3.1rem;
+    color: var(--cor-texto-principal);
+    background: var(--bg-principal);
+    border: 1px solid var(--cor-border);
+}
+
+.auth-card .form-control::placeholder {
+    color: var(--cor-texto-mutado);
+    opacity: 1;
+}
+
+.auth-card .form-control:focus {
+    color: var(--cor-texto-principal);
+    background: var(--bg-principal);
+    border-color: var(--btn-filtrar-bg);
+    box-shadow: 0 0 0 .2rem color-mix(in srgb, var(--btn-filtrar-bg) 22%, transparent);
+}
+
+.auth-card .form-label {
+    color: var(--cor-texto-secundario);
+}
+
+.auth-card .btn-auth-primary {
+    min-height: 3rem;
+    color: #fff;
+    background: var(--btn-filtrar-bg);
+    border: 1px solid var(--btn-filtrar-bg);
+    border-radius: .75rem;
+    font-weight: 700;
+    transition: background .18s ease, transform .18s ease;
+}
+
+.auth-card .btn-auth-primary:hover {
+    color: #fff;
+    background: var(--btn-filtrar-hover);
+    border-color: var(--btn-filtrar-hover);
+    transform: translateY(-1px);
+}
+
+.auth-card .btn-auth-eye {
+    color: var(--cor-texto-secundario);
+    background: var(--bg-principal);
+    border-color: var(--cor-border);
+}
+
+.auth-card a {
+    color: var(--btn-filtrar-bg) !important;
+}
+
+.auth-card a:hover {
+    color: var(--btn-filtrar-hover) !important;
+}
+
+.auth-card .alert {
+    border-radius: .75rem;
+}
+
+@media (max-width: 575.98px) {
+    .auth-stage { padding: 1rem 0; }
+    .auth-card .card-body { padding: 2rem 1.35rem !important; }
 }

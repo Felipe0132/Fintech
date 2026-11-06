@@ -6,7 +6,7 @@
 {% block active_inicio %}active{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'style/inicio.css' %}?v=20261106-1">
+<link rel="stylesheet" href="{% static 'style/inicio.css' %}?v=20261106-2">
 {% endblock %}
 
 {% block content %}
@@ -23,14 +23,14 @@
         <div class="card card-dark home-summary home-income p-4 h-100">
             <span class="home-metric-icon"><i class="bi bi-arrow-down-left"></i></span>
             <span class="text-label mb-2">Total de receitas</span>
-            <span class="summary-value text-positive">R$ {{ total_receitas }}</span>
+            <span class="summary-value text-positive">R$ {{ total_receitas|default_if_none:0|floatformat:2 }}</span>
         </div>
     </div>
     <div class="col-12 col-sm-6 col-xl-4 col-xxl">
         <div class="card card-dark home-summary home-expense p-4 h-100">
             <span class="home-metric-icon"><i class="bi bi-arrow-up-right"></i></span>
             <span class="text-label mb-2">Total de gastos</span>
-            <span class="summary-value text-negative">R$ {{ total_gastos }}</span>
+            <span class="summary-value text-negative">R$ {{ total_gastos|default_if_none:0|floatformat:2 }}</span>
         </div>
     </div>
     <div class="col-12 col-sm-6 col-xl-4 col-xxl">
@@ -38,11 +38,11 @@
             <span class="home-metric-icon"><i class="bi bi-wallet2"></i></span>
             <span class="text-label mb-2">Saldo</span>
             {% if saldo_atual > 0 %}
-            <span class="summary-value text-positive">R$ {{ saldo_atual }}</span>
+            <span class="summary-value text-positive">R$ {{ saldo_atual|floatformat:2 }}</span>
             {% elif 0 > saldo_atual %}
-            <span class="summary-value text-negative">R$ {{ saldo_atual }}</span>
+            <span class="summary-value text-negative">R$ {{ saldo_atual|floatformat:2 }}</span>
             {% else %}
-            <span class="summary-value text-warning">R$ {{ saldo_atual }}</span>
+            <span class="summary-value text-warning">R$ {{ saldo_atual|floatformat:2 }}</span>
             {% endif %}
         </div>
     </div>
@@ -50,14 +50,14 @@
         <div class="card card-dark home-summary home-projection p-4 h-100">
             <span class="home-metric-icon"><i class="bi bi-hourglass-split"></i></span>
             <span class="text-label mb-2">Saldo imaginário (atual - não pagos)</span>
-            <span class="summary-value text-warning">R$ {{ saldo_imaginario }}</span>
+            <span class="summary-value text-warning">R$ {{ saldo_imaginario|default_if_none:0|floatformat:2 }}</span>
         </div>
     </div>
     <div class="col-12 col-sm-6 col-xl-4 col-xxl">
         <div class="card card-dark home-summary home-installments p-4 h-100">
             <span class="home-metric-icon"><i class="bi bi-credit-card-2-front"></i></span>
             <span class="text-label mb-2">Parcelas em aberto</span>
-            <span class="summary-value text-warning">R$ {{ total_parcelado }}</span>
+            <span class="summary-value text-warning">R$ {{ total_parcelado|default_if_none:0|floatformat:2 }}</span>
         </div>
     </div>
 </div>
@@ -102,6 +102,7 @@
                 <span>Nenhum gasto encontrado.</span>
             </div>
             {% endif %}
+            <div class="report-total mt-3"><span>Total líquido</span><strong>R$ {{ total_liquido_contas|floatformat:2 }}</strong></div>
         </div>
     </div>
 </div>

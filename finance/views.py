@@ -34,7 +34,7 @@ def login(request):
         login_django(request, user) # Navegador logado
         return redirect('finance:inicio')        
     else:
-        messages.error(request, 'Usuário ou senha inválidos.')
+        messages.error(request, 'E-mail não encontrado ou senha incorreta.')
 
     return redirect('finance:login')
 
@@ -113,11 +113,14 @@ def inicio(request):
 
     gastos = gastos.filter(is_paid=True)
 
+    # O saldo imaginário parte do saldo atual (que já considera apenas gastos pagos)
+    # e desconta cada compromisso em aberto uma única vez.
     saldo_imaginario = saldo_atual - sum_by_value(gastos_not_paid) - sum_by_value(gastos_parcelados_aberto)
 
     total_parcelado_aberto = sum_by_value(gastos_parcelados_aberto)
 
     total_account = total_by_account(Transaction.objects.filter(user=user))
+    total_liquido_contas = sum(total_account.values())
 
     user_context = {"gastos":gastos.order_by('-id')[:5],            
                     "receitas":receitas.order_by('-id')[:5], 
@@ -131,7 +134,8 @@ def inicio(request):
                     "gastos_parcelados":gastos_parcelados_aberto.order_by('-id')[:5],
                     "saldo_imaginario":saldo_imaginario,
                     "total_parcelado":total_parcelado_aberto,
-                    "total_account":total_account
+                    "total_account":total_account,
+                    "total_liquido_contas":total_liquido_contas
                     }
 
     return render(request, "finance/inicio.html", context=user_context)
@@ -548,8 +552,11 @@ def dashboard_mensal(request):
 
     total_receitas = sum_by_value(receitas_selected)
     total_gastos = sum_by_value(gastos_selected)
+    total_gastos_pagos = sum_by_value(gastos_selected.filter(is_paid=True))
 
-    saldo_atual = total_receitas - total_gastos
+    # O saldo atual considera somente despesas já pagas. As despesas em aberto
+    # são abatidas depois no saldo imaginário, sem duplicar o desconto.
+    saldo_atual = total_receitas - total_gastos_pagos
 
     gastos_not_paid = Transaction.objects.filter(user=user, type="G", date__year=selected_ref.year, date__month=selected_ref.month, is_paid=False, transaction_installment__isnull=True)
     gasto_parcelado = Transaction.objects.filter(user=user, type="G", date__year=selected_ref.year, date__month=selected_ref.month, transaction_installment__isnull=False)
@@ -566,6 +573,12 @@ def dashboard_mensal(request):
     gastos_account = sum_by_account(gastos_selected)
 
     total_account = total_by_account(Transaction.objects.filter(user=user, date__year=selected_ref.year, date__month=selected_ref.month))
+    total_receitas_lancamentos = sum_by_value(receitas_selected)
+    total_gastos_lancamentos = sum_by_value(gastos_selected)
+    total_parcelas_mes = sum_by_value(gasto_parcelado)
+    total_receitas_contas = sum(receitas_account.values())
+    total_gastos_contas = sum(gastos_account.values())
+    total_liquido_contas = sum(total_account.values())
     for account in accounts:
         receitas_account.setdefault(account.name, 0)
         gastos_account.setdefault(account.name, 0)
@@ -583,6 +596,7 @@ def dashboard_mensal(request):
                     "value_by_category_receitas_compare":value_by_category_receita_compare,
                     "value_by_category_gastos_compare":value_by_category_gastos_compare,
                     "total_gastos":total_gastos,
+                    "total_receitas":total_receitas,
                     "saldo_atual":saldo_atual,
                     "total_gastos_not_paid":total_gastos_not_paid,
                     "total_parcelado":total_parcelado,
@@ -590,7 +604,13 @@ def dashboard_mensal(request):
                     "saldo_imaginario":saldo_imaginario,
                     "receitas_account":receitas_account,
                     "gastos_account":gastos_account,
-                    "total_account":total_account
+                    "total_account":total_account,
+                    "total_receitas_lancamentos":total_receitas_lancamentos,
+                    "total_gastos_lancamentos":total_gastos_lancamentos,
+                    "total_parcelas_mes":total_parcelas_mes,
+                    "total_receitas_contas":total_receitas_contas,
+                    "total_gastos_contas":total_gastos_contas,
+                    "total_liquido_contas":total_liquido_contas
                     }
 
     return render(request, 'finance/dashboard_mensal.html', user_context)

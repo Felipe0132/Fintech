@@ -6,7 +6,7 @@
 {% block active_dashboard %}active{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'style/dashboard.css' %}?v=20261106-10">
+<link rel="stylesheet" href="{% static 'style/dashboard.css' %}?v=20261106-11">
 {% endblock %}
 
 {% block content %}
@@ -20,25 +20,25 @@
     <div class="col-12 col-md-3">
         <div class="card card-dark p-4 h-100">
             <span class="text-label mb-2">Total de gastos mês</span>
-            <span class="summary-value text-negative">R$ {{ total_gastos }}</span>
+            <span class="summary-value text-negative">R$ {{ total_gastos|default_if_none:0|floatformat:2 }}</span>
         </div>
     </div>
     <div class="col-12 col-md-3">
         <div class="card card-dark p-4 h-100">
             <span class="text-label mb-2">Saldo mês</span>
             {% if saldo_atual > 0 %}
-            <span class="summary-value text-positive">R$ {{ saldo_atual }}</span>
+            <span class="summary-value text-positive">R$ {{ saldo_atual|floatformat:2 }}</span>
             {% elif 0 > saldo_atual %}
-            <span class="summary-value text-negative">R$ {{ saldo_atual }}</span>
+            <span class="summary-value text-negative">R$ {{ saldo_atual|floatformat:2 }}</span>
             {% else %}
-            <span class="summary-value text-warning">R$ {{ saldo_atual }}</span>
+            <span class="summary-value text-warning">R$ {{ saldo_atual|floatformat:2 }}</span>
             {% endif %}
         </div>
     </div>
     <div class="col-12 col-md-3">
         <div class="card card-dark p-4 h-100">
             <span class="text-label mb-2">Saldo imaginário mês (atual - não pagos)</span>
-            <span class="summary-value text-warning">R$ {{ saldo_imaginario }}</span>
+            <span class="summary-value text-warning">R$ {{ saldo_imaginario|default_if_none:0|floatformat:2 }}</span>
         </div>
     </div>
 </div>
@@ -94,6 +94,7 @@
             {% endif %}
             </div>
             <div id="total-conta-chart" class="report-chart d-none"><canvas id="chartTotalConta" aria-label="Gráfico de total por conta"></canvas></div>
+            <div class="report-total mt-3"><span>Total líquido</span><strong>R$ {{ total_liquido_contas|floatformat:2 }}</strong></div>
         </div>
     </div>
 </div>
@@ -174,6 +175,7 @@
             {% endif %}
             </div>
             <div id="receitas-lancamentos-chart" class="report-chart d-none"></div>
+            <div class="report-total mt-3"><span>Total de receitas</span><strong class="text-positive">R$ {{ total_receitas_lancamentos|floatformat:2 }}</strong></div>
         </div>
     </div>
 
@@ -242,6 +244,7 @@
             {% endif %}
             </div>
             <div id="gastos-lancamentos-chart" class="report-chart d-none"></div>
+            <div class="report-total mt-3"><span>Total de gastos</span><strong class="text-negative">R$ {{ total_gastos_lancamentos|floatformat:2 }}</strong></div>
         </div>
     </div>
 </div>
@@ -301,6 +304,7 @@
     </div>
     </div>
     <div id="parcelas-chart" class="report-chart d-none"></div>
+    <div class="report-total mt-3"><span>Total das parcelas do mês</span><strong class="text-negative">R$ {{ total_parcelas_mes|floatformat:2 }}</strong></div>
 </div>
 
 <!-- Receitas e Gastos por Categoria -->
@@ -344,6 +348,7 @@
             </div>
             {% endif %}
             </div><div id="receitas-categoria-chart" class="report-chart d-none"><canvas id="chartReceitasCategoria" aria-label="Gráfico de receitas por categoria"></canvas></div>
+            <div class="report-total mt-3"><span>Total de receitas</span><strong class="text-positive">R$ {{ total_receitas|floatformat:2 }}</strong></div>
         </div>
     </div>
 
@@ -386,6 +391,7 @@
             </div>
             {% endif %}
             </div><div id="gastos-categoria-chart" class="report-chart d-none"><canvas id="chartGastosCategoria" aria-label="Gráfico de gastos por categoria"></canvas></div>
+            <div class="report-total mt-3"><span>Total de gastos</span><strong class="text-negative">R$ {{ total_gastos|floatformat:2 }}</strong></div>
         </div>
     </div>
 </div>
@@ -425,6 +431,7 @@
             </div>
             {% endif %}
             </div><div id="receitas-conta-chart" class="report-chart d-none"><canvas id="chartReceitasConta" aria-label="Gráfico de receitas por conta"></canvas></div>
+            <div class="report-total mt-3"><span>Total de receitas</span><strong class="text-positive">R$ {{ total_receitas_contas|floatformat:2 }}</strong></div>
         </div>
     </div>
 
@@ -461,6 +468,7 @@
             </div>
             {% endif %}
             </div><div id="gastos-conta-chart" class="report-chart d-none"><canvas id="chartGastosConta" aria-label="Gráfico de gastos por conta"></canvas></div>
+            <div class="report-total mt-3"><span>Total de gastos</span><strong class="text-negative">R$ {{ total_gastos_contas|floatformat:2 }}</strong></div>
         </div>
     </div>
 </div>

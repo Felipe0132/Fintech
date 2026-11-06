@@ -6,6 +6,14 @@
     padding: 0.85rem 2rem;
 }
 
+.navbar-index .navbar-toggler {
+    border-color: var(--cor-border);
+}
+
+:root:not([data-theme="light"]) .navbar-index .navbar-toggler-icon {
+    filter: invert(1);
+}
+
 .navbar-index .nav-link {
     color: var(--cor-texto-secundario) !important;
     font-weight: 500;
@@ -16,7 +24,7 @@
 }
 
 .navbar-index .btn-cadastrar {
-    background-color: var(--btn-add-receita-bg) !important;
+    background-color: var(--btn-filtrar-bg) !important;
     color: #fff !important;
     border-radius: 10px;
     padding: 0.5rem 1.25rem;
@@ -25,14 +33,14 @@
 }
 
 .navbar-index .btn-cadastrar:hover {
-    background-color: var(--btn-add-receita-hover) !important;
+    background-color: var(--btn-filtrar-hover) !important;
     transform: translateY(-1px);
 }
 
 /* ==================== Hero ==================== */
 
 .hero-index {
-    background: radial-gradient(circle at 50% 0%, #1a1f3a 0%, var(--bg-principal) 60%);
+    background: radial-gradient(circle at 50% 0%, color-mix(in srgb, var(--bg-cards) 65%, var(--bg-principal)) 0%, var(--bg-principal) 72%);
     padding: 7rem 2rem 6rem;
     text-align: center;
 }
@@ -63,17 +71,17 @@
 }
 
 .btn-hero-primary {
-    background-color: var(--btn-add-receita-bg);
+    background-color: var(--btn-filtrar-bg);
     color: #ffffff;
-    border: 1px solid var(--btn-add-receita-bg);
-    box-shadow: 0 4px 14px rgba(32, 163, 107, 0.3);
+    border: 1px solid var(--btn-filtrar-bg);
+    box-shadow: 0 4px 14px color-mix(in srgb, var(--btn-filtrar-bg) 32%, transparent);
 }
 
 .btn-hero-primary:hover {
-    background-color: var(--btn-add-receita-hover);
+    background-color: var(--btn-filtrar-hover);
     color: #ffffff;
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(32, 163, 107, 0.4);
+    box-shadow: 0 6px 20px color-mix(in srgb, var(--btn-filtrar-bg) 40%, transparent);
 }
 
 .btn-hero-secondary {
